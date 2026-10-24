@@ -68,7 +68,15 @@ Widget chỉ chạy khi mở launcher, không tự bật lúc đăng nhập.
 3. Mở **Quản lý icon MacTahoe** trong danh sách ứng dụng để chọn icon riêng cho ứng dụng. Font và bộ icon/theme tổng thể đã được cài tự động. Muốn bật hiệu ứng Blur My Shell, mở Extension Manager và bật extension; cấu hình Tahoe đã được nạp sẵn.
 4. Nếu không thấy thay đổi, kiểm tra Terminal đã hiện thông báo `Installed` chưa; nếu có, thử đăng xuất/đăng nhập lại một lần nữa.
 
-Chạy `./uninstall.sh` để gỡ theme và ứng dụng, khôi phục file đã sao lưu; script hỏi trước khi khôi phục bản sao cấu hình GNOME. Các gói hệ thống được giữ lại.
+### Gỡ cài đặt
+
+Để gỡ giao diện, tiện ích và khôi phục các file đã sao lưu (giữ lại thư mục repo để có thể cài lại), mở Terminal ở bất kỳ vị trí nào và chạy:
+
+```bash
+cd "$HOME/mactahoe-ubuntu" && ./uninstall.sh
+```
+
+Chạy bằng tài khoản thường, không thêm `sudo`; trình gỡ sẽ hỏi xác nhận trước khi khôi phục bản sao cấu hình GNOME. Nếu đã cài theme màn hình đăng nhập, lệnh này cũng sẽ yêu cầu mật khẩu sudo để khôi phục. Các gói hệ thống được giữ lại.
 
 `install.sh` và `install-gdm.sh` hiện chỉ hỗ trợ Ubuntu. Bộ cài GDM kiểm tra GDM3 đang có, cài các công cụ biên dịch/Yaru nếu thiếu, kiểm tra resource theme trước khi áp dụng giao diện Tahoe. Bước này thay đổi resource màn hình đăng nhập hệ thống; chạy riêng và reboot sau khi cài.
 

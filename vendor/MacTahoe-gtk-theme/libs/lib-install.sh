@@ -754,10 +754,18 @@ install_only_gdm_theme() {
   install_theme_deps; install_beggy "${MACTAHOE_TMP_DIR}" "${colors[0]}"
 
   local GDM_TMP_DIR="${MACTAHOE_TMP_DIR}/gdm"
+  local GDM_RESOURCE_TMP="${GDM_TMP_DIR}/gnome-shell-theme.gresource"
 
-  mkdir -p                                                                                    "${GDM_TMP_DIR}"
-  cp -r "${REPO_DIR}/other/gdm/theme"                                                         "${GDM_TMP_DIR}"
-  cp -r "${MACTAHOE_TMP_DIR}/background.png"                                                  "${GDM_TMP_DIR}/theme/background.png"
+  mkdir -p "${GDM_TMP_DIR}"
+  rm -rf "${GDM_TMP_DIR}/theme"
+  mkdir -p "${GDM_TMP_DIR}/theme"
+  cp -a "${REPO_DIR}/other/gdm/theme/." "${GDM_TMP_DIR}/theme/"
+  cp -f "${MACTAHOE_TMP_DIR}/background.png" "${GDM_TMP_DIR}/theme/background.png"
+  [[ -f "${GDM_TMP_DIR}/theme/pad-osd.css" ]] || {
+    prompt -e "GDM theme source is incomplete: pad-osd.css is missing."
+    exit 1
+  }
+  glib-compile-resources --sourcedir="${GDM_TMP_DIR}/theme" --target="${GDM_RESOURCE_TMP}" "${GDM_GR_XML_FILE}"
 
   # For Kali Linux GDM >>>
   local KALI_BACKGROUND_FOLDER="/usr/share/desktop-base/kali-theme/login"
@@ -769,7 +777,7 @@ install_only_gdm_theme() {
   # For Kali Linux GDM <<<
 
   backup_file "${TARGET}"
-  glib-compile-resources --sourcedir="${GDM_TMP_DIR}/theme" --target="${TARGET}" "${GDM_GR_XML_FILE}"
+  install -m 0644 "${GDM_RESOURCE_TMP}" "${TARGET}"
 }
 
 revert_gdm_theme() {
