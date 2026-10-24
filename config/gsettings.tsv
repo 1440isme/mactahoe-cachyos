@@ -36,14 +36,7 @@ org.gnome.shell.extensions.globalmenu menu-help-enabled true
 org.gnome.shell.extensions.blur-my-shell.appfolder blur true
 org.gnome.shell.extensions.blur-my-shell.overview blur true
 org.gnome.shell.extensions.blur-my-shell.dash-to-dock blur false
-org.gnome.shell.extensions.blur-my-shell.panel blur true
-org.gnome.shell.extensions.blur-my-shell.panel static-blur false
-org.gnome.shell.extensions.blur-my-shell.panel override-background true
-org.gnome.shell.extensions.blur-my-shell.panel style-panel 0
-org.gnome.shell.extensions.blur-my-shell.panel override-background-dynamically true
-org.gnome.shell.extensions.blur-my-shell.panel override-background-dynamically-mode 0
-org.gnome.shell.extensions.blur-my-shell.panel gradient-panel false
-org.gnome.shell.extensions.blur-my-shell.panel unblur-in-overview false
+org.gnome.shell.extensions.blur-my-shell.panel blur false
 org.gnome.shell.extensions.blur-my-shell.popup blur false
 org.gnome.shell.extensions.blur-my-shell.applications blur false
 org.gnome.shell.extensions.blur-my-shell.applications blacklist ['Plank', 'Conky']
@@ -63,11 +56,13 @@ org.gnome.shell.extensions.dash-to-dock intellihide-mode 'ALL_WINDOWS'
 org.gnome.shell.extensions.dash-to-dock always-center-icons true
 org.gnome.shell.extensions.dash-to-dock click-action 'minimize-or-previews'
 org.gnome.shell.extensions.dash-to-dock show-trash true
+org.gnome.shell.extensions.dash-to-dock show-favorites true
 org.gnome.shell.extensions.dash-to-dock show-mounts false
 org.gnome.shell.extensions.dash-to-dock show-mounts-network false
-org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 48
+org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 45
 org.gnome.shell.extensions.dash-to-dock icon-size-fixed false
-org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DOTS'
+org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DOT'
+org.gnome.shell.extensions.dash-to-dock height-fraction 0.89
 org.gnome.shell.extensions.dash-to-dock animation-time 0.2
 org.gnome.shell.extensions.dash-to-dock show-delay 0.1
 org.gnome.shell.extensions.dash-to-dock hide-delay 0.1
@@ -77,7 +72,7 @@ org.gnome.shell.extensions.dash-to-dock max-alpha 0.85
 org.gnome.shell.extensions.dash-to-dock min-alpha 0.15
 org.gnome.shell.extensions.dash-to-dock custom-theme-shrink false
 org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
-org.gnome.shell.extensions.dash-to-dock background-opacity 0.45
+org.gnome.shell.extensions.dash-to-dock background-opacity 0.44
 org.gnome.shell.extensions.dash-to-dock custom-background-color true
 org.gnome.shell.extensions.dash-to-dock background-color '#1f1f24'
 org.gnome.shell.extensions.dash-to-dock apply-custom-theme false
