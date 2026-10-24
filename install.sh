@@ -166,15 +166,16 @@ done
 
 gs() {
     local schema="$1"; shift
+    local command="$1"; shift
     local uuid schema_dir
     case "$schema" in
         org.gnome.shell.extensions.blur-my-shell*) uuid=blur-my-shell@aunetx ;;
         org.gnome.shell.extensions.globalmenu) uuid=globalmenu@ShiroOSL.github.io ;;
         org.gnome.shell.extensions.just-perfection) uuid=just-perfection-desktop@just-perfection ;;
-        *) gsettings "$schema" "$@"; return $? ;;
+        *) gsettings "$command" "$schema" "$@"; return $? ;;
     esac
     schema_dir="$HOME/.local/share/gnome-shell/extensions/$uuid/schemas"
-    GSETTINGS_SCHEMA_DIR="$schema_dir" gsettings "$schema" "$@"
+    GSETTINGS_SCHEMA_DIR="$schema_dir" gsettings "$command" "$schema" "$@"
 }
 
 while read -r schema key value; do
@@ -194,9 +195,11 @@ gsettings set org.gnome.desktop.screensaver picture-uri "$wall_uri"
 gsettings set org.gnome.desktop.screensaver picture-options 'zoom'
 
 extension_ids=(user-theme@gnome-shell-extensions.gcampax.github.com)
-extension_ids+=("${COMPATIBLE_EXTENSION_IDS[@]}")
+for uuid in "${COMPATIBLE_EXTENSION_IDS[@]}"; do
+    [ "$uuid" = blur-my-shell@aunetx ] || extension_ids+=("$uuid")
+done
 if [ "$distribution_id" = ubuntu ]; then extension_ids+=(ubuntu-dock@ubuntu.com); fi
-python3 - "${extension_ids[@]}" -- "${INCOMPATIBLE_EXTENSION_IDS[@]}" <<'PY'
+python3 - "${extension_ids[@]}" -- blur-my-shell@aunetx -- "${INCOMPATIBLE_EXTENSION_IDS[@]}" <<'PY'
 import ast
 import subprocess
 import sys
@@ -205,10 +208,12 @@ schema = "org.gnome.shell"
 key = "enabled-extensions"
 raw_enabled = subprocess.check_output(["gsettings", "get", schema, key], text=True).strip()
 enabled = ast.literal_eval(raw_enabled.removeprefix("@as "))
-separator = sys.argv.index("--")
-required = sys.argv[1:separator]
-incompatible = sys.argv[separator + 1:]
-enabled = [uuid for uuid in enabled if uuid not in incompatible]
+first_separator = sys.argv.index("--")
+second_separator = sys.argv.index("--", first_separator + 1)
+required = sys.argv[1:first_separator]
+disabled = sys.argv[first_separator + 1:second_separator]
+incompatible = sys.argv[second_separator + 1:]
+enabled = [uuid for uuid in enabled if uuid not in disabled and uuid not in incompatible]
 for uuid in required:
     if uuid not in enabled:
         enabled.append(uuid)

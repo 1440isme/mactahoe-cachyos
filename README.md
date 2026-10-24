@@ -32,7 +32,7 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 ## Thành phần giao diện
 
 - Theme GTK/GNOME Shell, bộ icon MacTahoe, con trỏ, font SF và wallpaper tạo phần giao diện nền.
-- Blur My Shell, Global Menu và Just Perfection là ba extension giao diện được cài từ repo; User Themes là extension hệ thống hỗ trợ theme GNOME Shell.
+- Blur My Shell, Global Menu và Just Perfection là ba extension giao diện được cài từ repo; User Themes là extension hệ thống hỗ trợ theme GNOME Shell. Blur My Shell được cài sẵn cấu hình nhưng mặc định tắt; có thể bật sau trong Extension Manager.
 - Trên Ubuntu, thanh dock là Ubuntu Dock có sẵn của hệ thống; repo chỉ cấu hình nó, không cài Plank hay Docky.
 - GNOME Tweaks và Extension Manager là ứng dụng quản lý tùy chọn/extension, không phải thành phần tạo giao diện. Trình quản lý icon MacTahoe và launcher widget là tiện ích riêng của repo.
 - Extension được kiểm tra theo phiên bản GNOME Shell khai báo trong metadata và chỉ được bật cho lần đăng nhập tiếp theo.
@@ -51,7 +51,7 @@ Lệnh trên cài GNOME Tweaks, Extension Manager, theme GTK/Shell, icon/cursor,
 
 1. Chờ Terminal báo `Installed`, sau đó đăng xuất rồi đăng nhập lại để GNOME nạp theme và extension. Nếu cài theme màn hình đăng nhập trên Ubuntu, khởi động lại máy.
 2. Widget không tự chạy khi đăng nhập. Mở ứng dụng **Widget MacTahoe** trong danh sách ứng dụng, hoặc chạy `mactahoe-widgets start` trong Terminal. Tắt widget bằng `mactahoe-widgets stop`.
-3. Mở **Quản lý icon MacTahoe** trong danh sách ứng dụng để chọn icon riêng cho ứng dụng. Font và bộ icon/theme tổng thể đã được cài tự động.
+3. Mở **Quản lý icon MacTahoe** trong danh sách ứng dụng để chọn icon riêng cho ứng dụng. Font và bộ icon/theme tổng thể đã được cài tự động. Muốn bật hiệu ứng Blur My Shell, mở Extension Manager và bật extension; cấu hình Tahoe đã được nạp sẵn.
 4. Nếu không thấy thay đổi, kiểm tra Terminal đã hiện thông báo `Installed` chưa; nếu có, thử đăng xuất/đăng nhập lại một lần nữa.
 
 Chạy `./uninstall.sh` để gỡ theme và ứng dụng, khôi phục file đã sao lưu; script hỏi trước khi khôi phục bản sao cấu hình GNOME. Các gói hệ thống được giữ lại.
