@@ -53,7 +53,13 @@ Nếu repo đã có trong `~/mactahoe-ubuntu` và chỉ muốn chạy lại cài
 cd "$HOME/mactahoe-ubuntu" && ./install.sh
 ```
 
-Lệnh trên cài GNOME Tweaks, Extension Manager, theme GTK/Shell, icon/cursor, font, wallpaper, cấu hình GNOME/dock, các extension giao diện, Firefox, widget và trình quản lý icon. Theme màn hình đăng nhập GDM **không cài mặc định** vì có thể làm hỏng màn hình đăng nhập khi không tương thích; chỉ chạy `./install.sh --with-gdm` nếu bạn chủ động muốn thử trên máy Ubuntu của mình. Widget chỉ chạy khi mở launcher, không tự bật lúc đăng nhập.
+Lệnh trên cài GNOME Tweaks, Extension Manager, theme GTK/Shell, icon/cursor, font, wallpaper, cấu hình GNOME/dock, các extension giao diện, Firefox, widget và trình quản lý icon. Theme màn hình đăng nhập GDM **không cài mặc định** vì có thể làm hỏng màn hình đăng nhập khi không tương thích. Nếu bạn chủ động muốn bật GDM, mở Terminal ở bất kỳ thư mục nào rồi chạy:
+
+```bash
+cd "$HOME/mactahoe-ubuntu" && ./install.sh --with-gdm
+```
+
+Widget chỉ chạy khi mở launcher, không tự bật lúc đăng nhập.
 
 ### Sau khi cài
 
