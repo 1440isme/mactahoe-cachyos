@@ -2,12 +2,10 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-INSTALL_GDM=0
-case "${1:-}" in
-    "") ;;
-    --with-gdm) INSTALL_GDM=1 ;;
-    *) printf 'Usage: %s [--with-gdm]\n' "$0" >&2; exit 2 ;;
-esac
+if [ "$#" -ne 0 ]; then
+    printf 'Usage: %s\n' "$0" >&2
+    exit 2
+fi
 
 if [ "$EUID" -eq 0 ]; then
     printf 'Run as your normal user, without sudo.\n' >&2
@@ -64,31 +62,8 @@ package_list=(breeze-icon-theme conky-all dconf-cli fontconfig \
     gir1.2-adw-1 gir1.2-gtk-4.0 gnome-shell-extension-manager \
     gnome-shell-extension-user-theme gnome-tweaks imagemagick \
     libglib2.0-dev-bin librsvg2-bin python3-gi sassc)
-if [ "$INSTALL_GDM" -eq 1 ]; then
-    package_list+=(yaru-theme-gnome-shell)
-fi
 sudo apt-get update
 sudo apt-get install -y "${package_list[@]}"
-
-gdm_theme_available=0
-if [ "$INSTALL_GDM" -eq 1 ]; then
-    for gdm_target in \
-        /usr/share/gnome-shell/theme/gnome-shell.css \
-        /usr/share/gnome-shell/theme/Pop/gnome-shell-theme.gresource \
-        /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource \
-        /usr/share/gnome-shell/theme/ZorinBlue-Dark/gnome-shell-theme.gresource \
-        /usr/share/gnome-shell/theme/ZorinBlue-Light/gnome-shell-theme.gresource \
-        /usr/share/gnome-shell/gnome-shell-theme.gresource; do
-        if [ -e "$gdm_target" ]; then
-            gdm_theme_available=1
-            break
-        fi
-    done
-    if [ "$gdm_theme_available" -eq 0 ]; then
-        printf 'Could not find a supported GDM theme resource after installing Yaru.\n' >&2
-        exit 1
-    fi
-fi
 
 mkdir -p "$HOME/.local/share/gnome-shell/extensions" \
     "$HOME/.local/share/fonts" "$HOME/.local/bin" "$HOME/.local/share/applications" \
@@ -273,13 +248,6 @@ for firefox_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla
     done < <(find "$firefox_root" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print0)
 done
 
-if [ "$INSTALL_GDM" -eq 1 ]; then
-    (cd "$ROOT_DIR/vendor/MacTahoe-gtk-theme/other/gdm" && ./parse-sass.sh)
-    sudo "$ROOT_DIR/vendor/MacTahoe-gtk-theme/tweaks.sh" -g -i apple -b "$wall"
-    touch "$STATE_DIR/gdm-installed"
-fi
-
 update-desktop-database "$HOME/.local/share/applications" || true
 printf '\nInstalled. Log out and back in to load GNOME Shell extensions.\n'
-if [ "$INSTALL_GDM" -eq 1 ]; then printf 'Reboot to apply the login screen theme.\n'; fi
 printf 'Widgets start only when you click Widget MacTahoe.\nBackup: %s\n' "$BACKUP_DIR"
