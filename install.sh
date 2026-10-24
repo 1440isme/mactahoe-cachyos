@@ -105,7 +105,8 @@ case "$package_manager" in
         ;;
     dnf)
         package_list=(breeze-icon-theme conky dconf fontconfig \
-            gnome-extensions-app gnome-tweaks ImageMagick glib2-devel librsvg2-tools \
+            gnome-extensions-app gnome-shell-extension-user-theme gnome-tweaks \
+            ImageMagick glib2-devel librsvg2-tools \
             python3-gobject gtk4-devel sassc)
         sudo dnf install -y "${package_list[@]}"
         ;;
@@ -142,7 +143,15 @@ sed "s|@HOME@|$HOME|g" "$ROOT_DIR/config/weather.conf" \
 
 EXTENSION_IDS=(blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
     just-perfection-desktop@just-perfection)
+COMPATIBLE_EXTENSION_IDS=()
+INCOMPATIBLE_EXTENSION_IDS=()
 for uuid in "${EXTENSION_IDS[@]}"; do
+    if ! python3 -c 'import json, sys; data = json.load(open(sys.argv[1], encoding="utf-8")); sys.exit(0 if sys.argv[2] in data.get("shell-version", []) else 1)' \
+        "$ROOT_DIR/vendor/gnome-extensions/$uuid/metadata.json" "$shell_major"; then
+        printf 'Skipping %s: it does not declare support for GNOME Shell %s.\n' "$uuid" "$shell_major"
+        INCOMPATIBLE_EXTENSION_IDS+=("$uuid")
+        continue
+    fi
     target="$HOME/.local/share/gnome-shell/extensions/$uuid"
     if [ -d "$target" ]; then
         mkdir -p "$BACKUP_DIR/extensions"
@@ -152,6 +161,7 @@ for uuid in "${EXTENSION_IDS[@]}"; do
     rm -rf "$target"
     cp -a "$ROOT_DIR/vendor/gnome-extensions/$uuid" "$target"
     if [ -d "$target/schemas" ]; then glib-compile-schemas "$target/schemas"; fi
+    COMPATIBLE_EXTENSION_IDS+=("$uuid")
 done
 
 gs() {
@@ -183,13 +193,28 @@ gsettings set org.gnome.desktop.background picture-options 'zoom'
 gsettings set org.gnome.desktop.screensaver picture-uri "$wall_uri"
 gsettings set org.gnome.desktop.screensaver picture-options 'zoom'
 
-extension_ids=(user-theme@gnome-shell-extensions.gcampax.github.com \
-    blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
-    just-perfection-desktop@just-perfection)
+extension_ids=(user-theme@gnome-shell-extensions.gcampax.github.com)
+extension_ids+=("${COMPATIBLE_EXTENSION_IDS[@]}")
 if [ "$distribution_id" = ubuntu ]; then extension_ids+=(ubuntu-dock@ubuntu.com); fi
-for uuid in "${extension_ids[@]}"; do
-    gnome-extensions enable "$uuid" || true
-done
+python3 - "${extension_ids[@]}" -- "${INCOMPATIBLE_EXTENSION_IDS[@]}" <<'PY'
+import ast
+import subprocess
+import sys
+
+schema = "org.gnome.shell"
+key = "enabled-extensions"
+raw_enabled = subprocess.check_output(["gsettings", "get", schema, key], text=True).strip()
+enabled = ast.literal_eval(raw_enabled.removeprefix("@as "))
+separator = sys.argv.index("--")
+required = sys.argv[1:separator]
+incompatible = sys.argv[separator + 1:]
+enabled = [uuid for uuid in enabled if uuid not in incompatible]
+for uuid in required:
+    if uuid not in enabled:
+        enabled.append(uuid)
+variant = "[" + ", ".join(repr(uuid) for uuid in enabled) + "]"
+subprocess.run(["gsettings", "set", schema, key, variant], check=True)
+PY
 
 cp "$ROOT_DIR/desktop/mactahoe-widgets.desktop" "$HOME/.local/share/applications/"
 cp "$ROOT_DIR/desktop/mactahoe-icon-manager.desktop" "$HOME/.local/share/applications/"

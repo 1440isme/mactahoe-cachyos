@@ -29,6 +29,14 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 - `config/gsettings.tsv`: tùy chọn GNOME, dock và extension được áp dụng.
 - `config/firefox-user.js`: tùy chọn cần cho CSS theme Firefox.
 
+## Thành phần giao diện
+
+- Theme GTK/GNOME Shell, bộ icon MacTahoe, con trỏ, font SF và wallpaper tạo phần giao diện nền.
+- Blur My Shell, Global Menu và Just Perfection là ba extension giao diện được cài từ repo; User Themes là extension hệ thống hỗ trợ theme GNOME Shell.
+- Trên Ubuntu, thanh dock là Ubuntu Dock có sẵn của hệ thống; repo chỉ cấu hình nó, không cài Plank hay Docky.
+- GNOME Tweaks và Extension Manager là ứng dụng quản lý tùy chọn/extension, không phải thành phần tạo giao diện. Trình quản lý icon MacTahoe và launcher widget là tiện ích riêng của repo.
+- Extension được kiểm tra theo phiên bản GNOME Shell khai báo trong metadata và chỉ được bật cho lần đăng nhập tiếp theo.
+
 ## Trạng thái
 
 Sau khi cài Git, cài bằng một lệnh:
