@@ -32,6 +32,8 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 ## Thành phần giao diện
 
 - Theme GTK/GNOME Shell, bộ icon MacTahoe, con trỏ, font SF và wallpaper tạo phần giao diện nền.
+- Topbar dùng kiểu trong suốt của chính MacTahoe GNOME Shell theme (`#panel` trong CSS); Blur My Shell cho panel vẫn tắt, không cần bật blur để có nền trong suốt.
+- Firefox bật bo góc cửa sổ tối đa hóa 16 px bằng CSS của theme; cấu hình `user.js` cũng bật góc CSD GTK.
 - Blur My Shell, Global Menu và Just Perfection là ba extension giao diện được cài từ repo; User Themes là extension hệ thống hỗ trợ theme GNOME Shell. Blur My Shell được cài sẵn cấu hình nhưng mặc định tắt; có thể bật sau trong Extension Manager.
 - Trên Ubuntu, thanh dock là Ubuntu Dock có sẵn của hệ thống; repo chỉ cấu hình nó, không cài Plank hay Docky.
 - GNOME Tweaks và Extension Manager là ứng dụng quản lý tùy chọn/extension, không phải thành phần tạo giao diện. Trình quản lý icon MacTahoe và launcher widget là tiện ích riêng của repo.

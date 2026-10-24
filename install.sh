@@ -147,7 +147,7 @@ mkdir -p "$HOME/.local/share/fonts/MacTahoe"
 cp -a "$ROOT_DIR/assets/fonts/SF-Pro" "$ROOT_DIR/assets/fonts/SF-Mono" \
     "$HOME/.local/share/fonts/MacTahoe/"
 fc-cache -f "$HOME/.local/share/fonts/MacTahoe"
-(cd "$ROOT_DIR/vendor/MacTahoe-gtk-theme" && ./install.sh -l --shell -i apple)
+(cd "$ROOT_DIR/vendor/MacTahoe-gtk-theme" && ./install.sh -l --shell -i apple -p default)
 (cd "$ROOT_DIR/vendor/MacTahoe-icon-theme" && ./install.sh -t blue)
 cp -a "$ROOT_DIR/assets/wallpapers/." "$HOME/Pictures/Wallpapers/MacTahoe/"
 
