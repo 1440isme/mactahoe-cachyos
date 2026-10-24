@@ -45,18 +45,18 @@ Sau khi cài Git, cài bằng một lệnh:
 cd ~ && if [ -d mactahoe-ubuntu/.git ]; then git -C mactahoe-ubuntu pull --ff-only; else git clone https://github.com/adfoxtheme/mactahoe-ubuntu.git mactahoe-ubuntu; fi && cd ~/mactahoe-ubuntu && ./install.sh
 ```
 
-Lệnh trên cài GNOME Tweaks, Extension Manager, theme GTK/Shell, icon/cursor, font, wallpaper, cấu hình GNOME/dock, các extension giao diện, Firefox, widget và trình quản lý icon. GDM được áp dụng ở cuối và cần quyền quản trị; dùng `./install.sh --without-gdm` để bỏ riêng màn hình đăng nhập. Widget chỉ chạy khi mở launcher, không tự bật lúc đăng nhập.
+Lệnh trên cài GNOME Tweaks, Extension Manager, theme GTK/Shell, icon/cursor, font, wallpaper, cấu hình GNOME/dock, các extension giao diện, Firefox, widget và trình quản lý icon. Theme màn hình đăng nhập GDM **không cài mặc định** vì có thể làm hỏng màn hình đăng nhập khi không tương thích; chỉ chạy `./install.sh --with-gdm` nếu bạn chủ động muốn thử trên máy Ubuntu của mình. Widget chỉ chạy khi mở launcher, không tự bật lúc đăng nhập.
 
 ### Sau khi cài
 
-1. Chờ Terminal báo `Installed`, sau đó đăng xuất rồi đăng nhập lại để GNOME nạp theme và extension. Nếu cài theme màn hình đăng nhập trên Ubuntu, khởi động lại máy.
+1. Chờ Terminal báo `Installed`, sau đó đăng xuất rồi đăng nhập lại để GNOME nạp theme và extension. Nếu đã chủ động cài theme màn hình đăng nhập bằng `--with-gdm`, khởi động lại máy.
 2. Widget không tự chạy khi đăng nhập. Mở ứng dụng **Widget MacTahoe** trong danh sách ứng dụng, hoặc chạy `mactahoe-widgets start` trong Terminal. Tắt widget bằng `mactahoe-widgets stop`.
 3. Mở **Quản lý icon MacTahoe** trong danh sách ứng dụng để chọn icon riêng cho ứng dụng. Font và bộ icon/theme tổng thể đã được cài tự động. Muốn bật hiệu ứng Blur My Shell, mở Extension Manager và bật extension; cấu hình Tahoe đã được nạp sẵn.
 4. Nếu không thấy thay đổi, kiểm tra Terminal đã hiện thông báo `Installed` chưa; nếu có, thử đăng xuất/đăng nhập lại một lần nữa.
 
 Chạy `./uninstall.sh` để gỡ theme và ứng dụng, khôi phục file đã sao lưu; script hỏi trước khi khôi phục bản sao cấu hình GNOME. Các gói hệ thống được giữ lại.
 
-`install.sh` nhận diện Ubuntu/Debian (`apt`), Fedora (`dnf`) và Arch (`pacman`), yêu cầu GNOME Shell 48 trở lên. Thiết lập Dock/favorites và theme màn hình đăng nhập chỉ áp dụng cho Ubuntu; theme GDM dùng Yaru nên các hệ khác tự bỏ qua bước này. Trên Debian, Fedora và Arch, script cài phần giao diện/tiện ích chung nhưng chưa áp dụng cấu hình distro-specific. Extension có thể cần bản cập nhật tương thích với phiên bản GNOME đang dùng; GNOME có thể tự vô hiệu hóa extension không tương thích. Sau khi cài cần đăng xuất/đăng nhập lại để nạp extension; nếu cài GDM thì reboot để thấy thay đổi.
+`install.sh` hiện chỉ hỗ trợ Ubuntu và yêu cầu GNOME Shell 48 trở lên. GDM là bước tùy chọn, không chạy trong lệnh cài mặc định; khi được yêu cầu bằng `--with-gdm`, script cài `yaru-theme-gnome-shell` làm nền rồi áp dụng theme Tahoe lên resource GDM và sao lưu resource gốc. Extension có thể cần bản cập nhật tương thích với phiên bản GNOME đang dùng; GNOME có thể tự vô hiệu hóa extension không tương thích. Sau khi cài cần đăng xuất/đăng nhập lại để nạp extension; nếu cài GDM thì reboot để thấy thay đổi.
 
 ## Nguồn và phiên bản theme
 

@@ -2,6 +2,10 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+if [ "$EUID" -eq 0 ]; then
+    printf 'Run this uninstaller as your normal user, without sudo.\n' >&2
+    exit 1
+fi
 STATE_DIR="$HOME/.local/state/mactahoe-ubuntu"
 BACKUP_DIR=""
 if [ -f "$STATE_DIR/latest-backup" ]; then BACKUP_DIR="$(cat "$STATE_DIR/latest-backup")"; fi
@@ -69,8 +73,8 @@ done
 
 if [ -n "$BACKUP_DIR" ]; then
     for path in gtk-3.0 gtk-4.0; do
+        rm -rf "$HOME/.config/$path"
         if [ -d "$BACKUP_DIR/$path" ]; then
-            rm -rf "$HOME/.config/$path"
             cp -a "$BACKUP_DIR/$path" "$HOME/.config/"
         fi
     done
@@ -122,4 +126,5 @@ if [ -n "$BACKUP_DIR" ]; then
 fi
 fc-cache -f "$HOME/.local/share/fonts" 2>/dev/null || true
 update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+rm -f "$STATE_DIR/latest-backup"
 printf 'Uninstall finished. Installed apt packages were left in place.\n'

@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [ ! -r /etc/os-release ]; then
+    printf 'Cannot identify this operating system.\n' >&2
+    exit 1
+fi
+. /etc/os-release
+if [ "${ID:-}" != ubuntu ]; then
+    printf 'This installer currently supports Ubuntu only.\n' >&2
+    exit 1
+fi
+
 if ! command -v apt-get >/dev/null 2>&1; then
-    printf 'This installer requires Ubuntu or another apt-based system.\n' >&2
+    printf 'Package manager apt-get was not found.\n' >&2
     exit 1
 fi
 

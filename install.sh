@@ -2,11 +2,11 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-INSTALL_GDM=1
+INSTALL_GDM=0
 case "${1:-}" in
     "") ;;
-    --without-gdm) INSTALL_GDM=0 ;;
-    *) printf 'Usage: %s [--without-gdm]\n' "$0" >&2; exit 2 ;;
+    --with-gdm) INSTALL_GDM=1 ;;
+    *) printf 'Usage: %s [--with-gdm]\n' "$0" >&2; exit 2 ;;
 esac
 
 if [ "$EUID" -eq 0 ]; then
@@ -14,27 +14,18 @@ if [ "$EUID" -eq 0 ]; then
     exit 1
 fi
 if [ ! -r /etc/os-release ] || ! command -v gsettings >/dev/null 2>&1; then
-    printf 'This installer requires a supported Linux distribution and a running GNOME session.\n' >&2
+    printf 'This installer requires Ubuntu and a running GNOME session.\n' >&2
     exit 1
 fi
 . /etc/os-release
 distribution_id="${ID:-}"
-distribution_like=" ${ID_LIKE:-} "
-case "$distribution_id" in
-    ubuntu|debian) package_manager=apt-get ;;
-    fedora) package_manager=dnf ;;
-    arch) package_manager=pacman ;;
-    *)
-        case "$distribution_like" in
-            *" debian "*|*" ubuntu "*) package_manager=apt-get ;;
-            *" fedora "*|*" rhel "*) package_manager=dnf ;;
-            *" arch "*) package_manager=pacman ;;
-            *) printf 'Unsupported distribution: %s (%s).\n' "${PRETTY_NAME:-unknown}" "$distribution_id" >&2; exit 1 ;;
-        esac
-        ;;
-esac
-if ! command -v "$package_manager" >/dev/null 2>&1; then
-    printf 'Package manager %s was not found.\n' "$package_manager" >&2
+if [ "$distribution_id" != ubuntu ]; then
+    printf 'This installer currently supports Ubuntu only; detected %s (%s).\n' \
+        "${PRETTY_NAME:-unknown}" "$distribution_id" >&2
+    exit 1
+fi
+if ! command -v apt-get >/dev/null 2>&1; then
+    printf 'Package manager apt-get was not found.\n' >&2
     exit 1
 fi
 shell_major="$(gnome-shell --version | grep -oE '[0-9]+' | head -n1)"
@@ -57,22 +48,76 @@ for firefox_process in firefox firefox-bin; do
 done
 
 STATE_DIR="$HOME/.local/state/mactahoe-ubuntu"
-BACKUP_DIR="$STATE_DIR/backup-$(date +%Y%m%d-%H%M%S)"
-mkdir -p "$BACKUP_DIR" "$HOME/.local/share/gnome-shell/extensions" \
+mkdir -p "$STATE_DIR"
+BACKUP_DIR=""
+if [ -f "$STATE_DIR/latest-backup" ]; then
+    previous_backup="$(cat "$STATE_DIR/latest-backup")"
+    if [ -d "$previous_backup" ] && [ "$(dirname "$previous_backup")" = "$STATE_DIR" ]; then
+        BACKUP_DIR="$previous_backup"
+    fi
+fi
+if [ -z "$BACKUP_DIR" ]; then
+    BACKUP_DIR="$(mktemp -d "$STATE_DIR/backup-$(date +%Y%m%d-%H%M%S)-XXXXXX")"
+fi
+
+package_list=(breeze-icon-theme conky-all dconf-cli fontconfig \
+    gir1.2-adw-1 gir1.2-gtk-4.0 gnome-shell-extension-manager \
+    gnome-shell-extension-user-theme gnome-tweaks imagemagick \
+    libglib2.0-dev-bin librsvg2-bin python3-gi sassc)
+if [ "$INSTALL_GDM" -eq 1 ]; then
+    package_list+=(yaru-theme-gnome-shell)
+fi
+sudo apt-get update
+sudo apt-get install -y "${package_list[@]}"
+
+gdm_theme_available=0
+if [ "$INSTALL_GDM" -eq 1 ]; then
+    for gdm_target in \
+        /usr/share/gnome-shell/theme/gnome-shell.css \
+        /usr/share/gnome-shell/theme/Pop/gnome-shell-theme.gresource \
+        /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource \
+        /usr/share/gnome-shell/theme/ZorinBlue-Dark/gnome-shell-theme.gresource \
+        /usr/share/gnome-shell/theme/ZorinBlue-Light/gnome-shell-theme.gresource \
+        /usr/share/gnome-shell/gnome-shell-theme.gresource; do
+        if [ -e "$gdm_target" ]; then
+            gdm_theme_available=1
+            break
+        fi
+    done
+    if [ "$gdm_theme_available" -eq 0 ]; then
+        printf 'Could not find a supported GDM theme resource after installing Yaru.\n' >&2
+        exit 1
+    fi
+fi
+
+mkdir -p "$HOME/.local/share/gnome-shell/extensions" \
     "$HOME/.local/share/fonts" "$HOME/.local/bin" "$HOME/.local/share/applications" \
     "$HOME/.local/share/mactahoe-widgets" "$HOME/.config/conky" \
     "$HOME/.config/mactahoe-widgets" "$HOME/.config/systemd/user" \
     "$HOME/Pictures/Wallpapers/MacTahoe"
 
-if command -v dconf >/dev/null 2>&1; then dconf dump / > "$BACKUP_DIR/dconf-before.ini" || true; fi
+if command -v dconf >/dev/null 2>&1 && [ ! -f "$BACKUP_DIR/dconf-before.ini" ]; then
+    dconf dump / > "$BACKUP_DIR/dconf-before.ini" || true
+fi
 for path in gtk-3.0 gtk-4.0; do
-    [ ! -e "$HOME/.config/$path" ] || cp -a "$HOME/.config/$path" "$BACKUP_DIR/"
+    if [ ! -e "$BACKUP_DIR/captured/.config/$path" ]; then
+        mkdir -p "$BACKUP_DIR/captured/.config"
+        if [ -e "$HOME/.config/$path" ] && [ ! -e "$BACKUP_DIR/$path" ]; then
+            cp -a "$HOME/.config/$path" "$BACKUP_DIR/"
+        fi
+        touch "$BACKUP_DIR/captured/.config/$path"
+    fi
 done
 backup_item() {
-    local relative="$1"
-    if [ -e "$HOME/$relative" ] || [ -L "$HOME/$relative" ]; then
-        mkdir -p "$BACKUP_DIR/home/$(dirname "$relative")"
-        cp -a "$HOME/$relative" "$BACKUP_DIR/home/$relative"
+    local relative="$1" backup_path="$BACKUP_DIR/home/$1" captured="$BACKUP_DIR/captured/home/$1"
+    if [ ! -e "$captured" ]; then
+        mkdir -p "$BACKUP_DIR/captured/home/$(dirname "$relative")"
+        if { [ -e "$HOME/$relative" ] || [ -L "$HOME/$relative" ]; } && \
+            [ ! -e "$backup_path" ] && [ ! -L "$backup_path" ]; then
+            mkdir -p "$BACKUP_DIR/home/$(dirname "$relative")"
+            cp -a "$HOME/$relative" "$backup_path"
+        fi
+        touch "$captured"
     fi
 }
 for relative in \
@@ -88,35 +133,15 @@ done
 for file in "$HOME"/.config/conky/mactahoe-*; do
     [ ! -e "$file" ] || backup_item ".config/conky/${file##*/}"
 done
-for path in "$HOME"/.themes/MacTahoe-* "$HOME"/.local/share/icons/MacTahoe*; do
-    [ ! -e "$path" ] || backup_item "${path#"$HOME"/}"
-done
+if [ ! -e "$BACKUP_DIR/captured/theme-icons" ]; then
+    mkdir -p "$BACKUP_DIR/captured"
+    for path in "$HOME"/.themes/MacTahoe-* "$HOME"/.local/share/icons/MacTahoe*; do
+        [ ! -e "$path" ] || backup_item "${path#"$HOME"/}"
+    done
+    touch "$BACKUP_DIR/captured/theme-icons"
+fi
 printf '%s\n' "$BACKUP_DIR" > "$STATE_DIR/latest-backup"
 printf '%s\n' "$ROOT_DIR" > "$STATE_DIR/project-path"
-
-case "$package_manager" in
-    apt-get)
-        package_list=(breeze-icon-theme conky-all dconf-cli fontconfig \
-            gir1.2-adw-1 gir1.2-gtk-4.0 gnome-shell-extension-manager \
-            gnome-shell-extension-user-theme gnome-tweaks imagemagick \
-            libglib2.0-dev-bin librsvg2-bin python3-gi sassc)
-        sudo apt-get update
-        sudo apt-get install -y "${package_list[@]}"
-        ;;
-    dnf)
-        package_list=(breeze-icon-theme conky dconf fontconfig \
-            gnome-extensions-app gnome-shell-extension-user-theme gnome-tweaks \
-            ImageMagick glib2-devel librsvg2-tools \
-            python3-gobject gtk4-devel sassc)
-        sudo dnf install -y "${package_list[@]}"
-        ;;
-    pacman)
-        package_list=(breeze-icons conky dconf fontconfig \
-            gnome-shell-extensions gnome-tweaks imagemagick glib2 librsvg \
-            python-gobject gtk4 sassc)
-        sudo pacman -Sy --needed --noconfirm "${package_list[@]}"
-        ;;
-esac
 
 mkdir -p "$HOME/.local/share/fonts/MacTahoe"
 cp -a "$ROOT_DIR/assets/fonts/SF-Pro" "$ROOT_DIR/assets/fonts/SF-Mono" \
@@ -153,9 +178,13 @@ for uuid in "${EXTENSION_IDS[@]}"; do
         continue
     fi
     target="$HOME/.local/share/gnome-shell/extensions/$uuid"
-    if [ -d "$target" ]; then
-        mkdir -p "$BACKUP_DIR/extensions"
-        cp -a "$target" "$BACKUP_DIR/extensions/"
+    if [ ! -e "$BACKUP_DIR/captured/extensions/$uuid" ]; then
+        mkdir -p "$BACKUP_DIR/captured/extensions"
+        if [ -d "$target" ] && [ ! -e "$BACKUP_DIR/extensions/$uuid" ]; then
+            mkdir -p "$BACKUP_DIR/extensions"
+            cp -a "$target" "$BACKUP_DIR/extensions/"
+        fi
+        touch "$BACKUP_DIR/captured/extensions/$uuid"
     fi
     mkdir -p "${target%/*}"
     rm -rf "$target"
@@ -180,9 +209,6 @@ gs() {
 
 while read -r schema key value; do
     [ -n "${schema:-}" ] || continue
-    if [ "$distribution_id" != ubuntu ] && { [ "$schema" = org.gnome.shell ] || [ "$schema" = org.gnome.shell.extensions.dash-to-dock ]; }; then
-        continue
-    fi
     if gs "$schema" writable "$key" >/dev/null 2>&1; then gs "$schema" set "$key" "$value"; fi
 done < "$ROOT_DIR/config/gsettings.tsv"
 
@@ -198,7 +224,7 @@ extension_ids=(user-theme@gnome-shell-extensions.gcampax.github.com)
 for uuid in "${COMPATIBLE_EXTENSION_IDS[@]}"; do
     [ "$uuid" = blur-my-shell@aunetx ] || extension_ids+=("$uuid")
 done
-if [ "$distribution_id" = ubuntu ]; then extension_ids+=(ubuntu-dock@ubuntu.com); fi
+extension_ids+=(ubuntu-dock@ubuntu.com)
 python3 - "${extension_ids[@]}" -- blur-my-shell@aunetx -- "${INCOMPATIBLE_EXTENSION_IDS[@]}" <<'PY'
 import ast
 import subprocess
@@ -248,15 +274,9 @@ for firefox_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla
 done
 
 if [ "$INSTALL_GDM" -eq 1 ]; then
-    if [ "$distribution_id" = ubuntu ] && [ -e /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource ]; then
-        (cd "$ROOT_DIR/vendor/MacTahoe-gtk-theme/other/gdm" && ./parse-sass.sh)
-        sudo cp -n /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource \
-            /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource.bak
-        sudo "$ROOT_DIR/vendor/MacTahoe-gtk-theme/tweaks.sh" -g -i apple -b "$wall"
-        touch "$STATE_DIR/gdm-installed"
-    else
-        printf 'Skipping login-screen theme: this GDM theme step is currently Ubuntu/Yaru-specific.\n'
-    fi
+    (cd "$ROOT_DIR/vendor/MacTahoe-gtk-theme/other/gdm" && ./parse-sass.sh)
+    sudo "$ROOT_DIR/vendor/MacTahoe-gtk-theme/tweaks.sh" -g -i apple -b "$wall"
+    touch "$STATE_DIR/gdm-installed"
 fi
 
 update-desktop-database "$HOME/.local/share/applications" || true
