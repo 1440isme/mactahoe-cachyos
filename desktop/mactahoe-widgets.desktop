@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Widget MacTahoe
+Comment=Bật lại widget thời tiết và hệ thống
+Exec=mactahoe-widgets start
+Icon=weather-clear
+Terminal=false
+Categories=Utility;
+Keywords=conky;weather;system;widget;

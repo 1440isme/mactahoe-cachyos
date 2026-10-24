@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# Bật / tắt các widget Conky MacTahoe.
+set -u
+
+WEATHER_CONF="$HOME/.config/conky/mactahoe-weather.conf"
+SYSTEM_CONF="$HOME/.config/conky/mactahoe-system.conf"
+LUNAR_CONF="$HOME/.config/conky/mactahoe-lunar.conf"
+REST_CONF="$HOME/.config/conky/mactahoe-rest.conf"
+CLOCK_CONF="$HOME/.config/conky/mactahoe-clock.conf"
+CONKY="$(command -v conky || echo /usr/bin/conky)"
+
+is_running() {
+    pgrep -f "conky -c $1" >/dev/null 2>&1
+}
+
+start_one() {
+    local conf="$1"
+    if is_running "$conf"; then
+        return 0
+    fi
+    nohup "$CONKY" -c "$conf" >/dev/null 2>&1 &
+}
+
+stop_one() {
+    local conf="$1"
+    pkill -f "conky -c $conf" >/dev/null 2>&1 || true
+}
+
+start_all() {
+    mkdir -p "$HOME/.cache/mactahoe-widgets"
+    if [ ! -f "$HOME/.cache/mactahoe-widgets/weather.state" ]; then
+        "$HOME/.local/bin/mactahoe-weather-fetch.py" >/dev/null 2>&1 || true
+    fi
+    if [ ! -f "$HOME/.cache/mactahoe-widgets/lunar.state" ]; then
+        "$HOME/.local/bin/mactahoe-lunar-fetch.py" >/dev/null 2>&1 || true
+    fi
+    start_one "$WEATHER_CONF"
+    start_one "$SYSTEM_CONF"
+    start_one "$LUNAR_CONF"
+    start_one "$REST_CONF"
+    start_one "$CLOCK_CONF"
+}
+
+stop_all() {
+    stop_one "$WEATHER_CONF"
+    stop_one "$SYSTEM_CONF"
+    stop_one "$LUNAR_CONF"
+    stop_one "$REST_CONF"
+    stop_one "$CLOCK_CONF"
+}
+
+case "${1:-start}" in
+    start)
+        start_all
+        echo "Đã bật widget MacTahoe."
+        ;;
+    stop)
+        stop_all
+        echo "Đã tắt widget MacTahoe."
+        ;;
+    restart)
+        stop_all
+        sleep 1
+        start_all
+        echo "Đã khởi động lại widget MacTahoe."
+        ;;
+    status)
+        if is_running "$WEATHER_CONF"; then
+            echo "Thời tiết: đang chạy"
+        else
+            echo "Thời tiết: đã tắt"
+        fi
+        if is_running "$SYSTEM_CONF"; then
+            echo "Hệ thống: đang chạy"
+        else
+            echo "Hệ thống: đã tắt"
+        fi
+        if is_running "$LUNAR_CONF"; then
+            echo "Âm lịch: đang chạy"
+        else
+            echo "Âm lịch: đã tắt"
+        fi
+        if is_running "$REST_CONF"; then
+            echo "Nhắc nghỉ: đang chạy"
+        else
+            echo "Nhắc nghỉ: đã tắt"
+        fi
+        if is_running "$CLOCK_CONF"; then
+            echo "Đồng hồ: đang chạy"
+        else
+            echo "Đồng hồ: đã tắt"
+        fi
+        ;;
+    *)
+        echo "Cách dùng: mactahoe-widgets {start|stop|restart|status}"
+        exit 2
+        ;;
+esac
