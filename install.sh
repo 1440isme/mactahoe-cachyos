@@ -219,6 +219,7 @@ done
 
 if [ "$INSTALL_GDM" -eq 1 ]; then
     if [ "$distribution_id" = ubuntu ] && [ -e /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource ]; then
+        (cd "$ROOT_DIR/vendor/MacTahoe-gtk-theme/other/gdm" && ./parse-sass.sh)
         sudo cp -n /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource \
             /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource.bak
         sudo "$ROOT_DIR/vendor/MacTahoe-gtk-theme/tweaks.sh" -g -i apple -b "$wall"
