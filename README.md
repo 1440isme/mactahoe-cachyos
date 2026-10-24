@@ -39,10 +39,16 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 
 ## Trạng thái
 
-Sau khi cài Git, cài bằng một lệnh:
+Mở Terminal ở bất kỳ thư mục nào, dán nguyên lệnh này để tải/cập nhật repo rồi cài:
 
 ```bash
-cd ~ && if [ -d mactahoe-ubuntu/.git ]; then git -C mactahoe-ubuntu pull --ff-only; else git clone https://github.com/adfoxtheme/mactahoe-ubuntu.git mactahoe-ubuntu; fi && cd ~/mactahoe-ubuntu && ./install.sh
+cd "$HOME" && if [ -d mactahoe-ubuntu/.git ]; then git -C mactahoe-ubuntu pull --ff-only; else git clone https://github.com/adfoxtheme/mactahoe-ubuntu.git mactahoe-ubuntu; fi && cd "$HOME/mactahoe-ubuntu" && ./install.sh
+```
+
+Nếu repo đã có trong `~/mactahoe-ubuntu` và chỉ muốn chạy lại cài đặt từ bất kỳ thư mục nào:
+
+```bash
+cd "$HOME/mactahoe-ubuntu" && ./install.sh
 ```
 
 Lệnh trên cài GNOME Tweaks, Extension Manager, theme GTK/Shell, icon/cursor, font, wallpaper, cấu hình GNOME/dock, các extension giao diện, Firefox, widget và trình quản lý icon. Theme màn hình đăng nhập GDM **không cài mặc định** vì có thể làm hỏng màn hình đăng nhập khi không tương thích; chỉ chạy `./install.sh --with-gdm` nếu bạn chủ động muốn thử trên máy Ubuntu của mình. Widget chỉ chạy khi mở launcher, không tự bật lúc đăng nhập.
