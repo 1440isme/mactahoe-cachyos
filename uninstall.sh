@@ -151,7 +151,7 @@ if [ -n "$BACKUP_DIR" ] && [ -d "$BACKUP_DIR" ]; then
     done
 fi
 
-# 9. Gỡ hình nền và phông chữ của MacTahoe (Giữ lại các file cá nhân của người dùng)
+# 9. Gỡ hình nền MacTahoe (Giữ lại phông chữ để đảm bảo hệ thống luôn hiển thị đẹp, không bị lỗi ô vuông)
 if [ -d "$HOME/Pictures/Wallpapers/MacTahoe" ]; then
     if [ -d "$ROOT_DIR/assets/wallpapers" ]; then
         for wp in "$ROOT_DIR"/assets/wallpapers/*; do
@@ -164,9 +164,6 @@ if [ -d "$HOME/Pictures/Wallpapers/MacTahoe" ]; then
     fi
     rmdir "$HOME/Pictures/Wallpapers/MacTahoe" 2>/dev/null || true
 fi
-
-rm -rf "$HOME/.local/share/fonts/MacTahoe/SF-Pro" "$HOME/.local/share/fonts/MacTahoe/SF-Mono"
-rmdir "$HOME/.local/share/fonts/MacTahoe" 2>/dev/null || true
 
 # 10. Khôi phục hoặc reset cài đặt GNOME (dconf/gsettings)
 reset_gnome_settings() {
@@ -214,11 +211,14 @@ else
     reset_gnome_settings
 fi
 
-# 11. Gỡ bỏ các gói APT do MacTahoe cài vào
+# 11. Gỡ bỏ các gói APT do MacTahoe cài vào (Giữ lại tuyệt đối fontconfig và các gói phông chữ)
 if [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/apt-packages-installed-by-mactahoe" ]; then
     mapfile -t apt_packages_to_remove < <(
         while IFS= read -r package; do
             [ -n "$package" ] || continue
+            # Giữ lại fontconfig và các gói phông chữ hệ thống
+            [ "$package" != "fontconfig" ] || continue
+            [[ "$package" == fonts-* ]] && continue
             dpkg-query -W -f='${db:Status-Abbrev}' "$package" 2>/dev/null | grep -q '^ii' &&
                 printf '%s\n' "$package"
         done < "$BACKUP_DIR/apt-packages-installed-by-mactahoe"
@@ -229,7 +229,7 @@ if [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/apt-packages-installed-by-mactahoe"
         sudo apt-get autoremove --purge -y 2>/dev/null || true
     fi
 elif [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/apt-tracking-legacy" ]; then
-    legacy_packages=(breeze-icon-theme conky-all dconf-cli fontconfig \
+    legacy_packages=(breeze-icon-theme conky-all dconf-cli \
         gir1.2-adw-1 gir1.2-gtk-4.0 gnome-shell-extension-manager \
         gnome-shell-extension-user-theme gnome-tweaks imagemagick \
         libglib2.0-dev-bin librsvg2-bin python3-gi python3-pil sassc)
@@ -239,6 +239,8 @@ elif [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/apt-tracking-legacy" ]; then
     if [[ ! "$answer" =~ ^[Nn]$ ]]; then
         installed_legacy_packages=()
         for package in "${legacy_packages[@]}"; do
+            [ "$package" != "fontconfig" ] || continue
+            [[ "$package" == fonts-* ]] && continue
             dpkg-query -W -f='${db:Status-Abbrev}' "$package" 2>/dev/null | grep -q '^ii' &&
                 installed_legacy_packages+=("$package")
         done
