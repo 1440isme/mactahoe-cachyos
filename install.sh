@@ -69,15 +69,15 @@ if [ ! -e "$BACKUP_DIR/apt-tracking-version" ] && [ ! -e "$BACKUP_DIR/apt-tracki
         touch "$BACKUP_DIR/apt-tracking-legacy"
     else
         dpkg-query -W -f='${db:Status-Abbrev}\t${binary:Package}\n' \
-            | awk '$1 ~ /^ii/ {print $2}' | sort -u > "$apt_snapshot"
+            | awk '$1 ~ /^ii/ {print $2}' | LC_ALL=C sort -u > "$apt_snapshot"
     fi
 fi
 sudo apt-get update
 sudo apt-get install -y "${package_list[@]}"
 if [ -f "$apt_snapshot" ] && [ ! -e "$BACKUP_DIR/apt-tracking-version" ]; then
     dpkg-query -W -f='${db:Status-Abbrev}\t${binary:Package}\n' \
-        | awk '$1 ~ /^ii/ {print $2}' | sort -u > "$BACKUP_DIR/apt-packages-after-mactahoe"
-    comm -13 "$apt_snapshot" "$BACKUP_DIR/apt-packages-after-mactahoe" > "$apt_installed"
+        | awk '$1 ~ /^ii/ {print $2}' | LC_ALL=C sort -u > "$BACKUP_DIR/apt-packages-after-mactahoe"
+    awk 'NR==FNR {seen[$0]=1; next} !seen[$0]' "$apt_snapshot" "$BACKUP_DIR/apt-packages-after-mactahoe" > "$apt_installed"
     rm -f "$apt_snapshot" "$BACKUP_DIR/apt-packages-after-mactahoe"
     touch "$BACKUP_DIR/apt-tracking-version"
 fi
