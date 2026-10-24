@@ -19,7 +19,13 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 
 ## Trạng thái
 
-Chạy `./install.sh` để cài GNOME Tweaks, Extension Manager, theme GTK/Shell, icon/cursor, font, wallpaper, cấu hình GNOME/dock, các extension, Firefox, widget và trình quản lý icon. GDM được áp dụng ở cuối và cần quyền quản trị; dùng `./install.sh --without-gdm` để bỏ riêng màn hình đăng nhập. Widget chỉ chạy khi mở launcher, không tự bật lúc đăng nhập.
+Repo hiện để riêng tư. Sau khi đăng nhập GitHub có quyền đọc repo, cài bằng một lệnh:
+
+```bash
+git clone https://github.com/adfoxtheme/mactahoe-ubuntu.git && cd mactahoe-ubuntu && ./install.sh
+```
+
+Lệnh trên cài GNOME Tweaks, Extension Manager, theme GTK/Shell, icon/cursor, font, wallpaper, cấu hình GNOME/dock, các extension, Firefox, widget và trình quản lý icon. GDM được áp dụng ở cuối và cần quyền quản trị; dùng `./install.sh --without-gdm` để bỏ riêng màn hình đăng nhập. Widget chỉ chạy khi mở launcher, không tự bật lúc đăng nhập.
 
 Chạy `./uninstall.sh` để gỡ theme và ứng dụng, khôi phục file đã sao lưu; script hỏi trước khi khôi phục bản sao cấu hình GNOME. Các gói apt được giữ lại.
 
