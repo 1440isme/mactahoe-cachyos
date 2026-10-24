@@ -19,7 +19,7 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 
 ## Trạng thái
 
-Repo hiện để riêng tư. Sau khi đăng nhập GitHub có quyền đọc repo, cài bằng một lệnh:
+Sau khi cài Git, cài bằng một lệnh:
 
 ```bash
 git clone https://github.com/adfoxtheme/mactahoe-ubuntu.git && cd mactahoe-ubuntu && ./install.sh
