@@ -2,11 +2,23 @@
 
 Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện ích đang dùng trên máy.
 
+## Hình ảnh
+
+<p align="center"><img src="assets/screenshots/mactahoe-desktop.png" alt="Desktop MacTahoe trên GNOME với widget và dock" width="100%"></p>
+
+<table>
+  <tr>
+    <td><img src="assets/screenshots/mactahoe-overview.png" alt="GNOME Overview với giao diện MacTahoe" width="100%"></td>
+    <td><img src="assets/screenshots/mactahoe-settings.png" alt="GNOME Settings và Files theo giao diện MacTahoe" width="100%"></td>
+  </tr>
+</table>
+
 ## Nội dung đã gom
 
 - `vendor/MacTahoe-gtk-theme/` và `vendor/MacTahoe-icon-theme/`: snapshot nguồn theme, đã bỏ metadata Git lồng bên trong.
 - `assets/fonts/SF-Pro/` và `assets/fonts/SF-Mono/`: font đang dùng.
 - `assets/wallpapers/`: wallpaper ngày và đêm.
+- `assets/screenshots/`: ảnh giới thiệu desktop, Overview và giao diện ứng dụng.
 - `apps/`: launcher điều khiển widget, trình quản lý icon và script lấy dữ liệu.
 - `conky/`: cấu hình và Lua cho widget.
 - `desktop/`: launcher ứng dụng.
