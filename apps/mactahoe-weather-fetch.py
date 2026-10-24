@@ -25,6 +25,7 @@ DEFAULT_CONFIG = {
     "LON": "105.8542",
     "CITY": "Hà Nội",
     "TIMEZONE": "Asia/Ho_Chi_Minh",
+    "LOCATION_MODE": "manual",
     "ICON_THEME": str(
         Path.home()
         / ".local/share/icons/MacTahoe-blue/status/32"
@@ -121,6 +122,36 @@ def fetch_weather(config: dict[str, str]) -> dict:
     )
     with urllib.request.urlopen(request, timeout=15) as response:
         return json.load(response)
+
+
+def resolve_location(config: dict[str, str]) -> dict[str, str]:
+    if config.get("LOCATION_MODE", "manual") != "auto":
+        return config
+    request = urllib.request.Request(
+        "https://ipapi.co/json/",
+        headers={"User-Agent": "MacTahoe-Widgets/1.0", "Accept": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=8) as response:
+            location = json.load(response)
+        latitude = location.get("latitude")
+        longitude = location.get("longitude")
+        city = location.get("city") or location.get("region") or location.get("country_name")
+        if latitude is None or longitude is None or not city:
+            raise ValueError("Dịch vụ định vị không trả về tọa độ và thành phố")
+        resolved = dict(config)
+        resolved.update(
+            {
+                "LAT": str(latitude),
+                "LON": str(longitude),
+                "CITY": str(city),
+                "TIMEZONE": str(location.get("timezone") or "auto"),
+            }
+        )
+        return resolved
+    except Exception as exc:  # noqa: BLE001 - dùng vị trí đã lưu nếu dịch vụ định vị lỗi
+        log(f"Không định vị được qua IP; dùng vị trí đã lưu: {exc}")
+        return config
 
 
 def read_cache() -> dict | None:
@@ -256,11 +287,12 @@ def write_state(state: dict[str, str]) -> None:
 def main() -> int:
     force = "--force" in sys.argv
     config = load_config()
+    location_config = resolve_location(config)
 
     data = read_cache()
     if force or data is None or cache_age() > 600:
         try:
-            data = fetch_weather(config)
+            data = fetch_weather(location_config)
             write_cache(data)
             log("Đã cập nhật thời tiết")
         except Exception as exc:  # noqa: BLE001 - widget không được chết vì mạng
@@ -271,7 +303,7 @@ def main() -> int:
     if data is None:
         write_state(
             {
-                "city": config["CITY"],
+                "city": location_config["CITY"],
                 "temp": "--",
                 "feels": "--",
                 "high": "--",
@@ -288,7 +320,7 @@ def main() -> int:
         return 1
 
     try:
-        state = format_state(data, config)
+        state = format_state(data, location_config)
         write_state(state)
     except Exception as exc:  # noqa: BLE001
         log(f"Lỗi format thời tiết: {exc}")

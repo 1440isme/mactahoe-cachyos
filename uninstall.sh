@@ -9,6 +9,8 @@ fi
 STATE_DIR="$HOME/.local/state/mactahoe-ubuntu"
 BACKUP_DIR=""
 if [ -f "$STATE_DIR/latest-backup" ]; then BACKUP_DIR="$(cat "$STATE_DIR/latest-backup")"; fi
+ICON_MANAGER_DIR="$HOME/.local/share/mactahoe-icon-manager"
+LOCAL_APPLICATIONS="$HOME/.local/share/applications"
 
 restore_item() {
     local relative="$1"
@@ -23,13 +25,42 @@ systemctl --user disable --now color-scheme-sync.service 2>/dev/null || true
 rm -f "$HOME/.config/systemd/user/color-scheme-sync.service"
 systemctl --user daemon-reload 2>/dev/null || true
 "$HOME/.local/bin/mactahoe-widgets" stop 2>/dev/null || true
+rm -rf "$HOME/.cache/mactahoe-widgets/runtime" "$HOME/.cache/mactahoe-widgets/pids"
+
+if [ -d "$ICON_MANAGER_DIR/backups" ]; then
+    mkdir -p "$LOCAL_APPLICATIONS"
+    for backup in "$ICON_MANAGER_DIR"/backups/*.desktop.bak; do
+        [ -f "$backup" ] || continue
+        desktop_id="${backup##*/}"
+        desktop_id="${desktop_id%.bak}"
+        rm -f "$LOCAL_APPLICATIONS/$desktop_id"
+        cp -a "$backup" "$LOCAL_APPLICATIONS/$desktop_id"
+    done
+fi
+if [ -d "$LOCAL_APPLICATIONS" ]; then
+    for desktop_file in "$LOCAL_APPLICATIONS"/*.desktop; do
+        [ -f "$desktop_file" ] || continue
+        if grep -Fq "$ICON_MANAGER_DIR/icons/" "$desktop_file"; then
+            rm -f "$desktop_file"
+        fi
+    done
+fi
+rm -rf "$ICON_MANAGER_DIR"
 
 for path in .local/bin/mactahoe-widgets .local/bin/mactahoe-icon-manager \
     .local/bin/mactahoe-weather-fetch.py .local/bin/mactahoe-lunar-fetch.py \
+    .local/bin/am-lich-viet-nam .local/bin/image-compressor \
     .local/bin/color-scheme-sync.sh .local/share/mactahoe-widgets \
     .local/share/applications/mactahoe-widgets.desktop \
     .local/share/applications/mactahoe-icon-manager.desktop \
+    .local/share/applications/vn.ihoan.AmLich.desktop \
+    .local/share/applications/vn.ihoan.ImageCompressor.desktop \
+    .local/share/mactahoe-apps/am-lich-viet-nam \
+    .local/share/mactahoe-apps/image-compressor \
+    .local/share/icons/hicolor/scalable/apps/vn.ihoan.AmLich.svg \
+    .local/share/icons/hicolor/scalable/apps/vn.ihoan.ImageCompressor.svg \
     .local/share/fonts/MacTahoe .config/mactahoe-widgets/weather.conf \
+    .config/mactahoe-widgets/settings.json \
     Pictures/Wallpapers/MacTahoe; do
     restore_item "$path"
 done
@@ -113,6 +144,38 @@ if [ -n "$BACKUP_DIR" ]; then
     fi
 fi
 
+if [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/apt-packages-installed-by-mactahoe" ]; then
+    mapfile -t apt_packages_to_remove < <(
+        while IFS= read -r package; do
+            [ -n "$package" ] || continue
+            dpkg-query -W -f='${db:Status-Abbrev}' "$package" 2>/dev/null | grep -q '^ii' &&
+                printf '%s\n' "$package"
+        done < "$BACKUP_DIR/apt-packages-installed-by-mactahoe"
+    )
+    if [ "${#apt_packages_to_remove[@]}" -gt 0 ]; then
+        printf 'Removing apt packages newly installed by MacTahoe: %s\n' "${apt_packages_to_remove[*]}"
+        sudo apt-get purge -y "${apt_packages_to_remove[@]}"
+    fi
+elif [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/apt-tracking-legacy" ]; then
+    legacy_packages=(breeze-icon-theme conky-all dconf-cli fontconfig \
+        gir1.2-adw-1 gir1.2-gtk-4.0 gnome-shell-extension-manager \
+        gnome-shell-extension-user-theme gnome-tweaks imagemagick \
+        libglib2.0-dev-bin librsvg2-bin python3-gi python3-pil sassc)
+    printf 'This installation predates package tracking. Purge installed MacTahoe package-list items?\n'
+    printf 'This may also remove packages that were installed before MacTahoe. [Y/n] '
+    read -r answer
+    if [[ ! "$answer" =~ ^[Nn]$ ]]; then
+        installed_legacy_packages=()
+        for package in "${legacy_packages[@]}"; do
+            dpkg-query -W -f='${db:Status-Abbrev}' "$package" 2>/dev/null | grep -q '^ii' &&
+                installed_legacy_packages+=("$package")
+        done
+        if [ "${#installed_legacy_packages[@]}" -gt 0 ]; then
+            sudo apt-get purge -y "${installed_legacy_packages[@]}"
+        fi
+    fi
+fi
+
 (cd "$ROOT_DIR/vendor/MacTahoe-gtk-theme" && ./install.sh -r || true)
 (cd "$ROOT_DIR/vendor/MacTahoe-icon-theme" && ./install.sh -r || true)
 if [ -f "$STATE_DIR/gdm-installed" ]; then
@@ -126,5 +189,6 @@ if [ -n "$BACKUP_DIR" ]; then
 fi
 fc-cache -f "$HOME/.local/share/fonts" 2>/dev/null || true
 update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+gtk-update-icon-cache -q -t "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
 rm -f "$STATE_DIR/latest-backup"
-printf 'Uninstall finished. Installed apt packages were left in place.\n'
+printf 'Uninstall finished. Pre-existing system packages were preserved.\n'

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2c2c2e"/>
+      <stop offset="1" stop-color="#141416"/>
+    </linearGradient>
+    <linearGradient id="photo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#64d2ff"/>
+      <stop offset="1" stop-color="#0a84ff"/>
+    </linearGradient>
+    <linearGradient id="arrow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#30d158"/>
+      <stop offset="1" stop-color="#1da34a"/>
+    </linearGradient>
+  </defs>
+  <rect x="6" y="6" width="116" height="116" rx="28" fill="url(#bg)"/>
+  <rect x="20" y="26" width="88" height="68" rx="13" fill="url(#photo)"/>
+  <circle cx="45" cy="45" r="7" fill="#fff7cf"/>
+  <path d="M22 82l23-25 16 17 11-12 34 34v12a9 9 0 0 1-9 9H31a9 9 0 0 1-9-9z" fill="#0b5fa5" opacity=".8"/>
+  <path d="M36 105l-9-9m0 0l9-9m-9 9h18" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M92 105l9-9m0 0l-9-9m9 9H83" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="99" cy="34" r="15" fill="url(#arrow)"/>
+  <path d="M99 26v14m0 0l-5-5m5 5l5-5" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

@@ -1,0 +1,184 @@
+/* Giao diện Nén ảnh — tông macOS, dùng màu của theme GTK hiện tại. */
+
+window.image-compressor-window {
+    background-color: @theme_bg_color;
+}
+
+headerbar.app-header {
+    background-color: transparent;
+    box-shadow: none;
+    border-bottom: 1px solid alpha(@theme_fg_color, 0.08);
+    min-height: 58px;
+}
+
+.app-title {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.app-subtitle {
+    font-size: 11px;
+    opacity: 0.55;
+}
+
+.section-heading {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.sidebar {
+    border: 3px solid #fff;
+    background-color: alpha(@theme_fg_color, 0.02);
+    padding: 20px;
+    border-radius: 18px;
+}
+
+.add-button {
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0;
+    border-radius: 9999px;
+    background-color: @theme_selected_bg_color;
+    color: @theme_selected_fg_color;
+    box-shadow: none;
+}
+
+.add-button:hover {
+    background-color: alpha(@theme_selected_bg_color, 0.85);
+}
+
+.file-list-card {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+}
+
+.file-list-card,
+.file-list-card scrolledwindow,
+.file-list-card viewport,
+.file-list {
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+}
+
+.file-row {
+    background-color: transparent;
+    border-radius: 10px;
+    padding: 6px 8px;
+    margin-bottom: 2px;
+}
+
+.file-row:hover {
+    background-color: alpha(@theme_fg_color, 0.045);
+}
+
+.thumbnail {
+    border-radius: 8px;
+    background-color: alpha(@theme_fg_color, 0.06);
+}
+
+.file-name {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.muted {
+    font-size: 11px;
+    opacity: 0.55;
+}
+
+.file-status {
+    font-size: 10px;
+    opacity: 0.55;
+}
+
+.file-status.processing {
+    color: #ffb340;
+    opacity: 0.95;
+}
+
+.file-status.success {
+    color: @theme_selected_bg_color;
+    opacity: 0.95;
+}
+
+.file-status.error {
+    color: #ff6961;
+    opacity: 0.95;
+}
+
+.row-remove {
+    opacity: 0.35;
+    min-width: 28px;
+    min-height: 28px;
+}
+
+.file-row:hover .row-remove {
+    opacity: 0.80;
+}
+
+.settings-card {
+    background-color: alpha(@theme_fg_color, 0.045);
+    border: 1px solid alpha(@theme_fg_color, 0.06);
+    border-radius: 18px;
+    padding: 20px;
+}
+
+.settings-title {
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.48;
+}
+
+.field-label {
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.67;
+}
+
+.quality-value {
+    font-size: 12px;
+    font-weight: 700;
+    color: @theme_selected_bg_color;
+}
+
+.size-preview {
+    font-size: 11px;
+    font-weight: 600;
+    color: @theme_selected_bg_color;
+    padding-top: 2px;
+}
+
+.summary {
+    font-size: 12px;
+    opacity: 0.78;
+    padding: 2px 2px;
+}
+
+.compress-button {
+    min-height: 42px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.empty-state {
+    padding: 40px;
+}
+
+.empty-title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.empty-state image {
+    opacity: 0.45;
+}
+
+progressbar {
+    min-height: 4px;
+}

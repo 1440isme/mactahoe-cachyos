@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+    export GDK_BACKEND=wayland
+    unset DISPLAY XAUTHORITY
+fi
+
+exec /usr/bin/python3 "$HOME/.local/share/mactahoe-apps/image-compressor/app.py" "$@"

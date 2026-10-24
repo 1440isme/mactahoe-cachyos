@@ -1,0 +1,187 @@
+/* Giao diện Âm lịch Việt Nam — tông macOS, dùng màu của theme GTK hiện tại. */
+
+window.amlich-window {
+    background-color: @theme_bg_color;
+}
+
+headerbar.amlich-header {
+    background-color: transparent;
+    box-shadow: none;
+    border-bottom: 1px solid alpha(@theme_fg_color, 0.08);
+    min-height: 58px;
+}
+
+.month-title {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.month-subtitle {
+    font-size: 11px;
+    opacity: 0.58;
+}
+
+.calendar-card {
+    background-color: alpha(@theme_fg_color, 0.035);
+    border-radius: 16px;
+    padding: 14px;
+}
+
+.weekday {
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0.52;
+    padding: 2px 4px 4px 4px;
+}
+
+.weekday.weekend {
+    opacity: 0.78;
+    color: #ff7b7b;
+}
+
+.day-cell {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    padding: 6px 8px;
+    min-height: 76px;
+    min-width: 0;
+}
+
+.day-cell:hover,
+.day-cell.hover {
+    background-color: alpha(@theme_fg_color, 0.06);
+}
+
+.day-cell.outside {
+    opacity: 0.30;
+}
+
+.day-cell.weekend .solar-label {
+    color: #ff8a8a;
+}
+
+.day-cell.today {
+    border-color: @theme_selected_bg_color;
+    background-color: alpha(@theme_selected_bg_color, 0.10);
+}
+
+.day-cell.selected {
+    background-color: @theme_selected_bg_color;
+    border-color: transparent;
+}
+
+.solar-label {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.lunar-label {
+    font-size: 11px;
+    opacity: 0.60;
+}
+
+.holiday-label {
+    font-size: 9px;
+    color: #ffb340;
+    opacity: 0.95;
+}
+
+.day-cell.selected .solar-label,
+.day-cell.selected .lunar-label,
+.day-cell.selected .holiday-label {
+    color: #07130e;
+}
+
+.day-cell.selected .lunar-label {
+    opacity: 0.72;
+}
+
+.day-cell.selected .holiday-label {
+    color: #07130e;
+    opacity: 0.82;
+}
+
+.sidebar {
+    background-color: alpha(@theme_fg_color, 0.025);
+    border-left: 1px solid alpha(@theme_fg_color, 0.07);
+}
+
+.big-day {
+    font-size: 64px;
+    font-weight: 700;
+    opacity: 0.95;
+}
+
+.sidebar-weekday {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.65;
+}
+
+.sidebar-month {
+    font-size: 12px;
+    opacity: 0.58;
+}
+
+.lunar-card {
+    background-color: alpha(@theme_fg_color, 0.065);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.card-title {
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.50;
+}
+
+.lunar-main {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.lunar-sub {
+    font-size: 11px;
+    opacity: 0.62;
+}
+
+.today-pill {
+    background-color: @theme_selected_bg_color;
+    color: #07130e;
+    border-radius: 999px;
+    padding: 3px 9px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.section-title {
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.48;
+}
+
+.canchi-label {
+    font-size: 11px;
+    opacity: 0.55;
+}
+
+.canchi-value {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.holiday-item {
+    font-size: 12px;
+    opacity: 0.90;
+}
+
+.muted {
+    opacity: 0.50;
+    font-size: 11px;
+}
+
+.footer-note {
+    font-size: 10px;
+    opacity: 0.42;
+}

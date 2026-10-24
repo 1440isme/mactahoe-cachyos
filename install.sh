@@ -61,14 +61,33 @@ fi
 package_list=(breeze-icon-theme conky-all dconf-cli fontconfig \
     gir1.2-adw-1 gir1.2-gtk-4.0 gnome-shell-extension-manager \
     gnome-shell-extension-user-theme gnome-tweaks imagemagick \
-    libglib2.0-dev-bin librsvg2-bin python3-gi sassc)
+    libglib2.0-dev-bin librsvg2-bin python3-gi python3-pil sassc)
+apt_snapshot="$BACKUP_DIR/apt-packages-before-mactahoe"
+apt_installed="$BACKUP_DIR/apt-packages-installed-by-mactahoe"
+if [ ! -e "$BACKUP_DIR/apt-tracking-version" ] && [ ! -e "$BACKUP_DIR/apt-tracking-legacy" ]; then
+    if [ -e "$STATE_DIR/project-path" ]; then
+        touch "$BACKUP_DIR/apt-tracking-legacy"
+    else
+        dpkg-query -W -f='${db:Status-Abbrev}\t${binary:Package}\n' \
+            | awk '$1 ~ /^ii/ {print $2}' | sort -u > "$apt_snapshot"
+    fi
+fi
 sudo apt-get update
 sudo apt-get install -y "${package_list[@]}"
+if [ -f "$apt_snapshot" ] && [ ! -e "$BACKUP_DIR/apt-tracking-version" ]; then
+    dpkg-query -W -f='${db:Status-Abbrev}\t${binary:Package}\n' \
+        | awk '$1 ~ /^ii/ {print $2}' | sort -u > "$BACKUP_DIR/apt-packages-after-mactahoe"
+    comm -13 "$apt_snapshot" "$BACKUP_DIR/apt-packages-after-mactahoe" > "$apt_installed"
+    rm -f "$apt_snapshot" "$BACKUP_DIR/apt-packages-after-mactahoe"
+    touch "$BACKUP_DIR/apt-tracking-version"
+fi
 
 mkdir -p "$HOME/.local/share/gnome-shell/extensions" \
     "$HOME/.local/share/fonts" "$HOME/.local/bin" "$HOME/.local/share/applications" \
     "$HOME/.local/share/mactahoe-widgets" "$HOME/.config/conky" \
     "$HOME/.config/mactahoe-widgets" "$HOME/.config/systemd/user" \
+    "$HOME/.local/share/mactahoe-apps" \
+    "$HOME/.local/share/icons/hicolor/scalable/apps" \
     "$HOME/Pictures/Wallpapers/MacTahoe"
 
 if command -v dconf >/dev/null 2>&1 && [ ! -f "$BACKUP_DIR/dconf-before.ini" ]; then
@@ -98,10 +117,18 @@ backup_item() {
 for relative in \
     .local/bin/mactahoe-widgets .local/bin/mactahoe-icon-manager \
     .local/bin/mactahoe-weather-fetch.py .local/bin/mactahoe-lunar-fetch.py \
+    .local/bin/am-lich-viet-nam .local/bin/image-compressor \
     .local/bin/color-scheme-sync.sh .local/share/fonts/MacTahoe \
     .local/share/mactahoe-widgets .local/share/applications/mactahoe-widgets.desktop \
     .local/share/applications/mactahoe-icon-manager.desktop \
-    .config/mactahoe-widgets/weather.conf .config/systemd/user/color-scheme-sync.service \
+    .local/share/applications/vn.ihoan.AmLich.desktop \
+    .local/share/applications/vn.ihoan.ImageCompressor.desktop \
+    .local/share/mactahoe-apps/am-lich-viet-nam \
+    .local/share/mactahoe-apps/image-compressor \
+    .local/share/icons/hicolor/scalable/apps/vn.ihoan.AmLich.svg \
+    .local/share/icons/hicolor/scalable/apps/vn.ihoan.ImageCompressor.svg \
+    .config/mactahoe-widgets/weather.conf .config/mactahoe-widgets/settings.json \
+    .config/systemd/user/color-scheme-sync.service \
     Pictures/Wallpapers/MacTahoe; do
     backup_item "$relative"
 done
@@ -129,10 +156,23 @@ cp -a "$ROOT_DIR/assets/wallpapers/." "$HOME/Pictures/Wallpapers/MacTahoe/"
 cp "$ROOT_DIR/apps/mactahoe-widgets" "$ROOT_DIR/apps/mactahoe-icon-manager" \
     "$ROOT_DIR/apps/mactahoe-weather-fetch.py" "$ROOT_DIR/apps/mactahoe-lunar-fetch.py" \
     "$ROOT_DIR/apps/color-scheme-sync.sh" "$HOME/.local/bin/"
+cp "$ROOT_DIR/apps/launchers/am-lich-viet-nam" \
+    "$ROOT_DIR/apps/launchers/image-compressor" "$HOME/.local/bin/"
 chmod +x "$HOME/.local/bin/mactahoe-widgets" "$HOME/.local/bin/mactahoe-icon-manager" \
     "$HOME/.local/bin/mactahoe-weather-fetch.py" "$HOME/.local/bin/mactahoe-lunar-fetch.py" \
+    "$HOME/.local/bin/am-lich-viet-nam" "$HOME/.local/bin/image-compressor" \
     "$HOME/.local/bin/color-scheme-sync.sh"
 cp "$ROOT_DIR/apps/lunar.py" "$HOME/.local/share/mactahoe-widgets/lunar.py"
+mkdir -p "$HOME/.local/share/mactahoe-apps/am-lich-viet-nam" \
+    "$HOME/.local/share/mactahoe-apps/image-compressor"
+cp -a "$ROOT_DIR/apps/am-lich-viet-nam/." \
+    "$HOME/.local/share/mactahoe-apps/am-lich-viet-nam/"
+cp -a "$ROOT_DIR/apps/image-compressor/." \
+    "$HOME/.local/share/mactahoe-apps/image-compressor/"
+cp "$ROOT_DIR/apps/am-lich-viet-nam/assets/vn.ihoan.AmLich.svg" \
+    "$HOME/.local/share/icons/hicolor/scalable/apps/"
+cp "$ROOT_DIR/apps/image-compressor/assets/vn.ihoan.ImageCompressor.svg" \
+    "$HOME/.local/share/icons/hicolor/scalable/apps/"
 
 for conf in "$ROOT_DIR"/conky/mactahoe-*.conf; do
     sed "s|@HOME@|$HOME|g" "$conf" > "$HOME/.config/conky/${conf##*/}"
@@ -224,6 +264,12 @@ PY
 
 cp "$ROOT_DIR/desktop/mactahoe-widgets.desktop" "$HOME/.local/share/applications/"
 cp "$ROOT_DIR/desktop/mactahoe-icon-manager.desktop" "$HOME/.local/share/applications/"
+sed "s|^Exec=am-lich-viet-nam$|Exec=$HOME/.local/bin/am-lich-viet-nam|" \
+    "$ROOT_DIR/desktop/vn.ihoan.AmLich.desktop" \
+    > "$HOME/.local/share/applications/vn.ihoan.AmLich.desktop"
+sed "s|^Exec=image-compressor$|Exec=$HOME/.local/bin/image-compressor|" \
+    "$ROOT_DIR/desktop/vn.ihoan.ImageCompressor.desktop" \
+    > "$HOME/.local/share/applications/vn.ihoan.ImageCompressor.desktop"
 cp "$ROOT_DIR/systemd/color-scheme-sync.service" "$HOME/.config/systemd/user/"
 systemctl --user daemon-reload
 systemctl --user enable --now color-scheme-sync.service

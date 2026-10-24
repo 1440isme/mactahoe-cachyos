@@ -1,5 +1,22 @@
 
 /* Add your own custom styles here */
 
-@import "MacTahoe/rounded-window-maximized.css";
+:root[tabsintitlebar]:not([inFullscreen]):not([sizemode="maximized"]):not([gtktiledwindow="true"]) #nav-bar,
+:root[customtitlebar]:not([inFullscreen]):not([sizemode="maximized"]):not([gtktiledwindow="true"]) #nav-bar {
+	border-top-left-radius: 10px !important;
+	border-top-right-radius: 10px !important;
+}
+
+:root[tabsintitlebar]:not([inFullscreen]):not([sizemode="maximized"]):not([gtktiledwindow="true"]) body,
+:root[customtitlebar]:not([inFullscreen]):not([sizemode="maximized"]):not([gtktiledwindow="true"]) body,
+:root[tabsintitlebar]:not([inFullscreen]):not([sizemode="maximized"]):not([gtktiledwindow="true"]) body::backdrop,
+:root[customtitlebar]:not([inFullscreen]):not([sizemode="maximized"]):not([gtktiledwindow="true"]) body::backdrop {
+	border-radius: 10px !important;
+}
+
+:root[sizemode="maximized"] #nav-bar,
+:root[sizemode="maximized"] body,
+:root[sizemode="maximized"] body::backdrop {
+	border-radius: 0 !important;
+}
 
