@@ -184,10 +184,12 @@ cp "$ROOT_DIR/conky/mactahoe-widgets.lua" "$HOME/.config/conky/"
 sed "s|@HOME@|$HOME|g" "$ROOT_DIR/config/weather.conf" \
     > "$HOME/.config/mactahoe-widgets/weather.conf"
 
-EXTENSION_IDS=(blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
-    just-perfection-desktop@just-perfection)
+EXTENSION_IDS=(UbuntuTahoe@adfoxtheme.github.io)
 COMPATIBLE_EXTENSION_IDS=()
-INCOMPATIBLE_EXTENSION_IDS=()
+INCOMPATIBLE_EXTENSION_IDS=(blur-my-shell@aunetx globalmenu@ShiroOSL.github.io just-perfection-desktop@just-perfection kimpanel@kde.org)
+for leg in "${INCOMPATIBLE_EXTENSION_IDS[@]}"; do
+    gnome-extensions disable "$leg" 2>/dev/null || true
+done
 for uuid in "${EXTENSION_IDS[@]}"; do
     if ! python3 -c 'import json, sys; data = json.load(open(sys.argv[1], encoding="utf-8")); sys.exit(0 if sys.argv[2] in data.get("shell-version", []) else 1)' \
         "$ROOT_DIR/vendor/gnome-extensions/$uuid/metadata.json" "$shell_major"; then
@@ -216,9 +218,10 @@ gs() {
     local command="$1"; shift
     local uuid schema_dir
     case "$schema" in
-        org.gnome.shell.extensions.blur-my-shell*) uuid=blur-my-shell@aunetx ;;
-        org.gnome.shell.extensions.globalmenu) uuid=globalmenu@ShiroOSL.github.io ;;
-        org.gnome.shell.extensions.just-perfection) uuid=just-perfection-desktop@just-perfection ;;
+        org.gnome.shell.extensions.ubuntutahoe*|\
+        org.gnome.shell.extensions.blur-my-shell*|\
+        org.gnome.shell.extensions.globalmenu*|\
+        org.gnome.shell.extensions.kimpanel*) uuid=UbuntuTahoe@adfoxtheme.github.io ;;
         *) gsettings "$command" "$schema" "$@"; return $? ;;
     esac
     schema_dir="$HOME/.local/share/gnome-shell/extensions/$uuid/schemas"

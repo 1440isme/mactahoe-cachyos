@@ -90,8 +90,8 @@ fi
 rmdir "$HOME/.config/conky" 2>/dev/null || true
 
 # 5. Gỡ extension GNOME Shell
-for uuid in blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
-    just-perfection-desktop@just-perfection; do
+for uuid in UbuntuTahoe@adfoxtheme.github.io blur-my-shell@aunetx \
+    globalmenu@ShiroOSL.github.io just-perfection-desktop@just-perfection kimpanel@kde.org; do
     gnome-extensions disable "$uuid" 2>/dev/null || true
     if [ -d "$HOME/.local/share/gnome-shell/extensions/$uuid" ]; then
         rm -rf "$HOME/.local/share/gnome-shell/extensions/$uuid"
@@ -172,9 +172,10 @@ reset_gnome_settings() {
         while read -r schema key value; do
             [ -n "${schema:-}" ] || continue
             case "$schema" in
-                org.gnome.shell.extensions.blur-my-shell*) uuid=blur-my-shell@aunetx ;;
-                org.gnome.shell.extensions.globalmenu) uuid=globalmenu@ShiroOSL.github.io ;;
-                org.gnome.shell.extensions.just-perfection) uuid=just-perfection-desktop@just-perfection ;;
+                org.gnome.shell.extensions.ubuntutahoe*|\
+                org.gnome.shell.extensions.blur-my-shell*|\
+                org.gnome.shell.extensions.globalmenu*|\
+                org.gnome.shell.extensions.kimpanel*) uuid=UbuntuTahoe@adfoxtheme.github.io ;;
                 *) uuid="" ;;
             esac
             if [ -n "$uuid" ] && [ -d "$ROOT_DIR/vendor/gnome-extensions/$uuid/schemas" ]; then

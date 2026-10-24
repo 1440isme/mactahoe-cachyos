@@ -23,7 +23,7 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 - `conky/`: cấu hình và Lua cho widget.
 - `desktop/`: launcher ứng dụng.
 - `config/weather.conf`: vị trí thời tiết mặc định; có thể đổi từ ứng dụng Widget MacTahoe.
-- `vendor/gnome-extensions/`: snapshot các extension giao diện được cài, gồm Blur My Shell, Global Menu và Just Perfection.
+- `vendor/gnome-extensions/`: tiện ích giao diện hợp nhất UbuntuTahoe (tích hợp Global Menu, dời đồng hồ sang phải, hiệu ứng mờ kính Overview & AppFolder và Input Method Panel).
 - `docs/extension-settings/current-gnome-extensions.md`: các extension đang bật và cấu hình Blur/My Shell, Global Menu trên máy.
 - `docs/skin-tahoe-source.md`: hướng dẫn cấu hình ban đầu.
 - `config/gsettings.tsv`: tùy chọn GNOME, dock và extension được áp dụng.
@@ -34,7 +34,7 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 - Theme GTK/GNOME Shell, bộ icon MacTahoe, con trỏ, font SF và wallpaper tạo phần giao diện nền.
 - Topbar dùng kiểu trong suốt của chính MacTahoe GNOME Shell theme (`#panel` trong CSS); Blur My Shell cho panel vẫn tắt, không cần bật blur để có nền trong suốt.
 - Firefox bo góc 10 px khi cửa sổ ở trạng thái thường và bỏ bo góc khi phóng tối đa; CSS ghi đè bán kính CSD dự phòng của theme để hiển thị nhất quán hơn.
-- Blur My Shell, Global Menu và Just Perfection là ba extension giao diện được cài từ repo; User Themes là extension hệ thống hỗ trợ theme GNOME Shell. Blur My Shell được cài sẵn cấu hình nhưng mặc định tắt; có thể bật sau trong Extension Manager.
+- UbuntuTahoe là tiện ích giao diện hợp nhất độc quyền cho bộ theme, tích hợp sẵn Global Menu, chuyển đồng hồ sang góc phải, hiệu ứng mờ kính Overview & thư mục ứng dụng và bộ gõ. Người dùng chỉ cần một công tắc bật duy nhất mà không cần cài đặt nhiều extension riêng rẽ; User Themes và Ubuntu Dock là các thành phần hệ thống được giữ lại để nạp theme Shell và dock.
 - Trên Ubuntu, thanh dock là Ubuntu Dock có sẵn của hệ thống; repo chỉ cấu hình nó, không cài Plank hay Docky.
 - GNOME Tweaks và Extension Manager là ứng dụng quản lý tùy chọn/extension, không phải thành phần tạo giao diện. Trình quản lý icon MacTahoe, launcher widget, **Âm lịch Việt Nam** và **Nén ảnh** được đóng gói trong repo.
 - Bộ cài cài hai ứng dụng vào menu GNOME, kèm icon và launcher; Âm lịch chạy offline, còn Nén ảnh xử lý tệp cục bộ bằng Pillow.
@@ -82,7 +82,7 @@ Trong mục **Vị trí thời tiết**, có thể dùng vị trí gần đúng 
 
 1. Chờ Terminal báo `Installed`, sau đó đăng xuất rồi đăng nhập lại để GNOME nạp theme và extension. Sau khi cài riêng GDM bằng `install-gdm.sh`, khởi động lại máy.
 2. Mở **Widget MacTahoe** trong danh sách ứng dụng, chọn các widget rồi bật công tắc tổng. Lựa chọn từng widget được lưu tự động. Có thể chạy `mactahoe-widgets start` hoặc `mactahoe-widgets stop` trong Terminal để bật/tắt nhanh.
-3. Mở **Quản lý icon MacTahoe** trong danh sách ứng dụng để chọn icon riêng cho ứng dụng. Font và bộ icon/theme tổng thể đã được cài tự động. Muốn bật hiệu ứng Blur My Shell, mở Extension Manager và bật extension; cấu hình Tahoe đã được nạp sẵn.
+3. Mở **Quản lý icon MacTahoe** trong danh sách ứng dụng để chọn icon riêng cho ứng dụng. Font, con trỏ, bộ icon/theme tổng thể và tiện ích **UbuntuTahoe** đã được tự động cài đặt và kích hoạt sẵn trọn bộ giao diện macOS Tahoe.
 4. **Âm lịch Việt Nam** và **Nén ảnh** được cài thành ứng dụng riêng, có thể mở từ danh sách ứng dụng GNOME hoặc chạy `am-lich-viet-nam` và `image-compressor` trong Terminal.
 5. Nếu không thấy thay đổi, kiểm tra Terminal đã hiện thông báo `Installed` chưa; nếu có, thử đăng xuất/đăng nhập lại một lần nữa.
 
