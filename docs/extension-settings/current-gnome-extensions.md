@@ -21,8 +21,6 @@ Các giá trị chính: `show-indicator=true`, `show-logo-menu=true`, `hide-over
 ## Extension khác đang bật
 
 - `just-perfection-desktop@just-perfection`, version 37: đồng hồ bên phải (`clock-menu-position=1`), offset 20; ẩn nút Overview.
-- `forward-keys@adfoxtheme.github.io`: sửa lỗi chuyển phím của bộ gõ trên GNOME 50; mã nguồn cũng nằm trong dự án `vietfox`.
-- `kimpanel@kde.org`, version 92: panel cho bộ gõ dùng giao thức Kimpanel.
 
 ## Extension hệ thống liên quan
 

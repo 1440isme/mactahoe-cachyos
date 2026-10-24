@@ -23,7 +23,7 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 - `conky/`: cấu hình và Lua cho widget.
 - `desktop/`: launcher ứng dụng.
 - `config/weather.conf`: vị trí thời tiết hiện tại; chỉnh lại trước khi dùng trên máy khác.
-- `vendor/gnome-extensions/`: snapshot các extension người dùng hiện đang bật, gồm Blur My Shell, Global Menu, Just Perfection, Forward Keys và Kimpanel.
+- `vendor/gnome-extensions/`: snapshot các extension giao diện được cài, gồm Blur My Shell, Global Menu và Just Perfection.
 - `docs/extension-settings/current-gnome-extensions.md`: các extension đang bật và cấu hình Blur/My Shell, Global Menu trên máy.
 - `docs/skin-tahoe-source.md`: hướng dẫn cấu hình ban đầu.
 - `config/gsettings.tsv`: tùy chọn GNOME, dock và extension được áp dụng.
@@ -37,7 +37,7 @@ Sau khi cài Git, cài bằng một lệnh:
 git clone https://github.com/adfoxtheme/mactahoe-ubuntu.git && cd mactahoe-ubuntu && ./install.sh
 ```
 
-Lệnh trên cài GNOME Tweaks, Extension Manager, theme GTK/Shell, icon/cursor, font, wallpaper, cấu hình GNOME/dock, các extension, Firefox, widget và trình quản lý icon. GDM được áp dụng ở cuối và cần quyền quản trị; dùng `./install.sh --without-gdm` để bỏ riêng màn hình đăng nhập. Widget chỉ chạy khi mở launcher, không tự bật lúc đăng nhập.
+Lệnh trên cài GNOME Tweaks, Extension Manager, theme GTK/Shell, icon/cursor, font, wallpaper, cấu hình GNOME/dock, các extension giao diện, Firefox, widget và trình quản lý icon. GDM được áp dụng ở cuối và cần quyền quản trị; dùng `./install.sh --without-gdm` để bỏ riêng màn hình đăng nhập. Widget chỉ chạy khi mở launcher, không tự bật lúc đăng nhập.
 
 ### Sau khi cài
 

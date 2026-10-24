@@ -37,8 +37,8 @@ if [ -n "$BACKUP_DIR" ] && [ -d "$BACKUP_DIR/home/.config/conky" ]; then
     cp -a "$BACKUP_DIR/home/.config/conky/." "$HOME/.config/conky/"
 fi
 
-for uuid in blur-my-shell@aunetx forward-keys@adfoxtheme.github.io \
-    globalmenu@ShiroOSL.github.io just-perfection-desktop@just-perfection kimpanel@kde.org; do
+for uuid in blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
+    just-perfection-desktop@just-perfection; do
     gnome-extensions disable "$uuid" 2>/dev/null || true
     rm -rf "$HOME/.local/share/gnome-shell/extensions/$uuid"
     if [ -n "$BACKUP_DIR" ] && [ -d "$BACKUP_DIR/extensions/$uuid" ]; then

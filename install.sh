@@ -42,10 +42,19 @@ if [ -z "$shell_major" ] || [ "$shell_major" -lt 48 ]; then
     printf 'This installer requires GNOME Shell 48 or newer; detected %s.\n' "${shell_major:-unknown}" >&2
     exit 1
 fi
-if pgrep -x firefox >/dev/null 2>&1; then
-    printf 'Close Firefox before installing its profile theme, then run this installer again.\n' >&2
-    exit 1
-fi
+for firefox_process in firefox firefox-bin; do
+    if pgrep -u "$UID" -x "$firefox_process" >/dev/null 2>&1; then
+        printf 'Force-closing Firefox before installing its profile theme...\n' >&2
+        pkill -KILL -u "$UID" -x "$firefox_process" || true
+    fi
+done
+sleep 1
+for firefox_process in firefox firefox-bin; do
+    if pgrep -u "$UID" -x "$firefox_process" >/dev/null 2>&1; then
+        printf 'Could not stop Firefox; close it manually and run the installer again.\n' >&2
+        exit 1
+    fi
+done
 
 STATE_DIR="$HOME/.local/state/mactahoe-ubuntu"
 BACKUP_DIR="$STATE_DIR/backup-$(date +%Y%m%d-%H%M%S)"
@@ -87,7 +96,7 @@ printf '%s\n' "$ROOT_DIR" > "$STATE_DIR/project-path"
 
 case "$package_manager" in
     apt-get)
-        package_list=(breeze-icon-theme conky-all dconf-cli fontconfig fcitx5 fcitx5-modules \
+        package_list=(breeze-icon-theme conky-all dconf-cli fontconfig \
             gir1.2-adw-1 gir1.2-gtk-4.0 gnome-shell-extension-manager \
             gnome-shell-extension-user-theme gnome-tweaks imagemagick \
             libglib2.0-dev-bin librsvg2-bin python3-gi sassc)
@@ -95,13 +104,13 @@ case "$package_manager" in
         sudo apt-get install -y "${package_list[@]}"
         ;;
     dnf)
-        package_list=(breeze-icon-theme conky dconf fontconfig fcitx5 fcitx5-gtk3 \
+        package_list=(breeze-icon-theme conky dconf fontconfig \
             gnome-extensions-app gnome-tweaks ImageMagick glib2-devel librsvg2-tools \
             python3-gobject gtk4-devel sassc)
         sudo dnf install -y "${package_list[@]}"
         ;;
     pacman)
-        package_list=(breeze-icons conky dconf fontconfig fcitx5 fcitx5-gtk3 \
+        package_list=(breeze-icons conky dconf fontconfig \
             gnome-shell-extensions gnome-tweaks imagemagick glib2 librsvg \
             python-gobject gtk4 sassc)
         sudo pacman -Sy --needed --noconfirm "${package_list[@]}"
@@ -131,8 +140,8 @@ cp "$ROOT_DIR/conky/mactahoe-widgets.lua" "$HOME/.config/conky/"
 sed "s|@HOME@|$HOME|g" "$ROOT_DIR/config/weather.conf" \
     > "$HOME/.config/mactahoe-widgets/weather.conf"
 
-EXTENSION_IDS=(blur-my-shell@aunetx forward-keys@adfoxtheme.github.io \
-    globalmenu@ShiroOSL.github.io just-perfection-desktop@just-perfection kimpanel@kde.org)
+EXTENSION_IDS=(blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
+    just-perfection-desktop@just-perfection)
 for uuid in "${EXTENSION_IDS[@]}"; do
     target="$HOME/.local/share/gnome-shell/extensions/$uuid"
     if [ -d "$target" ]; then
@@ -152,7 +161,6 @@ gs() {
         org.gnome.shell.extensions.blur-my-shell*) uuid=blur-my-shell@aunetx ;;
         org.gnome.shell.extensions.globalmenu) uuid=globalmenu@ShiroOSL.github.io ;;
         org.gnome.shell.extensions.just-perfection) uuid=just-perfection-desktop@just-perfection ;;
-        org.gnome.shell.extensions.kimpanel) uuid=kimpanel@kde.org ;;
         *) gsettings "$schema" "$@"; return $? ;;
     esac
     schema_dir="$HOME/.local/share/gnome-shell/extensions/$uuid/schemas"
@@ -176,9 +184,8 @@ gsettings set org.gnome.desktop.screensaver picture-uri "$wall_uri"
 gsettings set org.gnome.desktop.screensaver picture-options 'zoom'
 
 extension_ids=(user-theme@gnome-shell-extensions.gcampax.github.com \
-    blur-my-shell@aunetx forward-keys@adfoxtheme.github.io \
-    globalmenu@ShiroOSL.github.io just-perfection-desktop@just-perfection \
-    kimpanel@kde.org)
+    blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
+    just-perfection-desktop@just-perfection)
 if [ "$distribution_id" = ubuntu ]; then extension_ids+=(ubuntu-dock@ubuntu.com); fi
 for uuid in "${extension_ids[@]}"; do
     gnome-extensions enable "$uuid" || true
