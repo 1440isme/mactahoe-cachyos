@@ -151,6 +151,9 @@ cp -a "$ROOT_DIR/assets/fonts/SF-Pro" "$ROOT_DIR/assets/fonts/SF-Mono" \
 fc-cache -f "$HOME/.local/share/fonts/MacTahoe"
 (cd "$ROOT_DIR/vendor/MacTahoe-gtk-theme" && ./install.sh -l --shell -i apple -p default)
 (cd "$ROOT_DIR/vendor/MacTahoe-icon-theme" && ./install.sh -t blue)
+mkdir -p "$HOME/.local/share/icons/MacTahoe-cursors" "$HOME/.local/share/icons/MacTahoe-dark-cursors"
+cp -a "$ROOT_DIR/vendor/MacTahoe-icon-theme/cursors/dist/." "$HOME/.local/share/icons/MacTahoe-cursors/"
+cp -a "$ROOT_DIR/vendor/MacTahoe-icon-theme/cursors/dist-dark/." "$HOME/.local/share/icons/MacTahoe-dark-cursors/"
 cp -a "$ROOT_DIR/assets/wallpapers/." "$HOME/Pictures/Wallpapers/MacTahoe/"
 
 cp "$ROOT_DIR/apps/mactahoe-widgets" "$ROOT_DIR/apps/mactahoe-icon-manager" \
@@ -237,10 +240,10 @@ gsettings set org.gnome.desktop.screensaver picture-options 'zoom'
 
 extension_ids=(user-theme@gnome-shell-extensions.gcampax.github.com)
 for uuid in "${COMPATIBLE_EXTENSION_IDS[@]}"; do
-    [ "$uuid" = blur-my-shell@aunetx ] || extension_ids+=("$uuid")
+    extension_ids+=("$uuid")
 done
 extension_ids+=(ubuntu-dock@ubuntu.com)
-python3 - "${extension_ids[@]}" -- blur-my-shell@aunetx -- "${INCOMPATIBLE_EXTENSION_IDS[@]}" <<'PY'
+python3 - "${extension_ids[@]}" -- -- "${INCOMPATIBLE_EXTENSION_IDS[@]}" <<'PY'
 import ast
 import subprocess
 import sys

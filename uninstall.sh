@@ -136,6 +136,7 @@ done
 # 7. Gỡ theme vendor (Chạy trước khi restore GTK để không xóa nhầm file người dùng)
 (cd "$ROOT_DIR/vendor/MacTahoe-gtk-theme" && ./install.sh -r theme app || true)
 (cd "$ROOT_DIR/vendor/MacTahoe-icon-theme" && ./install.sh -r || true)
+rm -rf "$HOME/.local/share/icons/MacTahoe-cursors" "$HOME/.local/share/icons/MacTahoe-dark-cursors"
 if [ -f "$STATE_DIR/gdm-installed" ]; then
     sudo "$ROOT_DIR/vendor/MacTahoe-gtk-theme/tweaks.sh" -g -r || true
     rm -f "$STATE_DIR/gdm-installed"
