@@ -184,9 +184,11 @@ cp "$ROOT_DIR/conky/mactahoe-widgets.lua" "$HOME/.config/conky/"
 sed "s|@HOME@|$HOME|g" "$ROOT_DIR/config/weather.conf" \
     > "$HOME/.config/mactahoe-widgets/weather.conf"
 
-EXTENSION_IDS=(UbuntuTahoe@adfoxtheme.github.io)
+EXTENSION_IDS=(UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io)
 COMPATIBLE_EXTENSION_IDS=()
-INCOMPATIBLE_EXTENSION_IDS=(blur-my-shell@aunetx globalmenu@ShiroOSL.github.io just-perfection-desktop@just-perfection kimpanel@kde.org)
+INCOMPATIBLE_EXTENSION_IDS=(blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
+    just-perfection-desktop@just-perfection kimpanel@kde.org \
+    ubuntu-dock@ubuntu.com dash-to-dock@micxgx.gmail.com)
 for leg in "${INCOMPATIBLE_EXTENSION_IDS[@]}"; do
     gnome-extensions disable "$leg" 2>/dev/null || true
 done
@@ -218,6 +220,7 @@ gs() {
     local command="$1"; shift
     local uuid schema_dir
     case "$schema" in
+        org.gnome.shell.extensions.ubuntutahoedock*) uuid=UbuntuTahoeDock@adfoxtheme.github.io ;;
         org.gnome.shell.extensions.ubuntutahoe*|\
         org.gnome.shell.extensions.blur-my-shell*|\
         org.gnome.shell.extensions.globalmenu*|\
@@ -245,7 +248,6 @@ extension_ids=(user-theme@gnome-shell-extensions.gcampax.github.com)
 for uuid in "${COMPATIBLE_EXTENSION_IDS[@]}"; do
     extension_ids+=("$uuid")
 done
-extension_ids+=(ubuntu-dock@ubuntu.com)
 python3 - "${extension_ids[@]}" -- -- "${INCOMPATIBLE_EXTENSION_IDS[@]}" <<'PY'
 import ast
 import subprocess

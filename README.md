@@ -23,7 +23,7 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 - `conky/`: cấu hình và Lua cho widget.
 - `desktop/`: launcher ứng dụng.
 - `config/weather.conf`: vị trí thời tiết mặc định; có thể đổi từ ứng dụng Widget MacTahoe.
-- `vendor/gnome-extensions/`: tiện ích giao diện hợp nhất UbuntuTahoe (tích hợp Global Menu, dời đồng hồ sang phải, hiệu ứng mờ kính Overview & AppFolder và Input Method Panel).
+- `vendor/gnome-extensions/`: tiện ích giao diện hợp nhất UbuntuTahoe và thanh dock macOS độc quyền UbuntuTahoeDock.
 - `docs/extension-settings/current-gnome-extensions.md`: các extension đang bật và cấu hình Blur/My Shell, Global Menu trên máy.
 - `docs/skin-tahoe-source.md`: hướng dẫn cấu hình ban đầu.
 - `config/gsettings.tsv`: tùy chọn GNOME, dock và extension được áp dụng.
@@ -32,10 +32,10 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 ## Thành phần giao diện
 
 - Theme GTK/GNOME Shell, bộ icon MacTahoe, con trỏ, font SF và wallpaper tạo phần giao diện nền.
-- Topbar dùng kiểu trong suốt của chính MacTahoe GNOME Shell theme (`#panel` trong CSS); Blur My Shell cho panel vẫn tắt, không cần bật blur để có nền trong suốt.
+- Topbar dùng kiểu trong suốt vĩnh viễn (`#panel` trong CSS); không cần bật blur để có nền trong suốt.
 - Firefox bo góc 10 px khi cửa sổ ở trạng thái thường và bỏ bo góc khi phóng tối đa; CSS ghi đè bán kính CSD dự phòng của theme để hiển thị nhất quán hơn.
-- UbuntuTahoe là tiện ích giao diện hợp nhất độc quyền cho bộ theme, tích hợp sẵn Global Menu, chuyển đồng hồ sang góc phải, hiệu ứng mờ kính Overview & thư mục ứng dụng và bộ gõ. Người dùng chỉ cần một công tắc bật duy nhất mà không cần cài đặt nhiều extension riêng rẽ; User Themes và Ubuntu Dock là các thành phần hệ thống được giữ lại để nạp theme Shell và dock.
-- Trên Ubuntu, thanh dock là Ubuntu Dock có sẵn của hệ thống; repo chỉ cấu hình nó, không cài Plank hay Docky.
+- **UbuntuTahoe** là tiện ích giao diện hợp nhất độc quyền cho bộ theme, tích hợp sẵn Global Menu, chuyển đồng hồ sang góc phải, hiệu ứng mờ kính Overview & thư mục ứng dụng và bộ gõ. Người dùng chỉ cần một công tắc bật duy nhất mà không cần cài đặt nhiều extension riêng rẽ.
+- **UbuntuTahoeDock** là tiện ích Dock độc quyền chuẩn phong cách macOS Tahoe (nổi ở đáy màn hình, bo cong kính mờ, đèn báo 1 chấm tròn DOT, tự ẩn thông minh, có thanh trượt chỉnh kích thước icon). Nhờ có UbuntuTahoeDock, bộ giao diện hoàn toàn độc lập và không phụ thuộc vào Ubuntu Dock của hệ thống, tương thích mượt mà trên mọi bản phân phối Linux dùng GNOME.
 - GNOME Tweaks và Extension Manager là ứng dụng quản lý tùy chọn/extension, không phải thành phần tạo giao diện. Trình quản lý icon MacTahoe, launcher widget, **Âm lịch Việt Nam** và **Nén ảnh** được đóng gói trong repo.
 - Bộ cài cài hai ứng dụng vào menu GNOME, kèm icon và launcher; Âm lịch chạy offline, còn Nén ảnh xử lý tệp cục bộ bằng Pillow.
 - Extension được kiểm tra theo phiên bản GNOME Shell khai báo trong metadata và chỉ được bật cho lần đăng nhập tiếp theo.
