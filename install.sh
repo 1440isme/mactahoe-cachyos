@@ -58,7 +58,7 @@ if [ -z "$BACKUP_DIR" ]; then
     BACKUP_DIR="$(mktemp -d "$STATE_DIR/backup-$(date +%Y%m%d-%H%M%S)-XXXXXX")"
 fi
 
-package_list=(breeze-icon-theme conky-all dconf-cli fontconfig \
+package_list=(breeze-icon-theme dconf-cli fontconfig \
     gir1.2-adw-1 gir1.2-gtk-4.0 gnome-shell-extension-manager \
     gnome-shell-extension-user-theme gnome-tweaks imagemagick \
     libglib2.0-dev-bin librsvg2-bin python3-gi python3-pil sassc)
@@ -84,8 +84,7 @@ fi
 
 mkdir -p "$HOME/.local/share/gnome-shell/extensions" \
     "$HOME/.local/share/fonts" "$HOME/.local/bin" "$HOME/.local/share/applications" \
-    "$HOME/.local/share/mactahoe-widgets" "$HOME/.config/conky" \
-    "$HOME/.config/mactahoe-widgets" "$HOME/.config/systemd/user" \
+    "$HOME/.config/systemd/user" \
     "$HOME/.local/share/mactahoe-apps" \
     "$HOME/.local/share/icons/hicolor/scalable/apps" \
     "$HOME/Pictures/Wallpapers/MacTahoe"
@@ -115,11 +114,9 @@ backup_item() {
     fi
 }
 for relative in \
-    .local/bin/mactahoe-widgets .local/bin/mactahoe-icon-manager \
-    .local/bin/mactahoe-weather-fetch.py .local/bin/mactahoe-lunar-fetch.py \
+    .local/bin/mactahoe-icon-manager \
     .local/bin/am-lich-viet-nam .local/bin/image-compressor \
     .local/bin/color-scheme-sync.sh .local/share/fonts/MacTahoe \
-    .local/share/mactahoe-widgets .local/share/applications/mactahoe-widgets.desktop \
     .local/share/applications/mactahoe-icon-manager.desktop \
     .local/share/applications/vn.ihoan.AmLich.desktop \
     .local/share/applications/vn.ihoan.ImageCompressor.desktop \
@@ -127,13 +124,9 @@ for relative in \
     .local/share/mactahoe-apps/image-compressor \
     .local/share/icons/hicolor/scalable/apps/vn.ihoan.AmLich.svg \
     .local/share/icons/hicolor/scalable/apps/vn.ihoan.ImageCompressor.svg \
-    .config/mactahoe-widgets/weather.conf .config/mactahoe-widgets/settings.json \
     .config/systemd/user/color-scheme-sync.service \
     Pictures/Wallpapers/MacTahoe; do
     backup_item "$relative"
-done
-for file in "$HOME"/.config/conky/mactahoe-*; do
-    [ ! -e "$file" ] || backup_item ".config/conky/${file##*/}"
 done
 if [ ! -e "$BACKUP_DIR/captured/theme-icons" ]; then
     mkdir -p "$BACKUP_DIR/captured"
@@ -156,16 +149,13 @@ cp -a "$ROOT_DIR/vendor/MacTahoe-icon-theme/cursors/dist/." "$HOME/.local/share/
 cp -a "$ROOT_DIR/vendor/MacTahoe-icon-theme/cursors/dist-dark/." "$HOME/.local/share/icons/MacTahoe-dark-cursors/"
 cp -a "$ROOT_DIR/assets/wallpapers/." "$HOME/Pictures/Wallpapers/MacTahoe/"
 
-cp "$ROOT_DIR/apps/mactahoe-widgets" "$ROOT_DIR/apps/mactahoe-icon-manager" \
-    "$ROOT_DIR/apps/mactahoe-weather-fetch.py" "$ROOT_DIR/apps/mactahoe-lunar-fetch.py" \
+cp "$ROOT_DIR/apps/mactahoe-icon-manager" \
     "$ROOT_DIR/apps/color-scheme-sync.sh" "$HOME/.local/bin/"
 cp "$ROOT_DIR/apps/launchers/am-lich-viet-nam" \
     "$ROOT_DIR/apps/launchers/image-compressor" "$HOME/.local/bin/"
-chmod +x "$HOME/.local/bin/mactahoe-widgets" "$HOME/.local/bin/mactahoe-icon-manager" \
-    "$HOME/.local/bin/mactahoe-weather-fetch.py" "$HOME/.local/bin/mactahoe-lunar-fetch.py" \
+chmod +x "$HOME/.local/bin/mactahoe-icon-manager" \
     "$HOME/.local/bin/am-lich-viet-nam" "$HOME/.local/bin/image-compressor" \
     "$HOME/.local/bin/color-scheme-sync.sh"
-cp "$ROOT_DIR/apps/lunar.py" "$HOME/.local/share/mactahoe-widgets/lunar.py"
 mkdir -p "$HOME/.local/share/mactahoe-apps/am-lich-viet-nam" \
     "$HOME/.local/share/mactahoe-apps/image-compressor"
 cp -a "$ROOT_DIR/apps/am-lich-viet-nam/." \
@@ -177,14 +167,7 @@ cp "$ROOT_DIR/apps/am-lich-viet-nam/assets/vn.ihoan.AmLich.svg" \
 cp "$ROOT_DIR/apps/image-compressor/assets/vn.ihoan.ImageCompressor.svg" \
     "$HOME/.local/share/icons/hicolor/scalable/apps/"
 
-for conf in "$ROOT_DIR"/conky/mactahoe-*.conf; do
-    sed "s|@HOME@|$HOME|g" "$conf" > "$HOME/.config/conky/${conf##*/}"
-done
-cp "$ROOT_DIR/conky/mactahoe-widgets.lua" "$HOME/.config/conky/"
-sed "s|@HOME@|$HOME|g" "$ROOT_DIR/config/weather.conf" \
-    > "$HOME/.config/mactahoe-widgets/weather.conf"
-
-EXTENSION_IDS=(UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io)
+EXTENSION_IDS=(UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io UbuntuTahoeWidgets@adfoxtheme.github.io)
 COMPATIBLE_EXTENSION_IDS=()
 INCOMPATIBLE_EXTENSION_IDS=(blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
     just-perfection-desktop@just-perfection kimpanel@kde.org \
@@ -221,6 +204,7 @@ gs() {
     local uuid schema_dir
     case "$schema" in
         org.gnome.shell.extensions.ubuntutahoedock*) uuid=UbuntuTahoeDock@adfoxtheme.github.io ;;
+        org.gnome.shell.extensions.ubuntutahoewidgets*) uuid=UbuntuTahoeWidgets@adfoxtheme.github.io ;;
         org.gnome.shell.extensions.ubuntutahoe*|\
         org.gnome.shell.extensions.blur-my-shell*|\
         org.gnome.shell.extensions.globalmenu*|\
@@ -270,7 +254,6 @@ variant = "[" + ", ".join(repr(uuid) for uuid in enabled) + "]"
 subprocess.run(["gsettings", "set", schema, key, variant], check=True)
 PY
 
-cp "$ROOT_DIR/desktop/mactahoe-widgets.desktop" "$HOME/.local/share/applications/"
 cp "$ROOT_DIR/desktop/mactahoe-icon-manager.desktop" "$HOME/.local/share/applications/"
 sed "s|^Exec=am-lich-viet-nam$|Exec=$HOME/.local/bin/am-lich-viet-nam|" \
     "$ROOT_DIR/desktop/vn.ihoan.AmLich.desktop" \
@@ -303,5 +286,4 @@ for firefox_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla
 done
 
 update-desktop-database "$HOME/.local/share/applications" || true
-printf '\nInstalled. Log out and back in to load GNOME Shell extensions.\n'
-printf 'Widgets start only when you click Widget MacTahoe.\nBackup: %s\n' "$BACKUP_DIR"
+printf '\nInstalled. Log out and back in to load GNOME Shell extensions.\nBackup: %s\n' "$BACKUP_DIR"

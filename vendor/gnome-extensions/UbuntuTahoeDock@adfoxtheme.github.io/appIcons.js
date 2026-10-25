@@ -1440,9 +1440,17 @@ export const DockShowAppsIcon = GObject.registerClass({
 
     _createIcon(size) {
         this._iconActor = super._createIcon(size);
-        this._iconActor.fallbackIconName = this._iconActor.iconName;
-        this._iconActor.fallbackGicon = this._iconActor.gicon;
-        this._iconActor.iconName = `view-app-grid-${Main.sessionMode.currentMode}-symbolic`;
+        const extPath = Docking.DockManager?.extension?.path ||
+            `${GLib.get_home_dir()}/.local/share/gnome-shell/extensions/UbuntuTahoeDock@adfoxtheme.github.io`;
+        const launchpadFile = Gio.File.new_for_path(`${extPath}/media/launchpad.svg`);
+        if (launchpadFile.query_exists(null)) {
+            this._iconActor.iconName = null;
+            this._iconActor.gicon = new Gio.FileIcon({ file: launchpadFile });
+        } else {
+            this._iconActor.fallbackIconName = this._iconActor.iconName;
+            this._iconActor.fallbackGicon = this._iconActor.gicon;
+            this._iconActor.iconName = `view-app-grid-${Main.sessionMode.currentMode}-symbolic`;
+        }
         return this._iconActor;
     }
 

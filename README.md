@@ -19,11 +19,9 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 - `assets/fonts/SF-Pro/` và `assets/fonts/SF-Mono/`: font đang dùng.
 - `assets/wallpapers/`: wallpaper ngày và đêm.
 - `assets/screenshots/`: ảnh giới thiệu desktop, Overview và giao diện ứng dụng.
-- `apps/`: giao diện quản lý widget, trình quản lý icon, script lấy dữ liệu, cùng mã nguồn và test cho **Âm lịch Việt Nam** (`apps/am-lich-viet-nam/`) và **Nén ảnh** (`apps/image-compressor/`).
-- `conky/`: cấu hình và Lua cho widget.
+- `apps/`: trình quản lý icon MacTahoe, cùng mã nguồn và test cho **Âm lịch Việt Nam** (`apps/am-lich-viet-nam/`) và **Nén ảnh** (`apps/image-compressor/`).
 - `desktop/`: launcher ứng dụng.
-- `config/weather.conf`: vị trí thời tiết mặc định; có thể đổi từ ứng dụng Widget MacTahoe.
-- `vendor/gnome-extensions/`: tiện ích giao diện hợp nhất UbuntuTahoe và thanh dock macOS độc quyền UbuntuTahoeDock.
+- `vendor/gnome-extensions/`: các tiện ích độc quyền gồm giao diện hợp nhất **UbuntuTahoe**, thanh dock macOS **UbuntuTahoeDock** (có sẵn icon Launchpad) và bộ widget desktop Native **UbuntuTahoeWidgets** (thay thế hoàn toàn Conky, tích hợp OpenWeather).
 - `docs/extension-settings/current-gnome-extensions.md`: các extension đang bật và cấu hình Blur/My Shell, Global Menu trên máy.
 - `docs/skin-tahoe-source.md`: hướng dẫn cấu hình ban đầu.
 - `config/gsettings.tsv`: tùy chọn GNOME, dock và extension được áp dụng.
@@ -74,15 +72,13 @@ cd "$HOME/mactahoe-ubuntu" && ./install-gdm.sh
 >
 > Lệnh khôi phục trên giả định repo nằm ở `~/mactahoe-ubuntu`; nếu lưu ở chỗ khác, thay bằng đường dẫn repo thực tế. Nếu lần chạy dừng ở bước kiểm tra/biên dịch trước khi áp dụng, GDM chưa bị thay đổi.
 
-Ứng dụng **Widget MacTahoe** mở bảng điều khiển. Bật công tắc tổng để hiện các widget đã chọn; các công tắc riêng được lưu qua những lần mở sau. Tắt công tắc tổng sẽ ẩn toàn bộ nhưng không xóa lựa chọn. Các widget bên phải tự dồn lên khi tắt một widget, không để khoảng trống. Widget không tự chạy khi đăng nhập.
-
-Trong mục **Vị trí thời tiết**, có thể dùng vị trí gần đúng theo IP hoặc tìm thành phố để đặt thủ công. Định vị tự động cần Internet, có thể không chính xác và gửi IP công khai tới dịch vụ định vị. Nếu dịch vụ không phản hồi, thời tiết dùng vị trí đã lưu.
+Bộ widget desktop được tích hợp trực tiếp qua tiện ích mở rộng **UbuntuTahoeWidgets**, hoàn toàn không cần cài đặt Conky hay chạy tiến trình nền bên ngoài. Người dùng có thể tùy chỉnh bật/tắt từng widget (Đồng hồ lớn, Thời tiết OpenWeather, Hệ thống, Âm lịch, Nhắc nghỉ), nhập API Key và căn lề ngay trong ứng dụng **Tiện ích mở rộng (Extension Manager)**.
 
 ### Sau khi cài
 
-1. Chờ Terminal báo `Installed`, sau đó đăng xuất rồi đăng nhập lại để GNOME nạp theme và extension. Sau khi cài riêng GDM bằng `install-gdm.sh`, khởi động lại máy.
-2. Mở **Widget MacTahoe** trong danh sách ứng dụng, chọn các widget rồi bật công tắc tổng. Lựa chọn từng widget được lưu tự động. Có thể chạy `mactahoe-widgets start` hoặc `mactahoe-widgets stop` trong Terminal để bật/tắt nhanh.
-3. Mở **Quản lý icon MacTahoe** trong danh sách ứng dụng để chọn icon riêng cho ứng dụng. Font, con trỏ, bộ icon/theme tổng thể và tiện ích **UbuntuTahoe** đã được tự động cài đặt và kích hoạt sẵn trọn bộ giao diện macOS Tahoe.
+1. Chờ Terminal báo `Installed`, sau đó đăng xuất rồi đăng nhập lại để GNOME nạp theme và các extension. Sau khi cài riêng GDM bằng `install-gdm.sh`, khởi động lại máy.
+2. Mở **Tiện ích mở rộng (Extension Manager)**, bật tiện ích **UbuntuTahoeWidgets** để hiển thị bộ widget desktop và vào phần Cài đặt để tùy chỉnh theo ý muốn.
+3. Mở **Quản lý icon MacTahoe** trong danh sách ứng dụng để chọn icon riêng cho ứng dụng. Font, con trỏ, bộ icon/theme tổng thể và tiện ích **UbuntuTahoe**, **UbuntuTahoeDock** đã được tự động cài đặt và kích hoạt sẵn trọn bộ giao diện macOS Tahoe.
 4. **Âm lịch Việt Nam** và **Nén ảnh** được cài thành ứng dụng riêng, có thể mở từ danh sách ứng dụng GNOME hoặc chạy `am-lich-viet-nam` và `image-compressor` trong Terminal.
 5. Nếu không thấy thay đổi, kiểm tra Terminal đã hiện thông báo `Installed` chưa; nếu có, thử đăng xuất/đăng nhập lại một lần nữa.
 

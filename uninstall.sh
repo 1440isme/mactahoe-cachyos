@@ -60,12 +60,10 @@ fi
 rm -rf "$ICON_MANAGER_DIR"
 
 # 3. Gỡ bỏ các ứng dụng, binary, file .desktop và dữ liệu của MacTahoe
-for path in .local/bin/mactahoe-widgets .local/bin/mactahoe-icon-manager \
-    .local/bin/mactahoe-weather-fetch.py .local/bin/mactahoe-lunar-fetch.py \
+for path in .local/bin/mactahoe-icon-manager \
     .local/bin/am-lich-viet-nam .local/bin/image-compressor \
     .local/bin/gnome-theme-switcher \
-    .local/bin/color-scheme-sync.sh .local/share/mactahoe-widgets \
-    .local/share/applications/mactahoe-widgets.desktop \
+    .local/bin/color-scheme-sync.sh \
     .local/share/applications/mactahoe-icon-manager.desktop \
     .local/share/applications/org.gnome.GTK4ThemeSwitcher.desktop \
     .local/share/applications/vn.ihoan.AmLich.desktop \
@@ -74,23 +72,13 @@ for path in .local/bin/mactahoe-widgets .local/bin/mactahoe-icon-manager \
     .local/share/mactahoe-apps/image-compressor \
     .local/share/icons/hicolor/scalable/apps/vn.ihoan.AmLich.svg \
     .local/share/icons/hicolor/scalable/apps/vn.ihoan.ImageCompressor.svg \
-    .config/mactahoe-widgets/weather.conf \
-    .config/mactahoe-widgets/settings.json \
     .config/systemd/user/color-scheme-sync.service; do
     restore_item "$path"
 done
 
-# 4. Gỡ cấu hình Conky
-for path in "$HOME"/.config/conky/mactahoe-*; do
-    [ ! -e "$path" ] || rm -f "$path"
-done
-if [ -n "$BACKUP_DIR" ] && [ -d "$BACKUP_DIR/home/.config/conky" ]; then
-    cp -a "$BACKUP_DIR/home/.config/conky/." "$HOME/.config/conky/"
-fi
-rmdir "$HOME/.config/conky" 2>/dev/null || true
-
-# 5. Gỡ extension GNOME Shell
+# 4. Gỡ extension GNOME Shell
 for uuid in UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io \
+    UbuntuTahoeWidgets@adfoxtheme.github.io \
     blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
     just-perfection-desktop@just-perfection kimpanel@kde.org; do
     gnome-extensions disable "$uuid" 2>/dev/null || true
@@ -175,6 +163,7 @@ reset_gnome_settings() {
             [ -n "${schema:-}" ] || continue
             case "$schema" in
                 org.gnome.shell.extensions.ubuntutahoedock*) uuid=UbuntuTahoeDock@adfoxtheme.github.io ;;
+                org.gnome.shell.extensions.ubuntutahoewidgets*) uuid=UbuntuTahoeWidgets@adfoxtheme.github.io ;;
                 org.gnome.shell.extensions.ubuntutahoe*|\
                 org.gnome.shell.extensions.blur-my-shell*|\
                 org.gnome.shell.extensions.globalmenu*|\
@@ -234,7 +223,7 @@ if [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/apt-packages-installed-by-mactahoe"
         sudo apt-get autoremove --purge -y 2>/dev/null || true
     fi
 elif [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/apt-tracking-legacy" ]; then
-    legacy_packages=(breeze-icon-theme conky-all dconf-cli \
+    legacy_packages=(breeze-icon-theme dconf-cli \
         gir1.2-adw-1 gir1.2-gtk-4.0 gnome-shell-extension-manager \
         gnome-shell-extension-user-theme gnome-tweaks imagemagick \
         libglib2.0-dev-bin librsvg2-bin python3-gi python3-pil sassc)
