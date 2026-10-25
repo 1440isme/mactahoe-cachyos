@@ -82,6 +82,33 @@ Bộ widget desktop được tích hợp trực tiếp qua tiện ích mở rộ
 4. **Âm lịch Việt Nam** và **Nén ảnh** được cài thành ứng dụng riêng, có thể mở từ danh sách ứng dụng GNOME hoặc chạy `am-lich-viet-nam` và `image-compressor` trong Terminal.
 5. Nếu không thấy thay đổi, kiểm tra Terminal đã hiện thông báo `Installed` chưa; nếu có, thử đăng xuất/đăng nhập lại một lần nữa.
 
+### Tùy chỉnh Widget Desktop (UbuntuTahoeWidgets)
+
+Toàn bộ widget desktop được quản lý tập trung và trực quan ngay trong phần Cài đặt của tiện ích mở rộng **UbuntuTahoeWidgets**:
+
+- **Cách mở bảng tùy chỉnh:**
+  - **Cách 1 (Giao diện):** Mở ứng dụng **Trình quản lý tiện ích (Extension Manager)** hoặc **Tiện ích (Extensions)** từ danh sách ứng dụng > tìm tiện ích **UbuntuTahoeWidgets** > bấm vào nút **Bánh răng (Cài đặt)**.
+  - **Cách 2 (Terminal):** Mở Terminal và chạy lệnh:
+    ```bash
+    gnome-extensions prefs UbuntuTahoeWidgets@adfoxtheme.github.io
+    ```
+
+- **Các tính năng có thể tùy chỉnh:**
+  - **Bật / Tắt từng widget:** Có công tắc bật/tắt độc lập cho từng widget:
+    - *Đồng hồ lớn (Clock):* Đồng hồ số viền kính phong cách macOS Tahoe đặt bên trái.
+    - *Thời tiết (Weather):* Thông tin thời tiết chi tiết, nhiệt độ, độ ẩm và gió.
+    - *Giám sát hệ thống (System Metrics):* Trực quan hóa tải CPU, GPU, RAM, ổ cứng SSD và tốc độ mạng.
+    - *Âm lịch Việt Nam (Lunar Calendar):* Lịch âm truyền thống Việt Nam.
+    - *Nhắc nhở nghỉ ngơi (Rest Reminder):* Theo dõi thời gian làm việc và nhắc nhở nghỉ ngơi.
+    *(Khi tắt một widget bên phải, các widget còn lại sẽ tự động dồn lên, không để lại khoảng trống trên màn hình).*
+  - **Cấu hình thời tiết OpenWeather:**
+    - Nhập **API Key OpenWeather** cá nhân (nếu để trống, tiện ích sẽ tự động dùng nguồn dữ liệu Open-Meteo miễn phí).
+    - Đặt **Tên thành phố** (ví dụ: `Hà Nội`, `Hồ Chí Minh`, `Đà Nẵng`...).
+    - Điều chỉnh chu kỳ làm mới dữ liệu (mặc định 15 phút).
+  - **Căn chỉnh vị trí & lề màn hình:**
+    - Tùy chỉnh khoảng cách lề trái và lề trên của Đồng hồ lớn.
+    - Tùy chỉnh khoảng cách lề phải và lề trên của Cụm widget để vừa vặn hoàn hảo với mọi độ phân giải màn hình.
+
 ### Gỡ cài đặt
 
 Để gỡ giao diện, tiện ích và khôi phục các file đã sao lưu (giữ lại thư mục repo để có thể cài lại), mở Terminal ở bất kỳ vị trí nào và chạy:
