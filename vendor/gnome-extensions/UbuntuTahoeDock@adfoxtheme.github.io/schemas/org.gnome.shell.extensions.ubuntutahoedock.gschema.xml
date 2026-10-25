@@ -341,7 +341,7 @@
       <summary>Activate only one window</summary>
     </key>
     <key name="click-action" enum="org.gnome.shell.extensions.ubuntutahoedock.clickAction">
-      <default>'minimize-or-previews'</default>
+      <default>'minimize'</default>
       <summary>Action when clicking on a running app</summary>
       <description>Set the action that is executed when clicking on the icon of a running application</description>
     </key>

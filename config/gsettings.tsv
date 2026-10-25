@@ -47,3 +47,4 @@ org.gnome.shell.extensions.blur-my-shell.panel override-background-dynamically f
 org.gnome.shell.extensions.blur-my-shell sigma 30
 org.gnome.shell.extensions.blur-my-shell brightness 0.6
 org.gnome.shell.extensions.ubuntutahoedock dash-max-icon-size 45
+org.gnome.shell.extensions.ubuntutahoedock click-action 'minimize'
