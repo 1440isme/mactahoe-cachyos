@@ -47,7 +47,7 @@ class ClockWidget extends St.DrawingArea {
 
         // 2. Draw Colon Dots (proportional vertical spacing)
         const colonX = startX + hoursWidth + colonWidth / 2;
-        const colonAlpha = (seconds % 2 === 0) ? 0.96 : 0.58;
+        const colonAlpha = (seconds % 2 === 0) ? 0.88 : 0.45;
         cr.setSourceRGBA(0.96, 0.99, 1.00, colonAlpha);
 
         // Upper dot

@@ -96,20 +96,20 @@ export function drawGlassText(cr, x, y, str, size, family = 'SF Pro Rounded', we
     const [pWidth, pHeight] = layout.get_pixel_size();
     const drawY = y - baseline;
 
-    // Fill with glass gradient
+    // Fill with glass gradient: bên trên trắng nhẹ (0.48), bên dưới trong luôn (0.00)
     cr.moveTo(x, drawY);
     PangoCairo.layout_path(cr, layout);
 
     const gradient = new cairo.LinearGradient(x, drawY, x, drawY + pHeight);
-    gradient.addColorStopRGBA(0, 1.00, 1.00, 1.00, 0.48);
-    gradient.addColorStopRGBA(0.50, 1.00, 1.00, 1.00, 0.34);
-    gradient.addColorStopRGBA(1, 1.00, 1.00, 1.00, 0.20);
+    gradient.addColorStopRGBA(0.00, 1.00, 1.00, 1.00, 0.48);
+    gradient.addColorStopRGBA(0.50, 1.00, 1.00, 1.00, 0.18);
+    gradient.addColorStopRGBA(1.00, 1.00, 1.00, 1.00, 0.00);
     cr.setSource(gradient);
     cr.fillPreserve();
 
-    // Outline stroke
-    cr.setSourceRGBA(1.00, 1.00, 1.00, 0.86);
-    cr.setLineWidth(1.2);
+    // Outline stroke: đường viền trong hơn 1 chút (0.65)
+    cr.setSourceRGBA(1.00, 1.00, 1.00, 0.65);
+    cr.setLineWidth(1.1);
     cr.stroke();
     cr.restore();
 }
