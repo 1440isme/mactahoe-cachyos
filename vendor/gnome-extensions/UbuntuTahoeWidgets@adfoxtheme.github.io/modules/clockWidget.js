@@ -33,34 +33,34 @@ class ClockWidget extends St.DrawingArea {
         const startX = 10;
         const baselineY = 220;
 
-        // Measure hours width using Pango
+        // Measure hours width using Pango with SF Pro Rounded Semibold
         const layout = PangoCairo.create_layout(cr);
-        const desc = Pango.FontDescription.from_string(`SF Pro Rounded 600 ${size}px`);
+        const desc = Pango.FontDescription.from_string(`SF Pro Rounded Semibold ${size}px`);
         layout.set_font_description(desc);
         layout.set_text(hours, -1);
         const [hoursWidth] = layout.get_pixel_size();
 
-        const colonWidth = Math.round(size * 0.32);
+        const colonWidth = Math.round(size * 0.30);
 
         // 1. Draw Hours
-        Drawing.drawGlassText(cr, startX, baselineY, hours, size, 'SF Pro Rounded');
+        Drawing.drawGlassText(cr, startX, baselineY, hours, size, 'SF Pro Rounded', 'Semibold');
 
         // 2. Draw Colon Dots (proportional vertical spacing)
         const colonX = startX + hoursWidth + colonWidth / 2;
         const colonAlpha = (seconds % 2 === 0) ? 0.96 : 0.58;
         cr.setSourceRGBA(0.96, 0.99, 1.00, colonAlpha);
 
-        // Upper dot (at ~38% of digit height)
-        cr.arc(colonX, baselineY - 105, 9, 0, 2 * Math.PI);
+        // Upper dot
+        cr.arc(colonX, baselineY - 88, 8.5, 0, 2 * Math.PI);
         cr.fill();
 
-        // Lower dot (at ~72% of digit height)
-        cr.arc(colonX, baselineY - 35, 9, 0, 2 * Math.PI);
+        // Lower dot
+        cr.arc(colonX, baselineY - 38, 8.5, 0, 2 * Math.PI);
         cr.fill();
 
         // 3. Draw Minutes
         const minutesX = startX + hoursWidth + colonWidth;
-        Drawing.drawGlassText(cr, minutesX, baselineY, minutes, size, 'SF Pro Rounded');
+        Drawing.drawGlassText(cr, minutesX, baselineY, minutes, size, 'SF Pro Rounded', 'Semibold');
     }
 
     destroy() {

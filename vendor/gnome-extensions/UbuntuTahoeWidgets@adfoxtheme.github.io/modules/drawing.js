@@ -84,16 +84,17 @@ export function drawText(cr, x, y, str, size, color, bold = false, align = 'left
     cr.restore();
 }
 
-export function drawGlassText(cr, x, y, str, size, family = 'SF Pro Rounded') {
+export function drawGlassText(cr, x, y, str, size, family = 'SF Pro Rounded', weight = 'Semibold') {
     if (!str) return;
     cr.save();
     const layout = PangoCairo.create_layout(cr);
-    const desc = Pango.FontDescription.from_string(`${family} 600 ${size}px`);
+    const desc = Pango.FontDescription.from_string(`${family} ${weight} ${size}px`);
     layout.set_font_description(desc);
     layout.set_text(String(str), -1);
 
+    const baseline = layout.get_baseline() / Pango.SCALE;
     const [pWidth, pHeight] = layout.get_pixel_size();
-    const drawY = y - pHeight * 0.85;
+    const drawY = y - baseline;
 
     // Fill with glass gradient
     cr.moveTo(x, drawY);
@@ -101,14 +102,14 @@ export function drawGlassText(cr, x, y, str, size, family = 'SF Pro Rounded') {
 
     const gradient = new cairo.LinearGradient(x, drawY, x, drawY + pHeight);
     gradient.addColorStopRGBA(0, 1.00, 1.00, 1.00, 0.48);
-    gradient.addColorStopRGBA(0.52, 1.00, 1.00, 1.00, 0.34);
+    gradient.addColorStopRGBA(0.50, 1.00, 1.00, 1.00, 0.34);
     gradient.addColorStopRGBA(1, 1.00, 1.00, 1.00, 0.20);
     cr.setSource(gradient);
     cr.fillPreserve();
 
     // Outline stroke
     cr.setSourceRGBA(1.00, 1.00, 1.00, 0.86);
-    cr.setLineWidth(1.4);
+    cr.setLineWidth(1.2);
     cr.stroke();
     cr.restore();
 }
