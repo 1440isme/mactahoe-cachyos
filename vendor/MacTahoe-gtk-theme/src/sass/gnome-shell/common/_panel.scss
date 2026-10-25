@@ -126,7 +126,9 @@ $panel_height: $menuitem_size;
 
   @if $panel_style =='default' {
     height: $panel_height + $container_padding * 2 !important;
-    background-color: transparent;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
   }
 
   @else {
@@ -137,10 +139,10 @@ $panel_height: $menuitem_size;
   // the rounded outset corners
   .panel-corner {
     -panel-corner-radius: $panel-corner-radius;
-    -panel-corner-background-color: $panel_bg;
-    -panel-corner-border-width: 2px;
+    -panel-corner-background-color: transparent !important;
+    -panel-corner-border-width: 0px;
     -panel-corner-border-color: transparent;
-    -panel-corner-opacity: 1;
+    -panel-corner-opacity: 0;
     transition-duration: 250ms;
   }
 
