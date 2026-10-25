@@ -52,7 +52,7 @@ Nếu repo đã có trong `~/mactahoe-ubuntu` và chỉ muốn chạy lại cài
 cd "$HOME/mactahoe-ubuntu" && ./install.sh
 ```
 
-Lệnh trên cài GNOME Tweaks, Extension Manager, theme GTK/Shell, icon/cursor, font, wallpaper, cấu hình GNOME/dock, các extension giao diện, Firefox, widget, trình quản lý icon, ứng dụng Âm lịch Việt Nam và Nén ảnh. Hai ứng dụng được thêm vào danh sách ứng dụng GNOME; Âm lịch chạy offline, còn Nén ảnh xử lý ảnh cục bộ. GDM được cài riêng, không chạy lại toàn bộ installer. Sau khi đã tải repo về `~/mactahoe-ubuntu`, mở Terminal ở bất kỳ thư mục nào và chạy lệnh này để chỉ cài màn hình đăng nhập:
+Nếu muốn màn hình đăng nhập (login) cũng đồng bộ giao diện Ubuntu Tahoe thì chạy tiếp lệnh dưới:
 
 ```bash
 cd "$HOME/mactahoe-ubuntu" && ./install-gdm.sh
