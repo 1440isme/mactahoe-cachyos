@@ -48,6 +48,8 @@
 
 #panel.transparent-panel {
     background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
     transition-duration: 500ms;
 }
 

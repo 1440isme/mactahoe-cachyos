@@ -9,6 +9,7 @@ import { KEYS } from './settings/keys.js';
 
 import { OverviewBlur } from './components/overview.js';
 import { AppFoldersBlur } from './components/appfolders.js';
+import { PanelBlur } from './components/panel/index.js';
 import { enable_system_style, disable_system_style } from './conveniences/style.js';
 import { track_painted_views } from './render/backdrop/painted_view.js';
 import { clear_snippets } from './render/shader/snippet_cache.js';
@@ -23,10 +24,11 @@ export class TahoeBlurManager {
         this._pipelines_manager = null;
         this._overview_blur = null;
         this._appfolder_blur = null;
+        this._panel_blur = null;
     }
 
     enable() {
-        console.log('[UbuntuTahoe > blur] Initializing Overview and AppFolder blur...');
+        console.log('[UbuntuTahoe > blur] Initializing Overview, AppFolder, and Panel transparency...');
         global.blur_my_shell = this;
 
         update_from_old_settings(this._gsettings);
@@ -50,12 +52,16 @@ export class TahoeBlurManager {
 
         this._overview_blur = new OverviewBlur(...init());
         this._appfolder_blur = new AppFoldersBlur(...init());
+        this._panel_blur = new PanelBlur(...init());
 
         if (this._settings.overview.BLUR) {
             this._overview_blur.enable();
         }
         if (this._settings.appfolder.BLUR) {
             this._appfolder_blur.enable();
+        }
+        if (this._settings.panel.BLUR || this._settings.panel.OVERRIDE_BACKGROUND) {
+            this._panel_blur.enable();
         }
 
         // Listen for setting changes
@@ -74,10 +80,23 @@ export class TahoeBlurManager {
                 this._appfolder_blur?.disable();
             }
         });
+
+        this._settings.panel.settings.connect('changed::override-background', () => {
+            if (this._settings?.panel?.OVERRIDE_BACKGROUND || this._settings?.panel?.BLUR) {
+                this._panel_blur?.enable();
+            } else {
+                this._panel_blur?.disable();
+            }
+        });
     }
 
     disable() {
-        console.log('[UbuntuTahoe > blur] Disabling blur manager...');
+        console.log('[UbuntuTahoe > blur] Disabling blur and panel manager...');
+        if (this._panel_blur) {
+            this._panel_blur.disable();
+            this._panel_blur = null;
+        }
+
         if (this._overview_blur) {
             this._overview_blur.disable();
             this._overview_blur = null;
