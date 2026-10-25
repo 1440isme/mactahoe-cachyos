@@ -60,7 +60,7 @@ export class TahoeBlurManager {
         if (this._settings.appfolder.BLUR) {
             this._appfolder_blur.enable();
         }
-        if (this._settings.panel.BLUR || this._settings.panel.OVERRIDE_BACKGROUND) {
+        if (this._settings.panel.BLUR) {
             this._panel_blur.enable();
         }
 
@@ -81,8 +81,8 @@ export class TahoeBlurManager {
             }
         });
 
-        this._settings.panel.settings.connect('changed::override-background', () => {
-            if (this._settings?.panel?.OVERRIDE_BACKGROUND || this._settings?.panel?.BLUR) {
+        this._settings.panel.settings.connect('changed::blur', () => {
+            if (this._settings?.panel?.BLUR) {
                 this._panel_blur?.enable();
             } else {
                 this._panel_blur?.disable();
