@@ -31,14 +31,14 @@ if [ -z "$shell_major" ] || [ "$shell_major" -lt 48 ]; then
     printf 'This installer requires GNOME Shell 48 or newer; detected %s.\n' "${shell_major:-unknown}" >&2
     exit 1
 fi
-for firefox_process in firefox firefox-bin firefox-esr; do
+for firefox_process in firefox firefox-bin; do
     if pgrep -u "$UID" -x "$firefox_process" >/dev/null 2>&1; then
         printf 'Force-closing Firefox before installing its profile theme...\n' >&2
         pkill -KILL -u "$UID" -x "$firefox_process" || true
     fi
 done
 sleep 1
-for firefox_process in firefox firefox-bin firefox-esr; do
+for firefox_process in firefox firefox-bin; do
     if pgrep -u "$UID" -x "$firefox_process" >/dev/null 2>&1; then
         printf 'Could not stop Firefox; close it manually and run the installer again.\n' >&2
         exit 1
@@ -265,45 +265,7 @@ cp "$ROOT_DIR/systemd/color-scheme-sync.service" "$HOME/.config/systemd/user/"
 systemctl --user daemon-reload
 systemctl --user enable --now color-scheme-sync.service
 
-firefox_roots=(
-    "$HOME/snap/firefox/common/.mozilla/firefox"
-    "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox"
-    "$HOME/.var/app/org.mozilla.firefox-esr/.mozilla/firefox"
-    "$HOME/.mozilla/firefox"
-    "$HOME/.mozilla/firefox-esr"
-)
-
-has_firefox_profile=false
-for root_dir in "${firefox_roots[@]}"; do
-    if [ -d "$root_dir" ] && find "$root_dir" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print -quit 2>/dev/null | grep -q .; then
-        has_firefox_profile=true
-        break
-    fi
-done
-
-if [ "$has_firefox_profile" = false ]; then
-    for ff_cmd in firefox-esr firefox; do
-        if command -v "$ff_cmd" >/dev/null 2>&1; then
-            printf 'Initializing Firefox profile via %s...\n' "$ff_cmd"
-            timeout 8 "$ff_cmd" --headless --screenshot /tmp/mactahoe-firefox-init.png about:blank >/dev/null 2>&1 || true
-            rm -f /tmp/mactahoe-firefox-init.png
-            break
-        fi
-    done
-    if [ "$has_firefox_profile" = false ] && command -v flatpak >/dev/null 2>&1; then
-        for app_id in org.mozilla.firefox org.mozilla.firefox-esr; do
-            if flatpak info "$app_id" >/dev/null 2>&1; then
-                printf 'Initializing Firefox profile via flatpak %s...\n' "$app_id"
-                timeout 8 flatpak run "$app_id" --headless --screenshot /tmp/mactahoe-firefox-init.png about:blank >/dev/null 2>&1 || true
-                rm -f /tmp/mactahoe-firefox-init.png
-                break
-            fi
-        done
-    fi
-fi
-
-applied_firefox_count=0
-for firefox_root in "${firefox_roots[@]}"; do
+for firefox_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla/firefox"; do
     [ -d "$firefox_root" ] || continue
     while IFS= read -r -d '' prefs; do
         profile="${prefs%/prefs.js}"
@@ -319,20 +281,9 @@ for firefox_root in "${firefox_roots[@]}"; do
         if [ -f "$profile/user.js" ]; then cp -n "$profile/user.js" "$profile/user.js.mactahoe-backup"; fi
         while IFS= read -r pref; do
             grep -Fqx "$pref" "$profile/user.js" || printf '%s\n' "$pref" >> "$profile/user.js"
-            if [ -f "$prefs" ]; then
-                pref_key="${pref#*(\"}"
-                pref_key="${pref_key%%\"*}"
-                sed -i "/user_pref(\"$pref_key\",/d" "$prefs"
-                printf '%s\n' "$pref" >> "$prefs"
-            fi
         done < "$ROOT_DIR/config/firefox-user.js"
-        applied_firefox_count=$((applied_firefox_count + 1))
-        printf 'Applied MacTahoe theme to Firefox profile: %s\n' "$profile"
     done < <(find "$firefox_root" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print0)
 done
-if [ "$applied_firefox_count" -eq 0 ]; then
-    printf 'Warning: No Firefox profiles found to apply MacTahoe theme.\n' >&2
-fi
 
 update-desktop-database "$HOME/.local/share/applications" || true
 printf '\nInstalled. Log out and back in to load GNOME Shell extensions.\nBackup: %s\n' "$BACKUP_DIR"
