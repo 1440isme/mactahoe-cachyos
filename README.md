@@ -7,6 +7,7 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng đ
 > - **Ubuntu 26.04** (GNOME 48 trở lên)
 > - **Debian 13 (Trixie)** (GNOME 48 trở lên)
 > - **Fedora 40, 41, 42+** (GNOME 48 trở lên)
+> - **CachyOS GNOME / Arch Linux** (GNOME 48 trở lên)
 
 ## Hình ảnh
 
@@ -115,15 +116,16 @@ Toàn bộ widget desktop được quản lý tập trung và trực quan ngay t
     - Tùy chỉnh khoảng cách lề trái và lề trên của Đồng hồ lớn.
     - Tùy chỉnh khoảng cách lề phải và lề trên của Cụm widget để vừa vặn hoàn hảo với mọi độ phân giải màn hình.
 
-### Hỗ trợ & Kiểm thử trên Ubuntu 26.04, Debian 13 & Fedora
+### Hỗ trợ & Kiểm thử trên Ubuntu 26.04, Debian 13, Fedora & CachyOS (Arch)
 
 Repo được hỗ trợ đầy đủ và kiểm thử thực tế (tested) thành công trên:
 - **Ubuntu 26.04 LTS** (APT, Snap Firefox, Yaru GDM)
 - **Debian 13 (Trixie)** (APT, Mozilla APT / ESR Firefox, Adwaita GDM)
 - **Fedora 40, 41, 42+** (DNF, RPM / Flatpak Firefox, Adwaita GDM + SELinux)
+- **CachyOS GNOME / Arch Linux** (Pacman, Native / Flatpak Firefox, Adwaita GDM)
 với môi trường GNOME 48 trở lên.
 
-Bộ cài tự động phát hiện trình quản lý gói phù hợp (`dnf` trên Fedora, `apt-get` trên Ubuntu/Debian) và cài đặt đúng các gói tương thích.
+Bộ cài tự động phát hiện trình quản lý gói phù hợp (`pacman` trên CachyOS/Arch, `dnf` trên Fedora, `apt-get` trên Ubuntu/Debian) và cài đặt đúng các gói tương thích.
 
 Trên Debian, để có trải nghiệm giao diện Firefox chuẩn Safari/macOS Tahoe đẹp nhất, khuyến nghị cài đặt Firefox bản mới nhất từ kho chính thức của Mozilla (Mozilla APT) thay vì dùng bản Firefox ESR cũ:
 
@@ -157,7 +159,7 @@ cd "$HOME/mactahoe-ubuntu" && ./uninstall.sh
 
 Chạy bằng tài khoản thường, không thêm `sudo`; trình gỡ sẽ hỏi xác nhận trước khi khôi phục bản sao cấu hình GNOME. Nếu đã cài theme màn hình đăng nhập, lệnh này cũng sẽ yêu cầu mật khẩu sudo để khôi phục. Các gói hệ thống được giữ lại.
 
-Bộ cài (cả `install.sh` và `install-gdm.sh`) đã được kiểm thử và hỗ trợ đầy đủ trên **Ubuntu 26.04**, **Debian 13** và **Fedora** (GNOME 48 trở lên). Bộ cài GDM kiểm tra dịch vụ GDM đang có (`gdm` trên Fedora, `gdm3` trên Ubuntu/Debian), tự động nhận diện gói và resource phù hợp cho từng hệ thống (Yaru trên Ubuntu hoặc Adwaita trên Debian/Fedora) trước khi áp dụng giao diện Tahoe. Trên Fedora, script tự động phục hồi context bảo mật SELinux (`restorecon`) sau khi cập nhật resource GDM để đăng nhập luôn an toàn và ổn định. Bước này thay đổi resource màn hình đăng nhập hệ thống; chạy riêng và reboot sau khi cài.
+Bộ cài (cả `install.sh` và `install-gdm.sh`) đã được kiểm thử và hỗ trợ đầy đủ trên **Ubuntu 26.04**, **Debian 13**, **Fedora** và **CachyOS / Arch Linux** (GNOME 48 trở lên). Bộ cài GDM kiểm tra dịch vụ GDM đang có (`gdm` trên CachyOS/Arch/Fedora, `gdm3` trên Ubuntu/Debian), tự động nhận diện gói và resource phù hợp cho từng hệ thống (Yaru trên Ubuntu hoặc Adwaita trên Debian/Fedora/CachyOS) trước khi áp dụng giao diện Tahoe. Trên Fedora, script tự động phục hồi context bảo mật SELinux (`restorecon`) sau khi cập nhật resource GDM để đăng nhập luôn an toàn và ổn định. Bước này thay đổi resource màn hình đăng nhập hệ thống; chạy riêng và reboot sau khi cài.
 
 ## Nguồn và phiên bản theme
 

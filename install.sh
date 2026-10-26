@@ -12,19 +12,27 @@ if [ "$EUID" -eq 0 ]; then
     exit 1
 fi
 if [ ! -r /etc/os-release ] || ! command -v gsettings >/dev/null 2>&1; then
-    printf 'This installer requires Ubuntu, Debian, or Fedora and a running GNOME session.\n' >&2
+    printf 'This installer requires Ubuntu, Debian, Fedora, or CachyOS/Arch and a running GNOME session.\n' >&2
     exit 1
 fi
 . /etc/os-release
 distribution_id="${ID:-}"
-if [ "$distribution_id" != ubuntu ] && [ "$distribution_id" != debian ] && [ "$distribution_id" != fedora ]; then
-    printf 'This installer currently supports Ubuntu, Debian, and Fedora; detected %s (%s).\n' \
+distribution_like="${ID_LIKE:-}"
+if [ "$distribution_id" != ubuntu ] && [ "$distribution_id" != debian ] && \
+   [ "$distribution_id" != fedora ] && [ "$distribution_id" != cachyos ] && \
+   [ "$distribution_id" != arch ] && [[ ! "$distribution_like" =~ arch ]]; then
+    printf 'This installer currently supports Ubuntu, Debian, Fedora, and CachyOS/Arch; detected %s (%s).\n' \
         "${PRETTY_NAME:-unknown}" "$distribution_id" >&2
     exit 1
 fi
 if [ "$distribution_id" = fedora ]; then
     if ! command -v dnf >/dev/null 2>&1; then
         printf 'Package manager dnf was not found.\n' >&2
+        exit 1
+    fi
+elif [ "$distribution_id" = cachyos ] || [ "$distribution_id" = arch ] || [[ "$distribution_like" =~ arch ]]; then
+    if ! command -v pacman >/dev/null 2>&1; then
+        printf 'Package manager pacman was not found.\n' >&2
         exit 1
     fi
 else
@@ -85,6 +93,27 @@ if [ "$distribution_id" = fedora ]; then
         awk 'NR==FNR {seen[$0]=1; next} !seen[$0]' "$dnf_snapshot" "$BACKUP_DIR/dnf-packages-after-mactahoe" > "$dnf_installed"
         rm -f "$dnf_snapshot" "$BACKUP_DIR/dnf-packages-after-mactahoe"
         touch "$BACKUP_DIR/dnf-tracking-version"
+    fi
+elif [ "$distribution_id" = cachyos ] || [ "$distribution_id" = arch ] || [[ "$distribution_like" =~ arch ]]; then
+    package_list=(breeze-icons dconf fontconfig \
+        libadwaita gtk4 extension-manager \
+        gnome-shell-extensions gnome-tweaks imagemagick \
+        glib2 glib2-devel librsvg python-gobject python-pillow sassc)
+    pacman_snapshot="$BACKUP_DIR/pacman-packages-before-mactahoe"
+    pacman_installed="$BACKUP_DIR/pacman-packages-installed-by-mactahoe"
+    if [ ! -e "$BACKUP_DIR/pacman-tracking-version" ] && [ ! -e "$BACKUP_DIR/pacman-tracking-legacy" ]; then
+        if [ -e "$STATE_DIR/project-path" ]; then
+            touch "$BACKUP_DIR/pacman-tracking-legacy"
+        else
+            pacman -Qq | LC_ALL=C sort -u > "$pacman_snapshot"
+        fi
+    fi
+    sudo pacman -S --needed --noconfirm "${package_list[@]}"
+    if [ -f "$pacman_snapshot" ] && [ ! -e "$BACKUP_DIR/pacman-tracking-version" ]; then
+        pacman -Qq | LC_ALL=C sort -u > "$BACKUP_DIR/pacman-packages-after-mactahoe"
+        awk 'NR==FNR {seen[$0]=1; next} !seen[$0]' "$pacman_snapshot" "$BACKUP_DIR/pacman-packages-after-mactahoe" > "$pacman_installed"
+        rm -f "$pacman_snapshot" "$BACKUP_DIR/pacman-packages-after-mactahoe"
+        touch "$BACKUP_DIR/pacman-tracking-version"
     fi
 else
     package_list=(breeze-icon-theme dconf-cli fontconfig \
@@ -295,9 +324,9 @@ cp "$ROOT_DIR/systemd/color-scheme-sync.service" "$HOME/.config/systemd/user/"
 systemctl --user daemon-reload
 systemctl --user enable --now color-scheme-sync.service
 
-# Khởi tạo profile mặc định nếu Firefox (DEB/APT/RPM) chưa từng mở
-if [ -f /etc/debian_version ] || [ -f /etc/fedora-release ] || \
-   { command -v lsb_release >/dev/null 2>&1 && lsb_release -i | grep -qiE 'debian|fedora'; }; then
+# Khởi tạo profile mặc định nếu Firefox (DEB/APT/RPM/Pacman) chưa từng mở
+if [ -f /etc/debian_version ] || [ -f /etc/fedora-release ] || [ -f /etc/arch-release ] || [ -f /etc/cachyos-release ] || \
+   { command -v lsb_release >/dev/null 2>&1 && lsb_release -i | grep -qiE 'debian|fedora|arch|cachy'; }; then
     for ff_cmd in firefox firefox-esr; do
         if command -v "$ff_cmd" >/dev/null 2>&1 && [ ! -d "$HOME/snap/firefox" ]; then
             "$ff_cmd" --headless -screenshot /dev/null about:blank >/dev/null 2>&1 || true

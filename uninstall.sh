@@ -90,6 +90,7 @@ for uuid in UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.i
     fi
 done
 gnome-extensions enable ubuntu-dock@ubuntu.com 2>/dev/null || true
+gnome-extensions enable dash-to-dock@micxgx.gmail.com 2>/dev/null || true
 
 # 6. Đóng và khôi phục cấu hình Firefox
 for firefox_process in firefox firefox-bin firefox-esr; do
@@ -248,7 +249,40 @@ else
 fi
 
 # 11. Gỡ bỏ các gói hệ thống do MacTahoe cài vào (Giữ lại tuyệt đối fontconfig và các gói phông chữ)
-if [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/dnf-packages-installed-by-mactahoe" ]; then
+if [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/pacman-packages-installed-by-mactahoe" ]; then
+    mapfile -t pacman_packages_to_remove < <(
+        while IFS= read -r package; do
+            [ -n "$package" ] || continue
+            # Giữ lại fontconfig và các gói phông chữ hệ thống
+            [ "$package" != "fontconfig" ] || continue
+            [[ "$package" == *font* ]] && continue
+            pacman -Q "$package" >/dev/null 2>&1 && printf '%s\n' "$package"
+        done < "$BACKUP_DIR/pacman-packages-installed-by-mactahoe"
+    )
+    if [ "${#pacman_packages_to_remove[@]}" -gt 0 ]; then
+        printf 'Removing pacman packages newly installed by MacTahoe: %s\n' "${pacman_packages_to_remove[*]}"
+        sudo pacman -R --noconfirm "${pacman_packages_to_remove[@]}" || true
+    fi
+elif [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/pacman-tracking-legacy" ]; then
+    legacy_pacman_packages=(breeze-icons dconf \
+        libadwaita gtk4 extension-manager \
+        gnome-shell-extensions gnome-tweaks imagemagick \
+        glib2 glib2-devel librsvg python-gobject python-pillow sassc)
+    printf 'This installation predates package tracking. Remove installed MacTahoe package-list items?\n'
+    printf 'This may also remove packages that were installed before MacTahoe. [Y/n] '
+    read -r answer || true
+    if [[ ! "$answer" =~ ^[Nn]$ ]]; then
+        installed_legacy_pacman_packages=()
+        for package in "${legacy_pacman_packages[@]}"; do
+            [ "$package" != "fontconfig" ] || continue
+            [[ "$package" == *font* ]] && continue
+            pacman -Q "$package" >/dev/null 2>&1 && installed_legacy_pacman_packages+=("$package")
+        done
+        if [ "${#installed_legacy_pacman_packages[@]}" -gt 0 ]; then
+            sudo pacman -R --noconfirm "${installed_legacy_pacman_packages[@]}" || true
+        fi
+    fi
+elif [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/dnf-packages-installed-by-mactahoe" ]; then
     mapfile -t dnf_packages_to_remove < <(
         while IFS= read -r package; do
             [ -n "$package" ] || continue
