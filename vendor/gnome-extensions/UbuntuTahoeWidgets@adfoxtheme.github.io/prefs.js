@@ -35,7 +35,48 @@ export default class UbuntuTahoeWidgetsPreferences extends ExtensionPreferences 
         addSwitch('Âm lịch', 'Lịch âm Việt Nam và can chi hôm nay', 'show-lunar');
         addSwitch('Nhắc nghỉ', 'Theo dõi thời gian và nhắc nhở nghỉ ngơi', 'show-rest');
 
-        // Group 2: Cấu hình thời tiết OpenWeather
+        // Group 2: Chọn màn hình hiển thị
+        const monitorGroup = new Adw.PreferencesGroup({
+            title: 'Màn hình hiển thị Widget',
+            description: 'Tùy chọn hiển thị widget trên màn hình chính hoặc màn hình thứ 2',
+        });
+        page.add(monitorGroup);
+
+        const monitorModel = new Gtk.StringList();
+        monitorModel.append('Màn hình chính (Primary Monitor)'); // 0 -> -1
+        monitorModel.append('Màn hình thứ hai (Second Monitor)'); // 1 -> 1
+        monitorModel.append('Màn hình 1 (Monitor 0)');           // 2 -> 0
+        monitorModel.append('Màn hình 2 (Monitor 1)');           // 3 -> 1
+        monitorModel.append('Màn hình 3 (Monitor 2)');           // 4 -> 2
+
+        const monitorRow = new Adw.ComboRow({
+            title: 'Màn hình hiển thị',
+            subtitle: 'Chọn màn hình đặt đồng hồ lớn và cụm widget',
+            model: monitorModel,
+        });
+
+        const curTarget = settings.get_int('target-monitor');
+        if (curTarget === -1) monitorRow.selected = 0;
+        else if (curTarget === 1) monitorRow.selected = 1;
+        else if (curTarget === 0) monitorRow.selected = 2;
+        else if (curTarget === 2) monitorRow.selected = 4;
+        else monitorRow.selected = 0;
+
+        monitorRow.connect('notify::selected', () => {
+            let val;
+            switch (monitorRow.selected) {
+                case 0: val = -1; break; // Primary
+                case 1: val = 1; break;  // 2nd monitor
+                case 2: val = 0; break;  // Monitor 0
+                case 3: val = 1; break;  // Monitor 1
+                case 4: val = 2; break;  // Monitor 2
+                default: val = -1; break;
+            }
+            settings.set_int('target-monitor', val);
+        });
+        monitorGroup.add(monitorRow);
+
+        // Group 3: Cấu hình thời tiết OpenWeather
         const weatherGroup = new Adw.PreferencesGroup({
             title: 'Thời tiết (OpenWeatherMap)',
             description: 'Cấu hình API OpenWeather (để trống sẽ dùng Open-Meteo miễn phí)',
