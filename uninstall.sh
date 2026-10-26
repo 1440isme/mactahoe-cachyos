@@ -92,7 +92,7 @@ done
 gnome-extensions enable ubuntu-dock@ubuntu.com 2>/dev/null || true
 
 # 6. Đóng và khôi phục cấu hình Firefox
-for firefox_process in firefox firefox-bin; do
+for firefox_process in firefox firefox-bin firefox-esr; do
     if pgrep -u "$UID" -x "$firefox_process" >/dev/null 2>&1; then
         printf 'Closing Firefox before reverting profile theme...\n' >&2
         pkill -KILL -u "$UID" -x "$firefox_process" || true
@@ -100,7 +100,13 @@ for firefox_process in firefox firefox-bin; do
 done
 sleep 1
 
-for profile_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla/firefox"; do
+firefox_roots=(
+    "$HOME/snap/firefox/common/.mozilla/firefox"
+    "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox"
+    "$HOME/.var/app/org.mozilla.firefox-esr/.mozilla/firefox"
+    "$HOME/.mozilla/firefox"
+)
+for profile_root in "${firefox_roots[@]}"; do
     [ -d "$profile_root" ] || continue
     while IFS= read -r -d '' prefs; do
         profile="${prefs%/prefs.js}"

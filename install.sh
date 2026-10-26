@@ -31,14 +31,14 @@ if [ -z "$shell_major" ] || [ "$shell_major" -lt 48 ]; then
     printf 'This installer requires GNOME Shell 48 or newer; detected %s.\n' "${shell_major:-unknown}" >&2
     exit 1
 fi
-for firefox_process in firefox firefox-bin; do
+for firefox_process in firefox firefox-bin firefox-esr; do
     if pgrep -u "$UID" -x "$firefox_process" >/dev/null 2>&1; then
         printf 'Force-closing Firefox before installing its profile theme...\n' >&2
         pkill -KILL -u "$UID" -x "$firefox_process" || true
     fi
 done
 sleep 1
-for firefox_process in firefox firefox-bin; do
+for firefox_process in firefox firefox-bin firefox-esr; do
     if pgrep -u "$UID" -x "$firefox_process" >/dev/null 2>&1; then
         printf 'Could not stop Firefox; close it manually and run the installer again.\n' >&2
         exit 1
@@ -265,7 +265,43 @@ cp "$ROOT_DIR/systemd/color-scheme-sync.service" "$HOME/.config/systemd/user/"
 systemctl --user daemon-reload
 systemctl --user enable --now color-scheme-sync.service
 
-for firefox_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla/firefox"; do
+firefox_roots=(
+    "$HOME/snap/firefox/common/.mozilla/firefox"
+    "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox"
+    "$HOME/.var/app/org.mozilla.firefox-esr/.mozilla/firefox"
+    "$HOME/.mozilla/firefox"
+)
+
+has_firefox_profile=false
+for root_dir in "${firefox_roots[@]}"; do
+    if [ -d "$root_dir" ] && find "$root_dir" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print -quit 2>/dev/null | grep -q .; then
+        has_firefox_profile=true
+        break
+    fi
+done
+
+if [ "$has_firefox_profile" = false ]; then
+    for ff_cmd in firefox-esr firefox; do
+        if command -v "$ff_cmd" >/dev/null 2>&1; then
+            printf 'Initializing Firefox profile via %s...\n' "$ff_cmd"
+            timeout 8 "$ff_cmd" --headless --screenshot /tmp/mactahoe-firefox-init.png about:blank >/dev/null 2>&1 || true
+            rm -f /tmp/mactahoe-firefox-init.png
+            break
+        fi
+    done
+    if [ "$has_firefox_profile" = false ] && command -v flatpak >/dev/null 2>&1; then
+        for app_id in org.mozilla.firefox org.mozilla.firefox-esr; do
+            if flatpak info "$app_id" >/dev/null 2>&1; then
+                printf 'Initializing Firefox profile via flatpak %s...\n' "$app_id"
+                timeout 8 flatpak run "$app_id" --headless --screenshot /tmp/mactahoe-firefox-init.png about:blank >/dev/null 2>&1 || true
+                rm -f /tmp/mactahoe-firefox-init.png
+                break
+            fi
+        done
+    fi
+fi
+
+for firefox_root in "${firefox_roots[@]}"; do
     [ -d "$firefox_root" ] || continue
     while IFS= read -r -d '' prefs; do
         profile="${prefs%/prefs.js}"
