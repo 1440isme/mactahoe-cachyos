@@ -741,3 +741,15 @@ export function addActor(element, actor) {
 
 export const clamp = (v, m, M) => Math.min(Math.max(v, m), M);
 export const clampDouble = v => clamp(v, 0, 1);
+
+/**
+ * Returns the `Meta.CursorTracker`. First try the newer accessor via
+ * `global.backend.get_cursor_tracker()` and fall back to the unversioned
+ * constructor `Meta.CursorTracker.get_for_display()`.
+ *
+ * @returns {Meta.CursorTracker} The cursor tracker.
+ */
+export function getCursorTracker() {
+    return global.backend.get_cursor_tracker?.() ??
+        Meta.CursorTracker.get_for_display(global.display);
+}

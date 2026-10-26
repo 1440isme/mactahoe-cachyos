@@ -16,7 +16,7 @@ export default class UbuntuTahoeWidgetsExtension extends Extension {
 
         // Right column stack
         this._stackBox = new St.BoxLayout({
-            vertical: true,
+            orientation: Clutter.Orientation.VERTICAL,
             style: 'spacing: 12px;',
             reactive: false,
         });

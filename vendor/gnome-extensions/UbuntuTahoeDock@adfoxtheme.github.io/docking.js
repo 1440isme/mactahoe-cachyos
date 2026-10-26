@@ -16,7 +16,6 @@ import {
     Layout,
     Main,
     OverviewControls,
-    PointerWatcher,
     SwitcherPopup,
     Workspace,
     WorkspacesView,
@@ -273,6 +272,7 @@ const DockedDash = GObject.registerClass({
         this._dockDwelling = false;
         this._dockWatch = null;
         this._dockDwellUserTime = 0;
+        this._checkDockDwellId = 0;
         this._dockDwellTimeoutId = 0;
 
         // Create a new dash object
@@ -512,11 +512,9 @@ const DockedDash = GObject.registerClass({
         // Remove existing barrier
         this._removeBarrier();
 
-        // Remove pointer watcher
-        if (this._dockWatch) {
-            PointerWatcher.getPointerWatcher()._removeWatch(this._dockWatch);
-            this._dockWatch = null;
-        }
+        // Remove cursor tracker watch
+        this._removeDockWatch();
+        this._cancelDockDwell();
 
         if (this._optionalScrollWorkspaceSwitchDeadTimeId) {
             GLib.source_remove(this._optionalScrollWorkspaceSwitchDeadTimeId);
@@ -525,11 +523,8 @@ const DockedDash = GObject.registerClass({
     }
 
     _updateAutoHideBarriers() {
-        // Remove pointer watcher
-        if (this._dockWatch) {
-            PointerWatcher.getPointerWatcher()._removeWatch(this._dockWatch);
-            this._dockWatch = null;
-        }
+        // Remove cursor tracker watch
+        this._removeDockWatch();
 
         // Setup pressure barrier (GS38+ only)
         this._updatePressureBarrier();
@@ -922,11 +917,35 @@ const DockedDash = GObject.registerClass({
         if (this._autohideIsEnabled &&
             (!Utils.supportsExtendedBarriers() ||
              !DockManager.settings.requirePressureToShow)) {
-            const pointerWatcher = PointerWatcher.getPointerWatcher();
-            this._dockWatch = pointerWatcher.addWatch(
-                DOCK_DWELL_CHECK_INTERVAL, this._checkDockDwell.bind(this));
+            this._dockWatch = Utils.getCursorTracker().connect(
+                'position-invalidated',
+                () => this._checkDockDwellLater(...global.get_pointer()));
             this._dockDwelling = false;
             this._dockDwellUserTime = 0;
+        }
+    }
+
+    _checkDockDwellLater(x, y) {
+        if (this._checkDockDwellId > 0)
+            return;
+
+        this._checkDockDwellId = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
+            DOCK_DWELL_CHECK_INTERVAL, () => {
+                this._checkDockDwell(x, y);
+                this._checkDockDwellId = 0;
+                return GLib.SOURCE_REMOVE;
+            });
+    }
+
+    _removeDockWatch() {
+        if (this._checkDockDwellId > 0) {
+            GLib.source_remove(this._checkDockDwellId);
+            this._checkDockDwellId = 0;
+        }
+
+        if (this._dockWatch) {
+            Utils.getCursorTracker().disconnect(this._dockWatch);
+            this._dockWatch = null;
         }
     }
 
