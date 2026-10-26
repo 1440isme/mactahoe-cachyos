@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -u
 
+USER_THEME_SCHEMA="$HOME/.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas"
+if [ -d "$USER_THEME_SCHEMA" ]; then
+    export GSETTINGS_SCHEMA_DIR="$USER_THEME_SCHEMA:${GSETTINGS_SCHEMA_DIR:-}"
+fi
+
 write_ini() {
     local file="$1" prefer="$2"
     mkdir -p "$(dirname "$file")"

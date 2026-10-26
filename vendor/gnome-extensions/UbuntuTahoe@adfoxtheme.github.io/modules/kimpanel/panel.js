@@ -35,14 +35,15 @@ export class InputPanel extends GObject.Object {
 
         this.layout = new St.BoxLayout({
             style_class : 'popup-menu-content',
-            vertical : true,
+            orientation : Clutter.Orientation.VERTICAL,
         });
         this.layout.add_style_class_name('kimpanel-popup-content');
         this.panel.bin.set_child(this.layout);
 
         this.upperLayout = new St.BoxLayout();
-        this.lookupTableLayout = new St.BoxLayout(
-            {vertical : this.kimpanel.isLookupTableVertical()});
+        this.lookupTableLayout = new St.BoxLayout({
+            orientation: this.kimpanel.isLookupTableVertical() ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL,
+        });
 
         this.layout.add_child(this.upperLayout);
 
@@ -169,7 +170,12 @@ export class InputPanel extends GObject.Object {
                     .remove_style_pseudo_class('active');
         }
     }
-    setVertical(vertical) { this.lookupTableLayout.set_vertical(vertical); }
+    setVertical(vertical) {
+        if (typeof this.lookupTableLayout.set_orientation === 'function')
+            this.lookupTableLayout.set_orientation(vertical ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL);
+        else if (typeof this.lookupTableLayout.set_vertical === 'function')
+            this.lookupTableLayout.set_vertical(vertical);
+    }
     updateFont(textStyle) {
         this.text_style = textStyle;
         this.auxText.set_style(this.text_style);
