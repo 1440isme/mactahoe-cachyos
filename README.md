@@ -119,7 +119,7 @@ cd "$HOME/mactahoe-ubuntu" && ./uninstall.sh
 
 Chạy bằng tài khoản thường, không thêm `sudo`; trình gỡ sẽ hỏi xác nhận trước khi khôi phục bản sao cấu hình GNOME. Nếu đã cài theme màn hình đăng nhập, lệnh này cũng sẽ yêu cầu mật khẩu sudo để khôi phục. Các gói hệ thống được giữ lại.
 
-`install.sh` và `install-gdm.sh` hiện chỉ hỗ trợ Ubuntu. Bộ cài GDM kiểm tra GDM3 đang có, cài các công cụ biên dịch/Yaru nếu thiếu, kiểm tra resource theme trước khi áp dụng giao diện Tahoe. Bước này thay đổi resource màn hình đăng nhập hệ thống; chạy riêng và reboot sau khi cài.
+`install.sh` hỗ trợ Ubuntu và Debian 13 (GNOME 48 trở lên). `install-gdm.sh` hiện chỉ hỗ trợ Ubuntu (do cần theme Yaru của Ubuntu). Bộ cài GDM kiểm tra GDM3 đang có, cài các công cụ biên dịch/Yaru nếu thiếu, kiểm tra resource theme trước khi áp dụng giao diện Tahoe. Bước này thay đổi resource màn hình đăng nhập hệ thống; chạy riêng và reboot sau khi cài.
 
 ## Nguồn và phiên bản theme
 

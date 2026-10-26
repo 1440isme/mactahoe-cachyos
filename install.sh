@@ -12,13 +12,13 @@ if [ "$EUID" -eq 0 ]; then
     exit 1
 fi
 if [ ! -r /etc/os-release ] || ! command -v gsettings >/dev/null 2>&1; then
-    printf 'This installer requires Ubuntu and a running GNOME session.\n' >&2
+    printf 'This installer requires Ubuntu or Debian and a running GNOME session.\n' >&2
     exit 1
 fi
 . /etc/os-release
 distribution_id="${ID:-}"
-if [ "$distribution_id" != ubuntu ]; then
-    printf 'This installer currently supports Ubuntu only; detected %s (%s).\n' \
+if [ "$distribution_id" != ubuntu ] && [ "$distribution_id" != debian ]; then
+    printf 'This installer currently supports Ubuntu and Debian only; detected %s (%s).\n' \
         "${PRETTY_NAME:-unknown}" "$distribution_id" >&2
     exit 1
 fi
