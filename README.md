@@ -1,6 +1,11 @@
 # MacTahoe cho GNOME
 
-Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện ích đang dùng trên máy.
+Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng độc quyền dành cho môi trường GNOME.
+
+> [!NOTE]
+> **Hệ điều hành hỗ trợ & đã kiểm thử thực tế (Tested):**
+> - **Ubuntu 26.04** (GNOME 48 trở lên)
+> - **Debian 13 (Trixie)** (GNOME 48 trở lên)
 
 ## Hình ảnh
 
@@ -109,9 +114,9 @@ Toàn bộ widget desktop được quản lý tập trung và trực quan ngay t
     - Tùy chỉnh khoảng cách lề trái và lề trên của Đồng hồ lớn.
     - Tùy chỉnh khoảng cách lề phải và lề trên của Cụm widget để vừa vặn hoàn hảo với mọi độ phân giải màn hình.
 
-### Hỗ trợ Debian & Cài đặt Firefox từ Mozilla APT
+### Hỗ trợ & Kiểm thử trên Ubuntu 26.04 & Debian 13
 
-Repo tương thích hoàn toàn với cả **Ubuntu (Snap / DEB)** và **Debian 13+ (Trixie / GNOME 48+)**.
+Repo được hỗ trợ đầy đủ và kiểm thử thực tế (tested) thành công trên cả **Ubuntu 26.04** (Snap / DEB) và **Debian 13 (Trixie)** với môi trường GNOME 48 trở lên.
 
 Trên Debian, để có trải nghiệm giao diện Firefox chuẩn Safari/macOS Tahoe đẹp nhất, khuyến nghị cài đặt Firefox bản mới nhất từ kho chính thức của Mozilla (Mozilla APT) thay vì dùng bản Firefox ESR cũ:
 
@@ -144,7 +149,7 @@ cd "$HOME/mactahoe-ubuntu" && ./uninstall.sh
 
 Chạy bằng tài khoản thường, không thêm `sudo`; trình gỡ sẽ hỏi xác nhận trước khi khôi phục bản sao cấu hình GNOME. Nếu đã cài theme màn hình đăng nhập, lệnh này cũng sẽ yêu cầu mật khẩu sudo để khôi phục. Các gói hệ thống được giữ lại.
 
-`install.sh` hỗ trợ Ubuntu và Debian 13 (GNOME 48 trở lên). `install-gdm.sh` hiện chỉ hỗ trợ Ubuntu (do cần theme Yaru của Ubuntu). Bộ cài GDM kiểm tra GDM3 đang có, cài các công cụ biên dịch/Yaru nếu thiếu, kiểm tra resource theme trước khi áp dụng giao diện Tahoe. Bước này thay đổi resource màn hình đăng nhập hệ thống; chạy riêng và reboot sau khi cài.
+Bộ cài (cả `install.sh` và `install-gdm.sh`) đã được kiểm thử và hỗ trợ đầy đủ trên **Ubuntu 26.04** và **Debian 13** (GNOME 48 trở lên). Bộ cài GDM kiểm tra GDM3 đang có, tự động nhận diện gói và resource phù hợp cho từng hệ thống (Yaru trên Ubuntu hoặc Adwaita trên Debian) trước khi áp dụng giao diện Tahoe. Bước này thay đổi resource màn hình đăng nhập hệ thống; chạy riêng và reboot sau khi cài.
 
 ## Nguồn và phiên bản theme
 
