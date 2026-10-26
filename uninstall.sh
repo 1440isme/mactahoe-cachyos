@@ -103,6 +103,7 @@ sleep 1
 for profile_root in \
     "${XDG_CONFIG_HOME:-$HOME/.config}/mozilla/firefox" \
     "$HOME/.mozilla/firefox" \
+    "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox" \
     "$HOME/snap/firefox/common/.mozilla/firefox"; do
     [ -d "$profile_root" ] || continue
 
@@ -165,6 +166,11 @@ fi
 rm -rf "$HOME/.local/share/icons/MacTahoe-cursors" "$HOME/.local/share/icons/MacTahoe-dark-cursors"
 if [ -f "$STATE_DIR/gdm-installed" ]; then
     sudo "$ROOT_DIR/vendor/MacTahoe-gtk-theme/tweaks.sh" -g -r || true
+    if command -v restorecon >/dev/null 2>&1; then
+        sudo restorecon -v /usr/share/gnome-shell/gnome-shell-theme.gresource* \
+            /usr/share/gnome-shell/theme/gnome-shell-theme.gresource* \
+            /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource* 2>/dev/null || true
+    fi
     rm -f "$STATE_DIR/gdm-installed"
 fi
 
@@ -241,8 +247,43 @@ else
     reset_gnome_settings
 fi
 
-# 11. Gỡ bỏ các gói APT do MacTahoe cài vào (Giữ lại tuyệt đối fontconfig và các gói phông chữ)
-if [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/apt-packages-installed-by-mactahoe" ]; then
+# 11. Gỡ bỏ các gói hệ thống do MacTahoe cài vào (Giữ lại tuyệt đối fontconfig và các gói phông chữ)
+if [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/dnf-packages-installed-by-mactahoe" ]; then
+    mapfile -t dnf_packages_to_remove < <(
+        while IFS= read -r package; do
+            [ -n "$package" ] || continue
+            # Giữ lại fontconfig và các gói phông chữ hệ thống
+            [ "$package" != "fontconfig" ] || continue
+            [[ "$package" == *font* ]] && continue
+            rpm -q --quiet "$package" 2>/dev/null && printf '%s\n' "$package"
+        done < "$BACKUP_DIR/dnf-packages-installed-by-mactahoe"
+    )
+    if [ "${#dnf_packages_to_remove[@]}" -gt 0 ]; then
+        printf 'Removing dnf packages newly installed by MacTahoe: %s\n' "${dnf_packages_to_remove[*]}"
+        sudo dnf remove -y "${dnf_packages_to_remove[@]}" || true
+        sudo dnf autoremove -y 2>/dev/null || true
+    fi
+elif [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/dnf-tracking-legacy" ]; then
+    legacy_dnf_packages=(breeze-icon-theme dconf \
+        libadwaita gtk4 gnome-extensions-app \
+        gnome-shell-extension-user-theme gnome-tweaks ImageMagick \
+        glib2-devel librsvg2-tools python3-gobject python3-pillow sassc)
+    printf 'This installation predates package tracking. Remove installed MacTahoe package-list items?\n'
+    printf 'This may also remove packages that were installed before MacTahoe. [Y/n] '
+    read -r answer || true
+    if [[ ! "$answer" =~ ^[Nn]$ ]]; then
+        installed_legacy_dnf_packages=()
+        for package in "${legacy_dnf_packages[@]}"; do
+            [ "$package" != "fontconfig" ] || continue
+            [[ "$package" == *font* ]] && continue
+            rpm -q --quiet "$package" 2>/dev/null && installed_legacy_dnf_packages+=("$package")
+        done
+        if [ "${#installed_legacy_dnf_packages[@]}" -gt 0 ]; then
+            sudo dnf remove -y "${installed_legacy_dnf_packages[@]}" || true
+            sudo dnf autoremove -y 2>/dev/null || true
+        fi
+    fi
+elif [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/apt-packages-installed-by-mactahoe" ]; then
     mapfile -t apt_packages_to_remove < <(
         while IFS= read -r package; do
             [ -n "$package" ] || continue

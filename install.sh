@@ -12,19 +12,26 @@ if [ "$EUID" -eq 0 ]; then
     exit 1
 fi
 if [ ! -r /etc/os-release ] || ! command -v gsettings >/dev/null 2>&1; then
-    printf 'This installer requires Ubuntu or Debian and a running GNOME session.\n' >&2
+    printf 'This installer requires Ubuntu, Debian, or Fedora and a running GNOME session.\n' >&2
     exit 1
 fi
 . /etc/os-release
 distribution_id="${ID:-}"
-if [ "$distribution_id" != ubuntu ] && [ "$distribution_id" != debian ]; then
-    printf 'This installer currently supports Ubuntu and Debian only; detected %s (%s).\n' \
+if [ "$distribution_id" != ubuntu ] && [ "$distribution_id" != debian ] && [ "$distribution_id" != fedora ]; then
+    printf 'This installer currently supports Ubuntu, Debian, and Fedora; detected %s (%s).\n' \
         "${PRETTY_NAME:-unknown}" "$distribution_id" >&2
     exit 1
 fi
-if ! command -v apt-get >/dev/null 2>&1; then
-    printf 'Package manager apt-get was not found.\n' >&2
-    exit 1
+if [ "$distribution_id" = fedora ]; then
+    if ! command -v dnf >/dev/null 2>&1; then
+        printf 'Package manager dnf was not found.\n' >&2
+        exit 1
+    fi
+else
+    if ! command -v apt-get >/dev/null 2>&1; then
+        printf 'Package manager apt-get was not found.\n' >&2
+        exit 1
+    fi
 fi
 shell_major="$(gnome-shell --version | grep -oE '[0-9]+' | head -n1)"
 if [ -z "$shell_major" ] || [ "$shell_major" -lt 48 ]; then
@@ -58,28 +65,51 @@ if [ -z "$BACKUP_DIR" ]; then
     BACKUP_DIR="$(mktemp -d "$STATE_DIR/backup-$(date +%Y%m%d-%H%M%S)-XXXXXX")"
 fi
 
-package_list=(breeze-icon-theme dconf-cli fontconfig \
-    gir1.2-adw-1 gir1.2-gtk-4.0 gnome-shell-extension-manager \
-    gnome-shell-extension-user-theme gnome-tweaks imagemagick \
-    libglib2.0-dev-bin librsvg2-bin python3-gi python3-pil sassc)
-apt_snapshot="$BACKUP_DIR/apt-packages-before-mactahoe"
-apt_installed="$BACKUP_DIR/apt-packages-installed-by-mactahoe"
-if [ ! -e "$BACKUP_DIR/apt-tracking-version" ] && [ ! -e "$BACKUP_DIR/apt-tracking-legacy" ]; then
-    if [ -e "$STATE_DIR/project-path" ]; then
-        touch "$BACKUP_DIR/apt-tracking-legacy"
-    else
-        dpkg-query -W -f='${db:Status-Abbrev}\t${binary:Package}\n' \
-            | awk '$1 ~ /^ii/ {print $2}' | LC_ALL=C sort -u > "$apt_snapshot"
+if [ "$distribution_id" = fedora ]; then
+    package_list=(breeze-icon-theme dconf fontconfig \
+        libadwaita gtk4 gnome-extensions-app \
+        gnome-shell-extension-user-theme gnome-tweaks ImageMagick \
+        glib2-devel librsvg2-tools python3-gobject python3-pillow sassc)
+    dnf_snapshot="$BACKUP_DIR/dnf-packages-before-mactahoe"
+    dnf_installed="$BACKUP_DIR/dnf-packages-installed-by-mactahoe"
+    if [ ! -e "$BACKUP_DIR/dnf-tracking-version" ] && [ ! -e "$BACKUP_DIR/dnf-tracking-legacy" ]; then
+        if [ -e "$STATE_DIR/project-path" ]; then
+            touch "$BACKUP_DIR/dnf-tracking-legacy"
+        else
+            rpm -qa --qf '%{NAME}\n' | LC_ALL=C sort -u > "$dnf_snapshot"
+        fi
     fi
-fi
-sudo apt-get update
-sudo apt-get install -y "${package_list[@]}"
-if [ -f "$apt_snapshot" ] && [ ! -e "$BACKUP_DIR/apt-tracking-version" ]; then
-    dpkg-query -W -f='${db:Status-Abbrev}\t${binary:Package}\n' \
-        | awk '$1 ~ /^ii/ {print $2}' | LC_ALL=C sort -u > "$BACKUP_DIR/apt-packages-after-mactahoe"
-    awk 'NR==FNR {seen[$0]=1; next} !seen[$0]' "$apt_snapshot" "$BACKUP_DIR/apt-packages-after-mactahoe" > "$apt_installed"
-    rm -f "$apt_snapshot" "$BACKUP_DIR/apt-packages-after-mactahoe"
-    touch "$BACKUP_DIR/apt-tracking-version"
+    sudo dnf install -y "${package_list[@]}"
+    if [ -f "$dnf_snapshot" ] && [ ! -e "$BACKUP_DIR/dnf-tracking-version" ]; then
+        rpm -qa --qf '%{NAME}\n' | LC_ALL=C sort -u > "$BACKUP_DIR/dnf-packages-after-mactahoe"
+        awk 'NR==FNR {seen[$0]=1; next} !seen[$0]' "$dnf_snapshot" "$BACKUP_DIR/dnf-packages-after-mactahoe" > "$dnf_installed"
+        rm -f "$dnf_snapshot" "$BACKUP_DIR/dnf-packages-after-mactahoe"
+        touch "$BACKUP_DIR/dnf-tracking-version"
+    fi
+else
+    package_list=(breeze-icon-theme dconf-cli fontconfig \
+        gir1.2-adw-1 gir1.2-gtk-4.0 gnome-shell-extension-manager \
+        gnome-shell-extension-user-theme gnome-tweaks imagemagick \
+        libglib2.0-dev-bin librsvg2-bin python3-gi python3-pil sassc)
+    apt_snapshot="$BACKUP_DIR/apt-packages-before-mactahoe"
+    apt_installed="$BACKUP_DIR/apt-packages-installed-by-mactahoe"
+    if [ ! -e "$BACKUP_DIR/apt-tracking-version" ] && [ ! -e "$BACKUP_DIR/apt-tracking-legacy" ]; then
+        if [ -e "$STATE_DIR/project-path" ]; then
+            touch "$BACKUP_DIR/apt-tracking-legacy"
+        else
+            dpkg-query -W -f='${db:Status-Abbrev}\t${binary:Package}\n' \
+                | awk '$1 ~ /^ii/ {print $2}' | LC_ALL=C sort -u > "$apt_snapshot"
+        fi
+    fi
+    sudo apt-get update
+    sudo apt-get install -y "${package_list[@]}"
+    if [ -f "$apt_snapshot" ] && [ ! -e "$BACKUP_DIR/apt-tracking-version" ]; then
+        dpkg-query -W -f='${db:Status-Abbrev}\t${binary:Package}\n' \
+            | awk '$1 ~ /^ii/ {print $2}' | LC_ALL=C sort -u > "$BACKUP_DIR/apt-packages-after-mactahoe"
+        awk 'NR==FNR {seen[$0]=1; next} !seen[$0]' "$apt_snapshot" "$BACKUP_DIR/apt-packages-after-mactahoe" > "$apt_installed"
+        rm -f "$apt_snapshot" "$BACKUP_DIR/apt-packages-after-mactahoe"
+        touch "$BACKUP_DIR/apt-tracking-version"
+    fi
 fi
 
 mkdir -p "$HOME/.local/share/gnome-shell/extensions" \
@@ -265,8 +295,9 @@ cp "$ROOT_DIR/systemd/color-scheme-sync.service" "$HOME/.config/systemd/user/"
 systemctl --user daemon-reload
 systemctl --user enable --now color-scheme-sync.service
 
-# Khởi tạo profile mặc định nếu Firefox (DEB/APT) chưa từng mở trên Debian
-if [ -f /etc/debian_version ] || { command -v lsb_release >/dev/null 2>&1 && lsb_release -i | grep -qi debian; }; then
+# Khởi tạo profile mặc định nếu Firefox (DEB/APT/RPM) chưa từng mở
+if [ -f /etc/debian_version ] || [ -f /etc/fedora-release ] || \
+   { command -v lsb_release >/dev/null 2>&1 && lsb_release -i | grep -qiE 'debian|fedora'; }; then
     for ff_cmd in firefox firefox-esr; do
         if command -v "$ff_cmd" >/dev/null 2>&1 && [ ! -d "$HOME/snap/firefox" ]; then
             "$ff_cmd" --headless -screenshot /dev/null about:blank >/dev/null 2>&1 || true
@@ -278,6 +309,7 @@ fi
 for firefox_root in \
     "${XDG_CONFIG_HOME:-$HOME/.config}/mozilla/firefox" \
     "$HOME/.mozilla/firefox" \
+    "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox" \
     "$HOME/snap/firefox/common/.mozilla/firefox"; do
     [ -d "$firefox_root" ] || continue
 

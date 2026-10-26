@@ -6,6 +6,7 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng đ
 > **Hệ điều hành hỗ trợ & đã kiểm thử thực tế (Tested):**
 > - **Ubuntu 26.04** (GNOME 48 trở lên)
 > - **Debian 13 (Trixie)** (GNOME 48 trở lên)
+> - **Fedora 40, 41, 42+** (GNOME 48 trở lên)
 
 ## Hình ảnh
 
@@ -114,9 +115,15 @@ Toàn bộ widget desktop được quản lý tập trung và trực quan ngay t
     - Tùy chỉnh khoảng cách lề trái và lề trên của Đồng hồ lớn.
     - Tùy chỉnh khoảng cách lề phải và lề trên của Cụm widget để vừa vặn hoàn hảo với mọi độ phân giải màn hình.
 
-### Hỗ trợ & Kiểm thử trên Ubuntu 26.04 & Debian 13
+### Hỗ trợ & Kiểm thử trên Ubuntu 26.04, Debian 13 & Fedora
 
-Repo được hỗ trợ đầy đủ và kiểm thử thực tế (tested) thành công trên cả **Ubuntu 26.04** (Snap / DEB) và **Debian 13 (Trixie)** với môi trường GNOME 48 trở lên.
+Repo được hỗ trợ đầy đủ và kiểm thử thực tế (tested) thành công trên:
+- **Ubuntu 26.04 LTS** (APT, Snap Firefox, Yaru GDM)
+- **Debian 13 (Trixie)** (APT, Mozilla APT / ESR Firefox, Adwaita GDM)
+- **Fedora 40, 41, 42+** (DNF, RPM / Flatpak Firefox, Adwaita GDM + SELinux)
+với môi trường GNOME 48 trở lên.
+
+Bộ cài tự động phát hiện trình quản lý gói phù hợp (`dnf` trên Fedora, `apt-get` trên Ubuntu/Debian) và cài đặt đúng các gói tương thích.
 
 Trên Debian, để có trải nghiệm giao diện Firefox chuẩn Safari/macOS Tahoe đẹp nhất, khuyến nghị cài đặt Firefox bản mới nhất từ kho chính thức của Mozilla (Mozilla APT) thay vì dùng bản Firefox ESR cũ:
 
@@ -132,10 +139,11 @@ echo -e 'Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000' | \
 sudo apt update && sudo apt install -y firefox
 ```
 
-Bộ cài `install.sh` tự động nhận diện và đồng bộ theme Firefox trên cả 3 cấu hình đường dẫn:
-1. `${XDG_CONFIG_HOME:-$HOME/.config}/mozilla/firefox` *(Debian / Mozilla APT hiện đại)*
-2. `$HOME/.mozilla/firefox` *(Debian ESR, Fedora, ...)*
-3. `$HOME/snap/firefox/common/.mozilla/firefox` *(Ubuntu Snap)*
+Bộ cài `install.sh` tự động nhận diện và đồng bộ theme Firefox trên cả 4 cấu hình đường dẫn:
+1. `${XDG_CONFIG_HOME:-$HOME/.config}/mozilla/firefox` *(Debian / Mozilla APT / Fedora hiện đại)*
+2. `$HOME/.mozilla/firefox` *(Debian ESR, Fedora RPM native, ...)*
+3. `$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox` *(Fedora / Linux Flatpak)*
+4. `$HOME/snap/firefox/common/.mozilla/firefox` *(Ubuntu Snap)*
 
 Nếu Firefox vừa cài đặt mà chưa từng mở lần nào, `install.sh` cũng sẽ tự động chạy tiến trình ngầm để khởi tạo profile chuẩn trước khi nạp giao diện Tahoe.
 
@@ -149,7 +157,7 @@ cd "$HOME/mactahoe-ubuntu" && ./uninstall.sh
 
 Chạy bằng tài khoản thường, không thêm `sudo`; trình gỡ sẽ hỏi xác nhận trước khi khôi phục bản sao cấu hình GNOME. Nếu đã cài theme màn hình đăng nhập, lệnh này cũng sẽ yêu cầu mật khẩu sudo để khôi phục. Các gói hệ thống được giữ lại.
 
-Bộ cài (cả `install.sh` và `install-gdm.sh`) đã được kiểm thử và hỗ trợ đầy đủ trên **Ubuntu 26.04** và **Debian 13** (GNOME 48 trở lên). Bộ cài GDM kiểm tra GDM3 đang có, tự động nhận diện gói và resource phù hợp cho từng hệ thống (Yaru trên Ubuntu hoặc Adwaita trên Debian) trước khi áp dụng giao diện Tahoe. Bước này thay đổi resource màn hình đăng nhập hệ thống; chạy riêng và reboot sau khi cài.
+Bộ cài (cả `install.sh` và `install-gdm.sh`) đã được kiểm thử và hỗ trợ đầy đủ trên **Ubuntu 26.04**, **Debian 13** và **Fedora** (GNOME 48 trở lên). Bộ cài GDM kiểm tra dịch vụ GDM đang có (`gdm` trên Fedora, `gdm3` trên Ubuntu/Debian), tự động nhận diện gói và resource phù hợp cho từng hệ thống (Yaru trên Ubuntu hoặc Adwaita trên Debian/Fedora) trước khi áp dụng giao diện Tahoe. Trên Fedora, script tự động phục hồi context bảo mật SELinux (`restorecon`) sau khi cập nhật resource GDM để đăng nhập luôn an toàn và ổn định. Bước này thay đổi resource màn hình đăng nhập hệ thống; chạy riêng và reboot sau khi cài.
 
 ## Nguồn và phiên bản theme
 
