@@ -14,13 +14,17 @@ if [ "$EUID" -eq 0 ]; then
     exit 1
 fi
 if [ ! -r /etc/os-release ] || ! command -v gsettings >/dev/null 2>&1; then
-    printf 'This installer requires Ubuntu, Debian, or Fedora and a running GNOME session.\n' >&2
+    printf 'This installer requires a supported distribution and a running GNOME session.\n' >&2
     exit 1
 fi
 . /etc/os-release
 distribution_id="${ID:-}"
-if [ "$distribution_id" != ubuntu ] && [ "$distribution_id" != debian ] && [ "$distribution_id" != fedora ]; then
-    printf 'This installer currently supports Ubuntu, Debian, and Fedora; detected %s (%s).\n' \
+id_like="${ID_LIKE:-}"
+is_arch=false
+if [ "$distribution_id" = cachyos ] || [ "$distribution_id" = arch ] || [[ "$id_like" =~ (arch|cachyos) ]]; then
+    is_arch=true
+elif [ "$distribution_id" != ubuntu ] && [ "$distribution_id" != debian ] && [ "$distribution_id" != fedora ]; then
+    printf 'This installer currently supports Ubuntu, Debian, Fedora, Arch Linux, and CachyOS; detected %s (%s).\n' \
         "${PRETTY_NAME:-unknown}" "$distribution_id" >&2
     exit 1
 fi
@@ -55,6 +59,26 @@ if [ "$distribution_id" = fedora ]; then
         GDM_RESOURCE=/usr/share/gnome-shell/gnome-shell-theme.gresource
     fi
     sudo dnf install -y "${packages[@]}"
+elif [ "$is_arch" = true ]; then
+    packages=(glib2 sassc)
+    if [ -f /usr/share/gnome-shell/theme/gnome-shell-theme.gresource ]; then
+        GDM_RESOURCE=/usr/share/gnome-shell/theme/gnome-shell-theme.gresource
+    else
+        GDM_RESOURCE=/usr/share/gnome-shell/gnome-shell-theme.gresource
+    fi
+    to_install=()
+    for pkg in "${packages[@]}"; do
+        if ! pacman -Q "$pkg" >/dev/null 2>&1; then
+            to_install+=("$pkg")
+        fi
+    done
+    if [ ${#to_install[@]} -gt 0 ]; then
+        if [ -t 0 ] || sudo -n true 2>/dev/null; then
+            sudo pacman -S --needed --noconfirm "${to_install[@]}" || true
+        else
+            printf 'Note: Root privileges required to install: %s\n' "${to_install[*]}"
+        fi
+    fi
 elif [ "$distribution_id" = ubuntu ]; then
     packages=(libglib2.0-bin libglib2.0-dev-bin sassc yaru-theme-gnome-shell)
     GDM_RESOURCE=/usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource

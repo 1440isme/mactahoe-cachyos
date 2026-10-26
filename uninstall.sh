@@ -77,7 +77,8 @@ for path in .local/bin/mactahoe-icon-manager \
 done
 
 # 4. Gỡ extension GNOME Shell
-for uuid in UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io \
+for uuid in user-theme@gnome-shell-extensions.gcampax.github.com \
+    UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io \
     UbuntuTahoeWidgets@adfoxtheme.github.io \
     blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
     just-perfection-desktop@just-perfection kimpanel@kde.org; do
@@ -248,7 +249,21 @@ else
 fi
 
 # 11. Gỡ bỏ các gói hệ thống do MacTahoe cài vào (Giữ lại tuyệt đối fontconfig và các gói phông chữ)
-if [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/dnf-packages-installed-by-mactahoe" ]; then
+if [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/pacman-packages-installed-by-mactahoe" ]; then
+    mapfile -t pacman_packages_to_remove < <(
+        while IFS= read -r package; do
+            [ -n "$package" ] || continue
+            # Giữ lại fontconfig và các gói phông chữ hệ thống
+            [ "$package" != "fontconfig" ] || continue
+            [[ "$package" == *font* ]] && continue
+            pacman -Q "$package" >/dev/null 2>&1 && printf '%s\n' "$package"
+        done < "$BACKUP_DIR/pacman-packages-installed-by-mactahoe"
+    )
+    if [ "${#pacman_packages_to_remove[@]}" -gt 0 ]; then
+        printf 'Removing pacman packages newly installed by MacTahoe: %s\n' "${pacman_packages_to_remove[*]}"
+        sudo pacman -Rns --noconfirm "${pacman_packages_to_remove[@]}" || true
+    fi
+elif [ -n "$BACKUP_DIR" ] && [ -f "$BACKUP_DIR/dnf-packages-installed-by-mactahoe" ]; then
     mapfile -t dnf_packages_to_remove < <(
         while IFS= read -r package; do
             [ -n "$package" ] || continue

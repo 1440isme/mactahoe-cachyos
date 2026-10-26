@@ -4,6 +4,7 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng đ
 
 > [!NOTE]
 > **Hệ điều hành hỗ trợ & đã kiểm thử thực tế (Tested):**
+> - **CachyOS / Arch Linux** (GNOME 48 – GNOME 51+)
 > - **Ubuntu 26.04** (GNOME 48 trở lên)
 > - **Debian 13 (Trixie)** (GNOME 48 trở lên)
 > - **Fedora 40, 41, 42+** (GNOME 48 trở lên)

@@ -12,19 +12,28 @@ if [ "$EUID" -eq 0 ]; then
     exit 1
 fi
 if [ ! -r /etc/os-release ] || ! command -v gsettings >/dev/null 2>&1; then
-    printf 'This installer requires Ubuntu, Debian, or Fedora and a running GNOME session.\n' >&2
+    printf 'This installer requires a supported distribution and a running GNOME session.\n' >&2
     exit 1
 fi
 . /etc/os-release
 distribution_id="${ID:-}"
-if [ "$distribution_id" != ubuntu ] && [ "$distribution_id" != debian ] && [ "$distribution_id" != fedora ]; then
-    printf 'This installer currently supports Ubuntu, Debian, and Fedora; detected %s (%s).\n' \
+id_like="${ID_LIKE:-}"
+is_arch=false
+if [ "$distribution_id" = cachyos ] || [ "$distribution_id" = arch ] || [[ "$id_like" =~ (arch|cachyos) ]]; then
+    is_arch=true
+elif [ "$distribution_id" != ubuntu ] && [ "$distribution_id" != debian ] && [ "$distribution_id" != fedora ]; then
+    printf 'This installer currently supports Ubuntu, Debian, Fedora, Arch Linux, and CachyOS; detected %s (%s).\n' \
         "${PRETTY_NAME:-unknown}" "$distribution_id" >&2
     exit 1
 fi
 if [ "$distribution_id" = fedora ]; then
     if ! command -v dnf >/dev/null 2>&1; then
         printf 'Package manager dnf was not found.\n' >&2
+        exit 1
+    fi
+elif [ "$is_arch" = true ]; then
+    if ! command -v pacman >/dev/null 2>&1; then
+        printf 'Package manager pacman was not found.\n' >&2
         exit 1
     fi
 else
@@ -85,6 +94,39 @@ if [ "$distribution_id" = fedora ]; then
         awk 'NR==FNR {seen[$0]=1; next} !seen[$0]' "$dnf_snapshot" "$BACKUP_DIR/dnf-packages-after-mactahoe" > "$dnf_installed"
         rm -f "$dnf_snapshot" "$BACKUP_DIR/dnf-packages-after-mactahoe"
         touch "$BACKUP_DIR/dnf-tracking-version"
+    fi
+elif [ "$is_arch" = true ]; then
+    package_list=(breeze-icons dconf fontconfig \
+        libadwaita gtk4 gnome-shell-extensions gnome-tweaks \
+        extension-manager imagemagick glib2 librsvg \
+        python-gobject python-pillow sassc)
+    pacman_snapshot="$BACKUP_DIR/pacman-packages-before-mactahoe"
+    pacman_installed="$BACKUP_DIR/pacman-packages-installed-by-mactahoe"
+    if [ ! -e "$BACKUP_DIR/pacman-tracking-version" ] && [ ! -e "$BACKUP_DIR/pacman-tracking-legacy" ]; then
+        if [ -e "$STATE_DIR/project-path" ]; then
+            touch "$BACKUP_DIR/pacman-tracking-legacy"
+        else
+            pacman -Qq | LC_ALL=C sort -u > "$pacman_snapshot"
+        fi
+    fi
+    to_install=()
+    for pkg in "${package_list[@]}"; do
+        if ! pacman -Q "$pkg" >/dev/null 2>&1; then
+            to_install+=("$pkg")
+        fi
+    done
+    if [ ${#to_install[@]} -gt 0 ]; then
+        if sudo -n true 2>/dev/null; then
+            sudo pacman -S --needed --noconfirm "${to_install[@]}" || true
+        else
+            printf 'Note: System packages can optionally be installed with: sudo pacman -S --needed %s\n' "${to_install[*]}"
+        fi
+    fi
+    if [ -f "$pacman_snapshot" ] && [ ! -e "$BACKUP_DIR/pacman-tracking-version" ]; then
+        pacman -Qq | LC_ALL=C sort -u > "$BACKUP_DIR/pacman-packages-after-mactahoe"
+        awk 'NR==FNR {seen[$0]=1; next} !seen[$0]' "$pacman_snapshot" "$BACKUP_DIR/pacman-packages-after-mactahoe" > "$pacman_installed"
+        rm -f "$pacman_snapshot" "$BACKUP_DIR/pacman-packages-after-mactahoe"
+        touch "$BACKUP_DIR/pacman-tracking-version"
     fi
 else
     package_list=(breeze-icon-theme dconf-cli fontconfig \
@@ -197,7 +239,7 @@ cp "$ROOT_DIR/apps/am-lich-viet-nam/assets/vn.ihoan.AmLich.svg" \
 cp "$ROOT_DIR/apps/image-compressor/assets/vn.ihoan.ImageCompressor.svg" \
     "$HOME/.local/share/icons/hicolor/scalable/apps/"
 
-EXTENSION_IDS=(UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io UbuntuTahoeWidgets@adfoxtheme.github.io)
+EXTENSION_IDS=(user-theme@gnome-shell-extensions.gcampax.github.com UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io UbuntuTahoeWidgets@adfoxtheme.github.io)
 COMPATIBLE_EXTENSION_IDS=()
 INCOMPATIBLE_EXTENSION_IDS=(blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
     just-perfection-desktop@just-perfection kimpanel@kde.org \
@@ -239,6 +281,7 @@ gs() {
         org.gnome.shell.extensions.blur-my-shell*|\
         org.gnome.shell.extensions.globalmenu*|\
         org.gnome.shell.extensions.kimpanel*) uuid=UbuntuTahoe@adfoxtheme.github.io ;;
+        org.gnome.shell.extensions.user-theme*) uuid=user-theme@gnome-shell-extensions.gcampax.github.com ;;
         *) gsettings "$command" "$schema" "$@"; return $? ;;
     esac
     schema_dir="$HOME/.local/share/gnome-shell/extensions/$uuid/schemas"
@@ -295,9 +338,9 @@ cp "$ROOT_DIR/systemd/color-scheme-sync.service" "$HOME/.config/systemd/user/"
 systemctl --user daemon-reload
 systemctl --user enable --now color-scheme-sync.service
 
-# Khởi tạo profile mặc định nếu Firefox (DEB/APT/RPM) chưa từng mở
-if [ -f /etc/debian_version ] || [ -f /etc/fedora-release ] || \
-   { command -v lsb_release >/dev/null 2>&1 && lsb_release -i | grep -qiE 'debian|fedora'; }; then
+# Khởi tạo profile mặc định nếu Firefox (DEB/APT/RPM/Arch) chưa từng mở
+if [ -f /etc/debian_version ] || [ -f /etc/fedora-release ] || [ -f /etc/arch-release ] || [ -f /etc/cachyos-release ] || \
+   { command -v lsb_release >/dev/null 2>&1 && lsb_release -i | grep -qiE 'debian|fedora|arch|cachyos'; }; then
     for ff_cmd in firefox firefox-esr; do
         if command -v "$ff_cmd" >/dev/null 2>&1 && [ ! -d "$HOME/snap/firefox" ]; then
             "$ff_cmd" --headless -screenshot /dev/null about:blank >/dev/null 2>&1 || true
