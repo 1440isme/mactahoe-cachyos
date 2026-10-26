@@ -14,12 +14,14 @@ if [ "$EUID" -eq 0 ]; then
     exit 1
 fi
 if [ ! -r /etc/os-release ] || ! command -v gsettings >/dev/null 2>&1; then
-    printf 'This installer requires Ubuntu and a running GNOME session.\n' >&2
+    printf 'This installer requires Ubuntu or Debian and a running GNOME session.\n' >&2
     exit 1
 fi
 . /etc/os-release
-if [ "${ID:-}" != ubuntu ]; then
-    printf 'This installer currently supports Ubuntu only.\n' >&2
+distribution_id="${ID:-}"
+if [ "$distribution_id" != ubuntu ] && [ "$distribution_id" != debian ]; then
+    printf 'This installer currently supports Ubuntu and Debian only; detected %s (%s).\n' \
+        "${PRETTY_NAME:-unknown}" "$distribution_id" >&2
     exit 1
 fi
 shell_version="$(gnome-shell --version 2>/dev/null || true)"
@@ -44,12 +46,24 @@ if [ ! -f "$GDM_DIR/gnome-shell-theme.gresource.xml" ] || \
     exit 1
 fi
 
-sudo apt-get update
-sudo apt-get install -y libglib2.0-bin libglib2.0-dev-bin sassc yaru-theme-gnome-shell
+packages=(libglib2.0-bin libglib2.0-dev-bin sassc)
+if [ "$distribution_id" = ubuntu ]; then
+    packages+=(yaru-theme-gnome-shell)
+    GDM_RESOURCE=/usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource
+else
+    packages+=(gnome-shell-common)
+    if [ -f /usr/share/gnome-shell/theme/gnome-shell-theme.gresource ]; then
+        GDM_RESOURCE=/usr/share/gnome-shell/theme/gnome-shell-theme.gresource
+    else
+        GDM_RESOURCE=/usr/share/gnome-shell/gnome-shell-theme.gresource
+    fi
+fi
 
-GDM_RESOURCE=/usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource
+sudo apt-get update
+sudo apt-get install -y "${packages[@]}"
+
 if [ ! -f "$GDM_RESOURCE" ]; then
-    printf 'The Yaru GNOME Shell resource was not installed.\n' >&2
+    printf 'The GNOME Shell GDM resource (%s) was not found.\n' "$GDM_RESOURCE" >&2
     exit 1
 fi
 
