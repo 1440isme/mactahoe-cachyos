@@ -117,6 +117,13 @@ for profile_root in "${firefox_roots[@]}"; do
             mv "$profile/user.js.tmp" "$profile/user.js"
             [ -s "$profile/user.js" ] || rm -f "$profile/user.js"
         fi
+        if [ -f "$prefs" ] && [ -r "$ROOT_DIR/config/firefox-user.js" ]; then
+            while IFS= read -r pref; do
+                pref_key="${pref#*(\"}"
+                pref_key="${pref_key%%\"*}"
+                sed -i "/user_pref(\"$pref_key\",/d" "$prefs"
+            done < "$ROOT_DIR/config/firefox-user.js"
+        fi
         if [ -d "$profile/chrome.mactahoe-backup" ]; then
             rm -rf "$profile/chrome"
             mv "$profile/chrome.mactahoe-backup" "$profile/chrome"

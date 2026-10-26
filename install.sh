@@ -317,6 +317,12 @@ for firefox_root in "${firefox_roots[@]}"; do
         if [ -f "$profile/user.js" ]; then cp -n "$profile/user.js" "$profile/user.js.mactahoe-backup"; fi
         while IFS= read -r pref; do
             grep -Fqx "$pref" "$profile/user.js" || printf '%s\n' "$pref" >> "$profile/user.js"
+            if [ -f "$prefs" ]; then
+                pref_key="${pref#*(\"}"
+                pref_key="${pref_key%%\"*}"
+                sed -i "/user_pref(\"$pref_key\",/d" "$prefs"
+                printf '%s\n' "$pref" >> "$prefs"
+            fi
         done < "$ROOT_DIR/config/firefox-user.js"
     done < <(find "$firefox_root" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print0)
 done
