@@ -1,5 +1,6 @@
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 user_pref("browser.tabs.drawInTitlebar", true);
+user_pref("browser.tabs.inTitlebar", 1);
 user_pref("browser.uidensity", 0);
 user_pref("layers.acceleration.force-enabled", true);
 user_pref("mozilla.widget.use-argb-visuals", true);
