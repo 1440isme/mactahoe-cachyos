@@ -171,35 +171,15 @@
 </draw_ops>
 
 <draw_ops name="border_focused">
-	<rectangle color="C_border_focused" x="0" y="0" width="width-1" height="height-1" filled="false" />
 </draw_ops>
 
 <draw_ops name="border_unfocused">
-	<rectangle color="C_border_unfocused" x="0" y="0" width="width-1" height="height-1" filled="false" />
 </draw_ops>
 
 <draw_ops name="rounded_border_focused">
-	<line color="C_border_focused" x1="2" y1="0" x2="width-3" y2="0" />
-	<line color="C_border_focused" x1="0" y1="height-1" x2="width-1" y2="height-1" />
-	<line color="C_border_focused" x1="0" y1="2" x2="0" y2="height-2" />
-	<line color="C_border_focused" x1="width-1" y1="2" x2="width-1" y2="height-2" />
-	<arc color="C_border_focused" x="0" y="0" width="3" height="3"  start_angle="270" extent_angle="90" />
-	<arc color="C_border_focused" x="width-3" y="0" width="2" height="3"  start_angle="0" extent_angle="90" />
-	<!-- double arcs for darker borders -->
-	<arc color="C_border_focused" x="0" y="0" width="3" height="3"  start_angle="270" extent_angle="90" />
-	<arc color="C_border_focused" x="width-3" y="0" width="2" height="3"  start_angle="0" extent_angle="90" />
 </draw_ops>
 
 <draw_ops name="rounded_border_unfocused">
-	<line color="C_border_unfocused" x1="2" y1="0" x2="width-3" y2="0" />
-	<line color="C_border_unfocused" x1="0" y1="height-1" x2="width-1" y2="height-1" />
-	<line color="C_border_unfocused" x1="0" y1="2" x2="0" y2="height-2" />
-	<line color="C_border_unfocused" x1="width-1" y1="2" x2="width-1" y2="height-2" />
-	<arc color="C_border_unfocused" x="0" y="0" width="3" height="3"  start_angle="270" extent_angle="90" />
-	<arc color="C_border_unfocused" x="width-3" y="0" width="2" height="3"  start_angle="0" extent_angle="90" />
-	<!-- double arcs for darker borders -->
-	<arc color="C_border_unfocused" x="0" y="0" width="3" height="3"  start_angle="270" extent_angle="90" />
-	<arc color="C_border_unfocused" x="width-3" y="0" width="2" height="3"  start_angle="0" extent_angle="90" />
 </draw_ops>
 
 <draw_ops name="border_right_focused">

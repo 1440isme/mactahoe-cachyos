@@ -285,5 +285,21 @@ for firefox_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla
     done < <(find "$firefox_root" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print0)
 done
 
+if [ -d "$HOME/snap/firefox" ]; then
+    mkdir -p "$HOME/snap/firefox/common/.config/gtk-3.0" "$HOME/snap/firefox/common/.themes"
+    cp "$ROOT_DIR/config/gtk-snap.css" "$HOME/snap/firefox/common/.config/gtk-3.0/gtk.css"
+    for snap_dir in "$HOME/snap/firefox/"*/; do
+        snap_ver="$(basename "$snap_dir")"
+        if [ "$snap_ver" != "common" ] && [ "$snap_ver" != "current" ] && [ -d "$snap_dir/.config" ]; then
+            mkdir -p "$snap_dir/.config/gtk-3.0"
+            rm -f "$snap_dir/.config/gtk-3.0/gtk.css"
+            cp "$ROOT_DIR/config/gtk-snap.css" "$snap_dir/.config/gtk-3.0/gtk.css"
+        fi
+    done
+    if [ -d "$HOME/.themes/MacTahoe-Dark" ]; then
+        cp -a "$HOME/.themes/MacTahoe-Dark" "$HOME/snap/firefox/common/.themes/"
+    fi
+fi
+
 update-desktop-database "$HOME/.local/share/applications" || true
 printf '\nInstalled. Log out and back in to load GNOME Shell extensions.\nBackup: %s\n' "$BACKUP_DIR"

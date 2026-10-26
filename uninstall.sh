@@ -123,6 +123,17 @@ for profile_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla
     done < <(find "$profile_root" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print0)
 done
 
+if [ -d "$HOME/snap/firefox" ]; then
+    rm -f "$HOME/snap/firefox/common/.config/gtk-3.0/gtk.css"
+    rm -rf "$HOME/snap/firefox/common/.themes/MacTahoe-Dark"
+    for snap_dir in "$HOME/snap/firefox/"*/; do
+        snap_ver="$(basename "$snap_dir")"
+        if [ "$snap_ver" != "common" ] && [ "$snap_ver" != "current" ]; then
+            rm -f "$snap_dir/.config/gtk-3.0/gtk.css"
+        fi
+    done
+fi
+
 # 7. Gỡ theme vendor (Chạy trước khi restore GTK để không xóa nhầm file người dùng)
 (cd "$ROOT_DIR/vendor/MacTahoe-gtk-theme" && ./install.sh -r theme app || true)
 (cd "$ROOT_DIR/vendor/MacTahoe-icon-theme" && ./install.sh -r || true)
