@@ -105,6 +105,7 @@ firefox_roots=(
     "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox"
     "$HOME/.var/app/org.mozilla.firefox-esr/.mozilla/firefox"
     "$HOME/.mozilla/firefox"
+    "$HOME/.mozilla/firefox-esr"
 )
 for profile_root in "${firefox_roots[@]}"; do
     [ -d "$profile_root" ] || continue

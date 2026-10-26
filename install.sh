@@ -270,6 +270,7 @@ firefox_roots=(
     "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox"
     "$HOME/.var/app/org.mozilla.firefox-esr/.mozilla/firefox"
     "$HOME/.mozilla/firefox"
+    "$HOME/.mozilla/firefox-esr"
 )
 
 has_firefox_profile=false
@@ -301,6 +302,7 @@ if [ "$has_firefox_profile" = false ]; then
     fi
 fi
 
+applied_firefox_count=0
 for firefox_root in "${firefox_roots[@]}"; do
     [ -d "$firefox_root" ] || continue
     while IFS= read -r -d '' prefs; do
@@ -324,8 +326,13 @@ for firefox_root in "${firefox_roots[@]}"; do
                 printf '%s\n' "$pref" >> "$prefs"
             fi
         done < "$ROOT_DIR/config/firefox-user.js"
+        applied_firefox_count=$((applied_firefox_count + 1))
+        printf 'Applied MacTahoe theme to Firefox profile: %s\n' "$profile"
     done < <(find "$firefox_root" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print0)
 done
+if [ "$applied_firefox_count" -eq 0 ]; then
+    printf 'Warning: No Firefox profiles found to apply MacTahoe theme.\n' >&2
+fi
 
 update-desktop-database "$HOME/.local/share/applications" || true
 printf '\nInstalled. Log out and back in to load GNOME Shell extensions.\nBackup: %s\n' "$BACKUP_DIR"
