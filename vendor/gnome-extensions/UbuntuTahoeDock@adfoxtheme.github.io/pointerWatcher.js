@@ -23,15 +23,24 @@ export class PointerWatcher {
     _getPointer() {
         try {
             if (global.backend && typeof global.backend.get_cursor_tracker === 'function') {
-                const tracker = global.backend.get_cursor_tracker();
-                const [x, y] = tracker.get_pointer();
-                return [x, y];
+                const res = global.backend.get_cursor_tracker().get_pointer();
+                if (res && res[0]) {
+                    const c = res[0];
+                    if (typeof c.x === 'number' && typeof c.y === 'number') {
+                        return [c.x, c.y];
+                    }
+                    if (typeof c === 'number' && typeof res[1] === 'number') {
+                        return [c, res[1]];
+                    }
+                }
             }
         } catch (_) {}
         try {
             if (typeof global.get_pointer === 'function') {
                 const [x, y] = global.get_pointer();
-                return [x, y];
+                if (typeof x === 'number' && typeof y === 'number') {
+                    return [x, y];
+                }
             }
         } catch (_) {}
         return [0, 0];
