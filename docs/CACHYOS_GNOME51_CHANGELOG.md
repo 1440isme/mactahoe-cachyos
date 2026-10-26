@@ -1,6 +1,6 @@
-# Bản Fork CachyOS & GNOME 51+ (bởi 1440isme)
+# MacTahoe CachyOS (GNOME 51+)
 
-Bản fork này tối ưu hóa và hoàn thiện bộ giao diện **MacTahoe** cho các bản phân phối Linux hiện đại chạy **GNOME Shell 51+ (Mutter 51)** như **CachyOS**, **Arch Linux**, đồng thời bổ sung các tính năng tùy biến sâu, hỗ trợ đa màn hình và trình quản lý Clipboard tương tự Windows.
+Bản fork tối ưu hóa và hoàn thiện bộ giao diện **MacTahoe CachyOS** cho các bản phân phối Linux hiện đại chạy **GNOME Shell 51+ (Mutter 51)** như **CachyOS**, **Arch Linux**, đồng thời bổ sung các tính năng tùy biến sâu, hỗ trợ đa màn hình và trình quản lý Clipboard tương tự Windows.
 
 ---
 
@@ -46,7 +46,7 @@ Chạy lệnh sau trên terminal để tải bản fork và cài đặt:
 
 ```bash
 cd "$HOME" && \
-git clone -b cachyos-support https://github.com/1440isme/mactahoe-ubuntu.git mactahoe-cachyos && \
+git clone -b cachyos-support https://github.com/1440isme/mactahoe-cachyos.git mactahoe-cachyos && \
 cd mactahoe-cachyos && \
 ./install.sh
 ```

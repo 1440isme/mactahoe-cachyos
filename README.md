@@ -1,9 +1,9 @@
-# MacTahoe cho GNOME (Bản Fork CachyOS & GNOME 51+)
+# MacTahoe CachyOS
 
-Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng độc quyền dành cho môi trường GNOME.
+Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng tối ưu hóa đặc biệt cho **CachyOS**, **Arch Linux** và môi trường **GNOME Shell 51+**.
 
 > [!TIP]
-> **Bản Fork tối ưu cho CachyOS & GNOME Shell 51+ (bởi 1440isme):**
+> **Bản Fork MacTahoe CachyOS & GNOME Shell 51+ (bởi 1440isme):**
 > Hỗ trợ tương thích toàn diện GNOME 51+, hỗ trợ đa màn hình (chuyển widget sang màn hình 2), tùy biến topbar linh hoạt (bật/tắt Global Menu, đặt đồng hồ giữa), tìm kiếm tọa độ thời tiết tự động và tích hợp trình quản lý Clipboard (<kbd>Super</kbd> + <kbd>V</kbd>). Xem chi tiết tại [docs/CACHYOS_GNOME51_CHANGELOG.md](docs/CACHYOS_GNOME51_CHANGELOG.md).
 
 > [!NOTE]
@@ -49,18 +49,18 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng đ
 - Bộ cài cài hai ứng dụng vào menu GNOME, kèm icon và launcher; Âm lịch chạy offline, còn Nén ảnh xử lý tệp cục bộ bằng Pillow.
 - Extension được kiểm tra theo phiên bản GNOME Shell khai báo trong metadata và chỉ được bật cho lần đăng nhập tiếp theo.
 
-## Trạng thái
+## Cài đặt nhanh
 
 Mở Terminal ở bất kỳ thư mục nào, dán nguyên lệnh này để tải/cập nhật repo rồi cài:
 
 ```bash
-cd "$HOME" && if [ -d mactahoe-ubuntu/.git ]; then git -C mactahoe-ubuntu pull --ff-only; else git clone -b cachyos-support https://github.com/1440isme/mactahoe-ubuntu.git mactahoe-ubuntu; fi && cd "$HOME/mactahoe-ubuntu" && ./install.sh
+cd "$HOME" && if [ -d mactahoe-cachyos/.git ]; then git -C mactahoe-cachyos pull --ff-only; else git clone -b cachyos-support https://github.com/1440isme/mactahoe-cachyos.git mactahoe-cachyos; fi && cd "$HOME/mactahoe-cachyos" && ./install.sh
 ```
 
-Nếu repo đã có trong `~/mactahoe-ubuntu` và chỉ muốn chạy lại cài đặt từ bất kỳ thư mục nào:
+Nếu repo đã có trong `~/mactahoe-cachyos` (hoặc `~/mactahoe-ubuntu`) và chỉ muốn chạy lại cài đặt từ bất kỳ thư mục nào:
 
 ```bash
-cd "$HOME/mactahoe-ubuntu" && ./install.sh
+cd "$HOME/mactahoe-cachyos" 2>/dev/null || cd "$HOME/mactahoe-ubuntu" && ./install.sh
 ```
 
 Nếu muốn màn hình đăng nhập (login) cũng đồng bộ giao diện Ubuntu Tahoe thì chạy tiếp lệnh dưới:
