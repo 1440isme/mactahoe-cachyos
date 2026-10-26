@@ -1,6 +1,10 @@
-# MacTahoe cho GNOME
+# MacTahoe cho GNOME (Bản Fork CachyOS & GNOME 51+)
 
 Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng độc quyền dành cho môi trường GNOME.
+
+> [!TIP]
+> **Bản Fork tối ưu cho CachyOS & GNOME Shell 51+ (bởi 1440isme):**
+> Hỗ trợ tương thích toàn diện GNOME 51+, hỗ trợ đa màn hình (chuyển widget sang màn hình 2), tùy biến topbar linh hoạt (bật/tắt Global Menu, đặt đồng hồ giữa), tìm kiếm tọa độ thời tiết tự động và tích hợp trình quản lý Clipboard (<kbd>Super</kbd> + <kbd>V</kbd>). Xem chi tiết tại [docs/CACHYOS_GNOME51_CHANGELOG.md](docs/CACHYOS_GNOME51_CHANGELOG.md).
 
 > [!NOTE]
 > **Hệ điều hành hỗ trợ & đã kiểm thử thực tế (Tested):**
@@ -50,7 +54,7 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng đ
 Mở Terminal ở bất kỳ thư mục nào, dán nguyên lệnh này để tải/cập nhật repo rồi cài:
 
 ```bash
-cd "$HOME" && if [ -d mactahoe-ubuntu/.git ]; then git -C mactahoe-ubuntu pull --ff-only; else git clone https://github.com/adfoxtheme/mactahoe-ubuntu.git mactahoe-ubuntu; fi && cd "$HOME/mactahoe-ubuntu" && ./install.sh
+cd "$HOME" && if [ -d mactahoe-ubuntu/.git ]; then git -C mactahoe-ubuntu pull --ff-only; else git clone -b cachyos-support https://github.com/1440isme/mactahoe-ubuntu.git mactahoe-ubuntu; fi && cd "$HOME/mactahoe-ubuntu" && ./install.sh
 ```
 
 Nếu repo đã có trong `~/mactahoe-ubuntu` và chỉ muốn chạy lại cài đặt từ bất kỳ thư mục nào:

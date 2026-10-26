@@ -50,3 +50,6 @@ org.gnome.shell.extensions.ubuntutahoedock dash-max-icon-size 45
 org.gnome.shell.extensions.ubuntutahoedock click-action 'minimize'
 org.gnome.shell.extensions.ubuntutahoedock multi-monitor true
 org.gnome.shell.extensions.ubuntutahoewidgets target-monitor 1
+org.gnome.shell.extensions.clipboard-indicator toggle-menu ['<Super>v']
+org.gnome.shell.extensions.clipboard-indicator open-at-cursor true
+org.gnome.shell.extensions.clipboard-indicator paste-on-select true

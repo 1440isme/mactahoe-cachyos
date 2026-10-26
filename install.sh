@@ -239,7 +239,7 @@ cp "$ROOT_DIR/apps/am-lich-viet-nam/assets/vn.ihoan.AmLich.svg" \
 cp "$ROOT_DIR/apps/image-compressor/assets/vn.ihoan.ImageCompressor.svg" \
     "$HOME/.local/share/icons/hicolor/scalable/apps/"
 
-EXTENSION_IDS=(user-theme@gnome-shell-extensions.gcampax.github.com UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io UbuntuTahoeWidgets@adfoxtheme.github.io)
+EXTENSION_IDS=(user-theme@gnome-shell-extensions.gcampax.github.com UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io UbuntuTahoeWidgets@adfoxtheme.github.io clipboard-indicator@tudmotu.com)
 COMPATIBLE_EXTENSION_IDS=()
 INCOMPATIBLE_EXTENSION_IDS=(blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
     just-perfection-desktop@just-perfection kimpanel@kde.org \
@@ -270,6 +270,16 @@ for uuid in "${EXTENSION_IDS[@]}"; do
     COMPATIBLE_EXTENSION_IDS+=("$uuid")
 done
 
+# Compile schemas globally into user data dir
+mkdir -p "$HOME/.local/share/glib-2.0/schemas"
+for d in "$ROOT_DIR"/vendor/gnome-extensions/*/schemas; do
+    [ -d "$d" ] && cp -a "$d"/*.gschema.xml "$HOME/.local/share/glib-2.0/schemas/" 2>/dev/null || true
+done
+glib-compile-schemas "$HOME/.local/share/glib-2.0/schemas" 2>/dev/null || true
+
+# Free <Super>v for clipboard manager (shift message tray to <Super>m)
+gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>m']" 2>/dev/null || true
+
 gs() {
     local schema="$1"; shift
     local command="$1"; shift
@@ -282,6 +292,7 @@ gs() {
         org.gnome.shell.extensions.globalmenu*|\
         org.gnome.shell.extensions.kimpanel*) uuid=UbuntuTahoe@adfoxtheme.github.io ;;
         org.gnome.shell.extensions.user-theme*) uuid=user-theme@gnome-shell-extensions.gcampax.github.com ;;
+        org.gnome.shell.extensions.clipboard-indicator*) uuid=clipboard-indicator@tudmotu.com ;;
         *) gsettings "$command" "$schema" "$@"; return $? ;;
     esac
     schema_dir="$HOME/.local/share/gnome-shell/extensions/$uuid/schemas"

@@ -79,7 +79,7 @@ done
 # 4. Gỡ extension GNOME Shell
 for uuid in user-theme@gnome-shell-extensions.gcampax.github.com \
     UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io \
-    UbuntuTahoeWidgets@adfoxtheme.github.io \
+    UbuntuTahoeWidgets@adfoxtheme.github.io clipboard-indicator@tudmotu.com \
     blur-my-shell@aunetx globalmenu@ShiroOSL.github.io \
     just-perfection-desktop@just-perfection kimpanel@kde.org; do
     gnome-extensions disable "$uuid" 2>/dev/null || true
@@ -91,6 +91,7 @@ for uuid in user-theme@gnome-shell-extensions.gcampax.github.com \
     fi
 done
 gnome-extensions enable ubuntu-dock@ubuntu.com 2>/dev/null || true
+gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>v', '<Super>m']" 2>/dev/null || true
 
 # 6. Đóng và khôi phục cấu hình Firefox
 for firefox_process in firefox firefox-bin firefox-esr; do
