@@ -92,7 +92,7 @@ done
 gnome-extensions enable ubuntu-dock@ubuntu.com 2>/dev/null || true
 
 # 6. Đóng và khôi phục cấu hình Firefox
-for firefox_process in firefox firefox-bin; do
+for firefox_process in firefox firefox-bin firefox-esr; do
     if pgrep -u "$UID" -x "$firefox_process" >/dev/null 2>&1; then
         printf 'Closing Firefox before reverting profile theme...\n' >&2
         pkill -KILL -u "$UID" -x "$firefox_process" || true
@@ -100,10 +100,35 @@ for firefox_process in firefox firefox-bin; do
 done
 sleep 1
 
-for profile_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla/firefox"; do
+for profile_root in \
+    "${XDG_CONFIG_HOME:-$HOME/.config}/mozilla/firefox" \
+    "$HOME/.mozilla/firefox" \
+    "$HOME/snap/firefox/common/.mozilla/firefox"; do
     [ -d "$profile_root" ] || continue
+
+    profile_dirs=()
+    if [ -f "$profile_root/profiles.ini" ]; then
+        while IFS='=' read -r key val; do
+            [ "$key" = "Path" ] || continue
+            val="$(echo "$val" | tr -d '\r')"
+            case "$val" in
+                /*) p="$val" ;;
+                *)  p="$profile_root/$val" ;;
+            esac
+            [ -d "$p" ] && profile_dirs+=("$p")
+        done < "$profile_root/profiles.ini"
+    fi
     while IFS= read -r -d '' prefs; do
-        profile="${prefs%/prefs.js}"
+        profile_dirs+=("${prefs%/prefs.js}")
+    done < <(find "$profile_root" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print0)
+
+    unset seen_profiles
+    declare -A seen_profiles=()
+    for profile in "${profile_dirs[@]}"; do
+        [ -n "$profile" ] && [ -d "$profile" ] || continue
+        [ -z "${seen_profiles["$profile"]:-}" ] || continue
+        seen_profiles["$profile"]=1
+
         if [ -f "$profile/user.js.mactahoe-backup" ]; then
             mv "$profile/user.js.mactahoe-backup" "$profile/user.js"
         elif [ -f "$profile/user.js" ] && [ -r "$ROOT_DIR/config/firefox-user.js" ]; then
@@ -120,7 +145,7 @@ for profile_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla
                 "$profile/chrome/userContent.css"
             rmdir "$profile/chrome" 2>/dev/null || true
         fi
-    done < <(find "$profile_root" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print0)
+    done
 done
 
 if [ -d "$HOME/snap/firefox" ]; then

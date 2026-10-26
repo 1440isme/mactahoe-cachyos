@@ -31,7 +31,7 @@ Repo cá nhân để đóng gói lại bộ giao diện MacTahoe và các tiện
 
 - Theme GTK/GNOME Shell, bộ icon MacTahoe, con trỏ, font SF và wallpaper tạo phần giao diện nền.
 - Topbar dùng kiểu trong suốt vĩnh viễn (`#panel` trong CSS); không cần bật blur để có nền trong suốt.
-- Firefox bo góc 10 px khi cửa sổ ở trạng thái thường và bỏ bo góc khi phóng tối đa; CSS ghi đè bán kính CSD dự phòng của theme để hiển thị nhất quán hơn.
+- Firefox bo góc 24 px khi cửa sổ ở trạng thái thường (chuẩn macOS Tahoe) và bỏ bo góc khi phóng tối đa; loại bỏ viền đen ngoài khung CSD.
 - **UbuntuTahoe** là tiện ích giao diện hợp nhất độc quyền cho bộ theme, tích hợp sẵn Global Menu, chuyển đồng hồ sang góc phải, hiệu ứng mờ kính Overview & thư mục ứng dụng và bộ gõ. Người dùng chỉ cần một công tắc bật duy nhất mà không cần cài đặt nhiều extension riêng rẽ.
 - **UbuntuTahoeDock** là tiện ích Dock độc quyền chuẩn phong cách macOS Tahoe (nổi ở đáy màn hình, bo cong kính mờ, đèn báo 1 chấm tròn DOT, tự ẩn thông minh, có thanh trượt chỉnh kích thước icon). Nhờ có UbuntuTahoeDock, bộ giao diện hoàn toàn độc lập và không phụ thuộc vào Ubuntu Dock của hệ thống, tương thích mượt mà trên mọi bản phân phối Linux dùng GNOME.
 - GNOME Tweaks và Extension Manager là ứng dụng quản lý tùy chọn/extension, không phải thành phần tạo giao diện. Trình quản lý icon MacTahoe, launcher widget, **Âm lịch Việt Nam** và **Nén ảnh** được đóng gói trong repo.
@@ -108,6 +108,31 @@ Toàn bộ widget desktop được quản lý tập trung và trực quan ngay t
   - **Căn chỉnh vị trí & lề màn hình:**
     - Tùy chỉnh khoảng cách lề trái và lề trên của Đồng hồ lớn.
     - Tùy chỉnh khoảng cách lề phải và lề trên của Cụm widget để vừa vặn hoàn hảo với mọi độ phân giải màn hình.
+
+### Hỗ trợ Debian & Cài đặt Firefox từ Mozilla APT
+
+Repo tương thích hoàn toàn với cả **Ubuntu (Snap / DEB)** và **Debian 13+ (Trixie / GNOME 48+)**.
+
+Trên Debian, để có trải nghiệm giao diện Firefox chuẩn Safari/macOS Tahoe đẹp nhất, khuyến nghị cài đặt Firefox bản mới nhất từ kho chính thức của Mozilla (Mozilla APT) thay vì dùng bản Firefox ESR cũ:
+
+```bash
+sudo apt install -y wget
+sudo mkdir -p /etc/apt/keyrings
+sudo wget -qO /etc/apt/keyrings/packages.mozilla.org.asc \
+    https://packages.mozilla.org/apt/repo-signing-key.gpg
+echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" \
+    | sudo tee /etc/apt/sources.list.d/mozilla.list
+echo -e 'Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000' | \
+    sudo tee /etc/apt/preferences.d/mozilla
+sudo apt update && sudo apt install -y firefox
+```
+
+Bộ cài `install.sh` tự động nhận diện và đồng bộ theme Firefox trên cả 3 cấu hình đường dẫn:
+1. `${XDG_CONFIG_HOME:-$HOME/.config}/mozilla/firefox` *(Debian / Mozilla APT hiện đại)*
+2. `$HOME/.mozilla/firefox` *(Debian ESR, Fedora, ...)*
+3. `$HOME/snap/firefox/common/.mozilla/firefox` *(Ubuntu Snap)*
+
+Nếu Firefox vừa cài đặt mà chưa từng mở lần nào, `install.sh` cũng sẽ tự động chạy tiến trình ngầm để khởi tạo profile chuẩn trước khi nạp giao diện Tahoe.
 
 ### Gỡ cài đặt
 

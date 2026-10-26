@@ -31,14 +31,14 @@ if [ -z "$shell_major" ] || [ "$shell_major" -lt 48 ]; then
     printf 'This installer requires GNOME Shell 48 or newer; detected %s.\n' "${shell_major:-unknown}" >&2
     exit 1
 fi
-for firefox_process in firefox firefox-bin; do
+for firefox_process in firefox firefox-bin firefox-esr; do
     if pgrep -u "$UID" -x "$firefox_process" >/dev/null 2>&1; then
         printf 'Force-closing Firefox before installing its profile theme...\n' >&2
         pkill -KILL -u "$UID" -x "$firefox_process" || true
     fi
 done
 sleep 1
-for firefox_process in firefox firefox-bin; do
+for firefox_process in firefox firefox-bin firefox-esr; do
     if pgrep -u "$UID" -x "$firefox_process" >/dev/null 2>&1; then
         printf 'Could not stop Firefox; close it manually and run the installer again.\n' >&2
         exit 1
@@ -265,10 +265,45 @@ cp "$ROOT_DIR/systemd/color-scheme-sync.service" "$HOME/.config/systemd/user/"
 systemctl --user daemon-reload
 systemctl --user enable --now color-scheme-sync.service
 
-for firefox_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla/firefox"; do
+# Khởi tạo profile mặc định nếu Firefox (DEB/APT) chưa từng mở trên Debian
+if [ -f /etc/debian_version ] || { command -v lsb_release >/dev/null 2>&1 && lsb_release -i | grep -qi debian; }; then
+    for ff_cmd in firefox firefox-esr; do
+        if command -v "$ff_cmd" >/dev/null 2>&1 && [ ! -d "$HOME/snap/firefox" ]; then
+            "$ff_cmd" --headless -screenshot /dev/null about:blank >/dev/null 2>&1 || true
+            break
+        fi
+    done
+fi
+
+for firefox_root in \
+    "${XDG_CONFIG_HOME:-$HOME/.config}/mozilla/firefox" \
+    "$HOME/.mozilla/firefox" \
+    "$HOME/snap/firefox/common/.mozilla/firefox"; do
     [ -d "$firefox_root" ] || continue
+
+    profile_dirs=()
+    if [ -f "$firefox_root/profiles.ini" ]; then
+        while IFS='=' read -r key val; do
+            [ "$key" = "Path" ] || continue
+            val="$(echo "$val" | tr -d '\r')"
+            case "$val" in
+                /*) p="$val" ;;
+                *)  p="$firefox_root/$val" ;;
+            esac
+            [ -d "$p" ] && profile_dirs+=("$p")
+        done < "$firefox_root/profiles.ini"
+    fi
     while IFS= read -r -d '' prefs; do
-        profile="${prefs%/prefs.js}"
+        profile_dirs+=("${prefs%/prefs.js}")
+    done < <(find "$firefox_root" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print0)
+
+    unset seen_profiles
+    declare -A seen_profiles=()
+    for profile in "${profile_dirs[@]}"; do
+        [ -n "$profile" ] && [ -d "$profile" ] || continue
+        [ -z "${seen_profiles["$profile"]:-}" ] || continue
+        seen_profiles["$profile"]=1
+
         chrome="$profile/chrome"
         if [ -d "$chrome" ] && [ ! -e "$profile/chrome.mactahoe-backup" ]; then
             cp -a "$chrome" "$profile/chrome.mactahoe-backup"
@@ -278,11 +313,15 @@ for firefox_root in "$HOME/snap/firefox/common/.mozilla/firefox" "$HOME/.mozilla
         cp "$ROOT_DIR/vendor/MacTahoe-gtk-theme/other/firefox/customChrome.css" \
             "$ROOT_DIR/vendor/MacTahoe-gtk-theme/other/firefox/userChrome.css" \
             "$ROOT_DIR/vendor/MacTahoe-gtk-theme/other/firefox/userContent.css" "$chrome/"
-        if [ -f "$profile/user.js" ]; then cp -n "$profile/user.js" "$profile/user.js.mactahoe-backup"; fi
+        if [ -f "$profile/user.js" ]; then
+            cp -n "$profile/user.js" "$profile/user.js.mactahoe-backup"
+        else
+            touch "$profile/user.js"
+        fi
         while IFS= read -r pref; do
             grep -Fqx "$pref" "$profile/user.js" || printf '%s\n' "$pref" >> "$profile/user.js"
         done < "$ROOT_DIR/config/firefox-user.js"
-    done < <(find "$firefox_root" -mindepth 2 -maxdepth 4 -type f -name prefs.js -print0)
+    done
 done
 
 if [ -d "$HOME/snap/firefox" ]; then
