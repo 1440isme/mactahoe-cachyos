@@ -37,6 +37,10 @@ apply() {
     fi
     write_ini "$HOME/.config/gtk-3.0/settings.ini" "$prefer" "$variant"
     write_ini "$HOME/.config/gtk-4.0/settings.ini" "$prefer" "$variant"
+    if [ -f "$HOME/.config/gtk-4.0/gtk-$variant.css" ]; then
+        ln -sfn "$HOME/.config/gtk-4.0/gtk-$variant.css" "$HOME/.config/gtk-4.0/gtk.css"
+        ln -sfn "$HOME/.config/gtk-4.0/gtk-$variant.css" "$HOME/.config/gtk-4.0/gtk-dark.css"
+    fi
 }
 
 apply
