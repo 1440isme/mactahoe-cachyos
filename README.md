@@ -57,31 +57,13 @@ cd "$HOME" && if [ -d mactahoe-ubuntu/.git ]; then git -C mactahoe-ubuntu pull -
 
 ### Cập nhật mã nguồn mới & Cài đặt lại (Update & Reinstall)
 
-Khi repo có bản cập nhật mới (như thêm tính năng cho thanh Dock, tiện ích Widgets, ứng dụng mới hoặc sửa lỗi), bạn có thể cập nhật và cài đặt lại bộ mã theo các cách sau:
-
-#### Cách 1: Chạy 1 lệnh nhanh (Khuyên dùng)
-Dán lệnh sau vào Terminal để tự động kéo code mới nhất từ GitHub và cài đặt lại ngay lập tức:
+Khi repo có bản cập nhật mới (như thêm tính năng cho thanh Dock, tiện ích Widgets, ứng dụng mới hoặc sửa lỗi), dán lệnh sau vào Terminal để tự động kéo code mới nhất từ GitHub và cài đặt lại ngay lập tức:
 
 ```bash
 cd "$HOME/mactahoe-ubuntu" && git pull && ./install.sh
 ```
 
-#### Cách 2: Thực hiện từng bước
-1. Mở Terminal và chuyển vào thư mục dự án:
-   ```bash
-   cd "$HOME/mactahoe-ubuntu"
-   ```
-2. Kéo toàn bộ mã nguồn cập nhật mới nhất từ GitHub:
-   ```bash
-   git pull
-   ```
-3. Chạy lại trình cài đặt để áp dụng các tiện ích, ứng dụng và cấu hình mới:
-   ```bash
-   ./install.sh
-   ```
-4. Đăng xuất (Log out) rồi Đăng nhập lại để GNOME nạp phiên bản mới của các tiện ích mở rộng.
-
-*(Nếu muốn cài lại từ đầu khi chưa có sẵn trong thư mục, chỉ cần chạy `./install.sh`).*
+Sau khi cài xong, đăng xuất (Log out) rồi đăng nhập lại để GNOME nạp phiên bản mới của các tiện ích mở rộng.
 
 ### Đồng bộ màn hình đăng nhập (GDM)
 
