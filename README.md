@@ -30,12 +30,15 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng đ
     <td><img src="assets/screenshots/mactahoe-icon-manager.png" alt="Ứng dụng thay thế icon MacTahoe cho các ứng dụng" width="100%"></td>
     <td><img src="assets/screenshots/mactahoe-app-themer.png" alt="Ứng dụng chỉnh giao diện Tahoe cho Firefox và Brave" width="100%"></td>
   </tr>
+  <tr>
+    <th align="center">Quản lý và tuỳ chỉnh tiện ích</th>
+    <th align="center">Trình duyệt hiển thị (Safari Tahoe & Brave)</th>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/mactahoe-extensions.png" alt="Quản lý và tuỳ chỉnh tiện ích mở rộng" width="100%"></td>
+    <td><img src="assets/screenshots/mactahoe-browsers.png" alt="Trình duyệt hiển thị giao diện macOS Tahoe" width="100%"></td>
+  </tr>
 </table>
-
-<p align="center">
-  <img src="assets/screenshots/mactahoe-extensions.png" alt="Quản lý và tuỳ chỉnh tiện ích mở rộng" width="85%"><br>
-  <em>Quản lý và tuỳ chỉnh tiện ích mở rộng độc quyền (UbuntuTahoe, UbuntuTahoeDock, UbuntuTahoeWidgets) trong Extension Manager</em>
-</p>
 
 ## Nội dung đã gom
 

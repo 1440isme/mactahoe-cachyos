@@ -2,7 +2,16 @@
 
 Ứng dụng đồ họa viết bằng Python + GTK4 / Libadwaita, dùng để áp dụng và đồng bộ giao diện macOS Tahoe cho các ứng dụng phổ biến như **Mozilla Firefox** và **Brave Browser**.
 
-<p align="center"><img src="../../assets/screenshots/mactahoe-app-themer.png" alt="Giao diện ứng dụng" width="90%"></p>
+<table>
+  <tr>
+    <th align="center">Bảng điều khiển ứng dụng</th>
+    <th align="center">Trình duyệt hiển thị thực tế</th>
+  </tr>
+  <tr>
+    <td><img src="../../assets/screenshots/mactahoe-app-themer.png" alt="Giao diện ứng dụng" width="100%"></td>
+    <td><img src="../../assets/screenshots/mactahoe-browsers.png" alt="Trình duyệt hiển thị" width="100%"></td>
+  </tr>
+</table>
 
 ## Chức năng
 
