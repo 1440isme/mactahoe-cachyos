@@ -45,19 +45,45 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng đ
 - Bộ cài cài hai ứng dụng vào menu GNOME, kèm icon và launcher; Âm lịch chạy offline, còn Nén ảnh xử lý tệp cục bộ bằng Pillow.
 - Extension được kiểm tra theo phiên bản GNOME Shell khai báo trong metadata và chỉ được bật cho lần đăng nhập tiếp theo. Bộ tiện ích độc quyền (**UbuntuTahoe**, **UbuntuTahoeDock**, **UbuntuTahoeWidgets**) tương thích toàn diện từ **GNOME Shell 45 đến 51+** (đã chuẩn hóa sang `Meta.CursorTracker` và `Clutter.Orientation`, loại bỏ hoàn toàn các API cũ như `pointerWatcher.js` và thuộc tính `vertical`).
 
-## Trạng thái
+## Cài đặt & Cập nhật
 
-Mở Terminal ở bất kỳ thư mục nào, dán nguyên lệnh này để tải/cập nhật repo rồi cài:
+### Cài đặt lần đầu (Tải & Cài tự động)
+
+Mở Terminal ở bất kỳ thư mục nào, dán nguyên lệnh này để tải repo rồi tự động cài đặt:
 
 ```bash
 cd "$HOME" && if [ -d mactahoe-ubuntu/.git ]; then git -C mactahoe-ubuntu pull --ff-only; else git clone https://github.com/adfoxtheme/mactahoe-ubuntu.git mactahoe-ubuntu; fi && cd "$HOME/mactahoe-ubuntu" && ./install.sh
 ```
 
-Nếu repo đã có trong `~/mactahoe-ubuntu` và chỉ muốn chạy lại cài đặt từ bất kỳ thư mục nào:
+### Cập nhật mã nguồn mới & Cài đặt lại (Update & Reinstall)
+
+Khi repo có bản cập nhật mới (như thêm tính năng cho thanh Dock, tiện ích Widgets, ứng dụng mới hoặc sửa lỗi), bạn có thể cập nhật và cài đặt lại bộ mã theo các cách sau:
+
+#### Cách 1: Chạy 1 lệnh nhanh (Khuyên dùng)
+Dán lệnh sau vào Terminal để tự động kéo code mới nhất từ GitHub và cài đặt lại ngay lập tức:
 
 ```bash
-cd "$HOME/mactahoe-ubuntu" && ./install.sh
+cd "$HOME/mactahoe-ubuntu" && git pull && ./install.sh
 ```
+
+#### Cách 2: Thực hiện từng bước
+1. Mở Terminal và chuyển vào thư mục dự án:
+   ```bash
+   cd "$HOME/mactahoe-ubuntu"
+   ```
+2. Kéo toàn bộ mã nguồn cập nhật mới nhất từ GitHub:
+   ```bash
+   git pull
+   ```
+3. Chạy lại trình cài đặt để áp dụng các tiện ích, ứng dụng và cấu hình mới:
+   ```bash
+   ./install.sh
+   ```
+4. Đăng xuất (Log out) rồi Đăng nhập lại để GNOME nạp phiên bản mới của các tiện ích mở rộng.
+
+*(Nếu muốn cài lại từ đầu khi chưa có sẵn trong thư mục, chỉ cần chạy `./install.sh`).*
+
+### Đồng bộ màn hình đăng nhập (GDM)
 
 Nếu muốn màn hình đăng nhập (login) cũng đồng bộ giao diện Ubuntu Tahoe thì chạy tiếp lệnh dưới:
 
