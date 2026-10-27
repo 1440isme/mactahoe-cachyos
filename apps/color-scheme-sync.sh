@@ -7,14 +7,15 @@ if [ -d "$USER_THEME_SCHEMA" ]; then
 fi
 
 write_ini() {
-    local file="$1" prefer="$2"
+    local file="$1" prefer="$2" variant="$3"
     mkdir -p "$(dirname "$file")"
     if [ -f "$file" ]; then
-        grep -v '^gtk-application-prefer-dark-theme' "$file" > "$file.tmp" || true
+        grep -v -E '^(gtk-application-prefer-dark-theme|gtk-theme-name)' "$file" > "$file.tmp" || true
         mv "$file.tmp" "$file"
     else
         printf '[Settings]\n' > "$file"
     fi
+    printf 'gtk-theme-name=MacTahoe-%s\n' "$variant" >> "$file"
     printf 'gtk-application-prefer-dark-theme=%s\n' "$prefer" >> "$file"
 }
 
@@ -34,8 +35,8 @@ apply() {
     if [ "$(gsettings get org.gnome.shell.extensions.user-theme name)" != "'MacTahoe-$variant'" ]; then
         gsettings set org.gnome.shell.extensions.user-theme name "MacTahoe-$variant"
     fi
-    write_ini "$HOME/.config/gtk-3.0/settings.ini" "$prefer"
-    write_ini "$HOME/.config/gtk-4.0/settings.ini" "$prefer"
+    write_ini "$HOME/.config/gtk-3.0/settings.ini" "$prefer" "$variant"
+    write_ini "$HOME/.config/gtk-4.0/settings.ini" "$prefer" "$variant"
 }
 
 apply
