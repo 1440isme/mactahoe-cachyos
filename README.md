@@ -104,7 +104,7 @@ Toàn bộ widget desktop được quản lý tập trung và trực quan ngay t
   - **Bật / Tắt từng widget:** Có công tắc bật/tắt độc lập cho từng widget:
     - *Đồng hồ lớn (Clock):* Đồng hồ số viền kính phong cách macOS Tahoe đặt bên trái.
     - *Thời tiết (Weather):* Thông tin thời tiết chi tiết, nhiệt độ, độ ẩm và gió.
-    - *Giám sát hệ thống (System Metrics):* Trực quan hóa tải CPU, GPU, RAM, ổ cứng SSD và tốc độ mạng.
+    - *Giám sát hệ thống (System Metrics):* Trực quan hóa tải CPU (tự động nhận diện tên chip), GPU (tự động nhận diện card rời NVIDIA & AMD Radeon RX, tự động ẩn gọn gàng khi chỉ dùng card onboard iGPU), RAM, ổ cứng SSD và tốc độ mạng.
     - *Âm lịch Việt Nam (Lunar Calendar):* Lịch âm truyền thống Việt Nam.
     - *Nhắc nhở nghỉ ngơi (Rest Reminder):* Theo dõi thời gian làm việc và nhắc nhở nghỉ ngơi.
     *(Khi tắt một widget bên phải, các widget còn lại sẽ tự động dồn lên, không để lại khoảng trống trên màn hình).*
