@@ -12,6 +12,7 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng t�
 > - **Ubuntu 26.04** (GNOME 48 trở lên)
 > - **Debian 13 (Trixie)** (GNOME 48 trở lên)
 > - **Fedora 40, 41, 42+** (GNOME 48 trở lên)
+> - **CachyOS GNOME / Arch Linux** (GNOME 48 trở lên)
 
 ## Hình ảnh
 
@@ -19,8 +20,28 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng t�
 
 <table>
   <tr>
+    <th align="center">GNOME Overview</th>
+    <th align="center">Cài đặt hệ thống & Trình quản lý tệp</th>
+  </tr>
+  <tr>
     <td><img src="assets/screenshots/mactahoe-overview.png" alt="GNOME Overview với giao diện MacTahoe" width="100%"></td>
     <td><img src="assets/screenshots/mactahoe-settings.png" alt="GNOME Settings và Files theo giao diện MacTahoe" width="100%"></td>
+  </tr>
+  <tr>
+    <th align="center">Quản lý icon MacTahoe</th>
+    <th align="center">Giao diện ứng dụng (Firefox & Brave)</th>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/mactahoe-icon-manager.png" alt="Ứng dụng thay thế icon MacTahoe cho các ứng dụng" width="100%"></td>
+    <td><img src="assets/screenshots/mactahoe-app-themer.png" alt="Ứng dụng chỉnh giao diện Tahoe cho Firefox và Brave" width="100%"></td>
+  </tr>
+  <tr>
+    <th align="center">Quản lý và tuỳ chỉnh tiện ích</th>
+    <th align="center">Trình duyệt hiển thị (Safari Tahoe & Brave)</th>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/mactahoe-extensions.png" alt="Quản lý và tuỳ chỉnh tiện ích mở rộng" width="100%"></td>
+    <td><img src="assets/screenshots/mactahoe-browsers.png" alt="Trình duyệt hiển thị giao diện macOS Tahoe" width="100%"></td>
   </tr>
 </table>
 
@@ -30,7 +51,7 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng t�
 - `assets/fonts/SF-Pro/` và `assets/fonts/SF-Mono/`: font đang dùng.
 - `assets/wallpapers/`: wallpaper ngày và đêm.
 - `assets/screenshots/`: ảnh giới thiệu desktop, Overview và giao diện ứng dụng.
-- `apps/`: trình quản lý icon MacTahoe, cùng mã nguồn và test cho **Âm lịch Việt Nam** (`apps/am-lich-viet-nam/`) và **Nén ảnh** (`apps/image-compressor/`).
+- `apps/`: trình quản lý icon MacTahoe, cùng mã nguồn và test cho **Âm lịch Việt Nam** (`apps/am-lich-viet-nam/`), **Nén ảnh** (`apps/image-compressor/`) và **Giao diện ứng dụng** (`apps/mactahoe-app-themer/`).
 - `desktop/`: launcher ứng dụng.
 - `vendor/gnome-extensions/`: các tiện ích độc quyền gồm giao diện hợp nhất **UbuntuTahoe**, thanh dock macOS **UbuntuTahoeDock** (có sẵn icon Launchpad) và bộ widget desktop Native **UbuntuTahoeWidgets** (thay thế hoàn toàn Conky, tích hợp OpenWeather).
 - `docs/extension-settings/current-gnome-extensions.md`: các extension đang bật và cấu hình Blur/My Shell, Global Menu trên máy.
@@ -47,21 +68,30 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng t�
 - **UbuntuTahoeDock** là tiện ích Dock độc quyền chuẩn phong cách macOS Tahoe (nổi ở đáy màn hình, bo cong kính mờ, đèn báo 1 chấm tròn DOT, tự ẩn thông minh, có thanh trượt chỉnh kích thước icon). Nhờ có UbuntuTahoeDock, bộ giao diện hoàn toàn độc lập và không phụ thuộc vào Ubuntu Dock của hệ thống, tương thích mượt mà trên mọi bản phân phối Linux dùng GNOME.
 - GNOME Tweaks và Extension Manager là ứng dụng quản lý tùy chọn/extension, không phải thành phần tạo giao diện. Trình quản lý icon MacTahoe, launcher widget, **Âm lịch Việt Nam** và **Nén ảnh** được đóng gói trong repo.
 - Bộ cài cài hai ứng dụng vào menu GNOME, kèm icon và launcher; Âm lịch chạy offline, còn Nén ảnh xử lý tệp cục bộ bằng Pillow.
-- Extension được kiểm tra theo phiên bản GNOME Shell khai báo trong metadata và chỉ được bật cho lần đăng nhập tiếp theo.
+- Extension được kiểm tra theo phiên bản GNOME Shell khai báo trong metadata và chỉ được bật cho lần đăng nhập tiếp theo. Bộ tiện ích độc quyền (**UbuntuTahoe**, **UbuntuTahoeDock**, **UbuntuTahoeWidgets**) tương thích toàn diện từ **GNOME Shell 45 đến 51+** (đã chuẩn hóa sang `Meta.CursorTracker` và `Clutter.Orientation`, loại bỏ hoàn toàn các API cũ như `pointerWatcher.js` và thuộc tính `vertical`).
 
-## Cài đặt nhanh
+## Cài đặt & Cập nhật
 
-Mở Terminal ở bất kỳ thư mục nào, dán nguyên lệnh này để tải/cập nhật repo rồi cài:
+### Cài đặt lần đầu (Tải & Cài tự động)
+
+Mở Terminal ở bất kỳ thư mục nào, dán nguyên lệnh này để tải repo rồi tự động cài đặt:
 
 ```bash
 cd "$HOME" && if [ -d mactahoe-cachyos/.git ]; then git -C mactahoe-cachyos pull --ff-only; else git clone -b cachyos-support https://github.com/1440isme/mactahoe-cachyos.git mactahoe-cachyos; fi && cd "$HOME/mactahoe-cachyos" && ./install.sh
 ```
 
-Nếu repo đã có trong `~/mactahoe-cachyos` (hoặc `~/mactahoe-ubuntu`) và chỉ muốn chạy lại cài đặt từ bất kỳ thư mục nào:
+### Cập nhật mã nguồn mới & Cài đặt lại (Update & Reinstall)
+
+Khi repo có bản cập nhật mới (như thêm tính năng cho thanh Dock, tiện ích Widgets, ứng dụng mới hoặc sửa lỗi), dán lệnh sau vào Terminal để tự động kéo code mới nhất từ GitHub và cài đặt lại ngay lập tức:
 
 ```bash
-cd "$HOME/mactahoe-cachyos" 2>/dev/null || cd "$HOME/mactahoe-ubuntu" && ./install.sh
+(cd "$HOME/mactahoe-cachyos" 2>/dev/null || cd "$HOME/mactahoe-ubuntu") && git pull && ./install.sh
 ```
+```
+
+Sau khi cài xong, đăng xuất (Log out) rồi đăng nhập lại để GNOME nạp phiên bản mới của các tiện ích mở rộng.
+
+### Đồng bộ màn hình đăng nhập (GDM)
 
 Nếu muốn màn hình đăng nhập (login) cũng đồng bộ giao diện Ubuntu Tahoe thì chạy tiếp lệnh dưới:
 
@@ -90,45 +120,48 @@ Bộ widget desktop được tích hợp trực tiếp qua tiện ích mở rộ
 1. Chờ Terminal báo `Installed`, sau đó đăng xuất rồi đăng nhập lại để GNOME nạp theme và các extension. Sau khi cài riêng GDM bằng `install-gdm.sh`, khởi động lại máy.
 2. Mở **Tiện ích mở rộng (Extension Manager)**, bật tiện ích **UbuntuTahoeWidgets** để hiển thị bộ widget desktop và vào phần Cài đặt để tùy chỉnh theo ý muốn.
 3. Mở **Quản lý icon MacTahoe** trong danh sách ứng dụng để chọn icon riêng cho ứng dụng. Font, con trỏ, bộ icon/theme tổng thể và tiện ích **UbuntuTahoe**, **UbuntuTahoeDock** đã được tự động cài đặt và kích hoạt sẵn trọn bộ giao diện macOS Tahoe.
-4. **Âm lịch Việt Nam** và **Nén ảnh** được cài thành ứng dụng riêng, có thể mở từ danh sách ứng dụng GNOME hoặc chạy `am-lich-viet-nam` và `image-compressor` trong Terminal.
+4. **Âm lịch Việt Nam**, **Nén ảnh** và **Giao diện ứng dụng** được cài thành các ứng dụng riêng, có thể mở từ danh sách ứng dụng GNOME hoặc chạy `am-lich-viet-nam`, `image-compressor`, `mactahoe-app-themer` trong Terminal.
 5. Nếu không thấy thay đổi, kiểm tra Terminal đã hiện thông báo `Installed` chưa; nếu có, thử đăng xuất/đăng nhập lại một lần nữa.
 
-### Tùy chỉnh Widget Desktop (UbuntuTahoeWidgets)
+### Quản lý và tuỳ chỉnh tiện ích mở rộng
 
-Toàn bộ widget desktop được quản lý tập trung và trực quan ngay trong phần Cài đặt của tiện ích mở rộng **UbuntuTahoeWidgets**:
+Người dùng có thể quản lý và tùy chỉnh các tiện ích mở rộng độc quyền của bộ giao diện ngay trong ứng dụng **Trình quản lý tiện ích (Extension Manager)** hoặc **Tiện ích (Extensions)**:
 
-- **Cách mở bảng tùy chỉnh:**
-  - **Cách 1 (Giao diện):** Mở ứng dụng **Trình quản lý tiện ích (Extension Manager)** hoặc **Tiện ích (Extensions)** từ danh sách ứng dụng > tìm tiện ích **UbuntuTahoeWidgets** > bấm vào nút **Bánh răng (Cài đặt)**.
-  - **Cách 2 (Terminal):** Mở Terminal và chạy lệnh:
-    ```bash
-    gnome-extensions prefs UbuntuTahoeWidgets@adfoxtheme.github.io
-    ```
+#### 1. Thanh Dock macOS (UbuntuTahoeDock)
+Bấm vào nút **Bánh răng (Cài đặt)** cạnh `UbuntuTahoeDock` (hoặc chạy lệnh: `gnome-extensions prefs UbuntuTahoeDock@adfoxtheme.github.io`):
+- **Hành vi thanh Dock:**
+  - *Ẩn khi ứng dụng full:* Tự động ẩn thông minh khi cửa sổ phóng to tối đa hoặc toàn màn hình.
+  - *Luôn ẩn:* Luôn ẩn dưới mép màn hình, chỉ xuất hiện khi rê chuột tới.
+  - *Luôn hiển thị:* Dock nổi cố định trên ứng dụng chuẩn macOS, không làm co cửa sổ và không chừa khoảng trống bên dưới.
+- **Kích thước Dock:** Thanh trượt điều chỉnh kích thước biểu tượng Dock (mặc định chuẩn 45px).
 
-- **Các tính năng có thể tùy chỉnh:**
-  - **Bật / Tắt từng widget:** Có công tắc bật/tắt độc lập cho từng widget:
-    - *Đồng hồ lớn (Clock):* Đồng hồ số viền kính phong cách macOS Tahoe đặt bên trái.
-    - *Thời tiết (Weather):* Thông tin thời tiết chi tiết, nhiệt độ, độ ẩm và gió.
-    - *Giám sát hệ thống (System Metrics):* Trực quan hóa tải CPU, GPU, RAM, ổ cứng SSD và tốc độ mạng.
-    - *Âm lịch Việt Nam (Lunar Calendar):* Lịch âm truyền thống Việt Nam.
-    - *Nhắc nhở nghỉ ngơi (Rest Reminder):* Theo dõi thời gian làm việc và nhắc nhở nghỉ ngơi.
-    *(Khi tắt một widget bên phải, các widget còn lại sẽ tự động dồn lên, không để lại khoảng trống trên màn hình).*
-  - **Cấu hình thời tiết OpenWeather:**
-    - Nhập **API Key OpenWeather** cá nhân (nếu để trống, tiện ích sẽ tự động dùng nguồn dữ liệu Open-Meteo miễn phí).
-    - Đặt **Tên thành phố** (ví dụ: `Hà Nội`, `Hồ Chí Minh`, `Đà Nẵng`...).
-    - Điều chỉnh chu kỳ làm mới dữ liệu (mặc định 15 phút).
-  - **Căn chỉnh vị trí & lề màn hình:**
-    - Tùy chỉnh khoảng cách lề trái và lề trên của Đồng hồ lớn.
-    - Tùy chỉnh khoảng cách lề phải và lề trên của Cụm widget để vừa vặn hoàn hảo với mọi độ phân giải màn hình.
+#### 2. Widget Desktop (UbuntuTahoeWidgets)
+Bấm vào nút **Bánh răng (Cài đặt)** cạnh `UbuntuTahoeWidgets` (hoặc chạy lệnh: `gnome-extensions prefs UbuntuTahoeWidgets@adfoxtheme.github.io`):
+- **Bật / Tắt từng widget:** Có công tắc độc lập cho từng widget:
+  - *Đồng hồ lớn (Clock):* Đồng hồ số viền kính phong cách macOS Tahoe đặt bên trái.
+  - *Thời tiết (Weather):* Thông tin thời tiết chi tiết, nhiệt độ, độ ẩm và gió.
+  - *Giám sát hệ thống (System Metrics):* Trực quan hóa tải CPU (tự động nhận diện tên chip), GPU (tự động nhận diện card rời NVIDIA & AMD Radeon RX, tự động ẩn gọn gàng khi chỉ dùng card onboard iGPU), RAM, ổ cứng SSD và tốc độ mạng.
+  - *Âm lịch Việt Nam (Lunar Calendar):* Lịch âm truyền thống Việt Nam.
+  - *Nhắc nhở nghỉ ngơi (Rest Reminder):* Theo dõi thời gian làm việc và nhắc nhở nghỉ ngơi.
+  *(Khi tắt một widget bên phải, các widget còn lại sẽ tự động dồn lên, không để lại khoảng trống trên màn hình).*
+- **Cấu hình thời tiết OpenWeather:**
+  - Nhập **API Key OpenWeather** cá nhân (nếu để trống, tiện ích sẽ tự động dùng nguồn dữ liệu Open-Meteo miễn phí).
+  - Đặt **Tên thành phố** (ví dụ: `Hà Nội`, `Hồ Chí Minh`, `Đà Nẵng`...).
+  - Điều chỉnh chu kỳ làm mới dữ liệu (mặc định 15 phút).
+- **Căn chỉnh vị trí & lề màn hình:**
+  - Tùy chỉnh khoảng cách lề trái và lề trên của Đồng hồ lớn.
+  - Tùy chỉnh khoảng cách lề phải và lề trên của Cụm widget để vừa vặn hoàn hảo với mọi độ phân giải màn hình.
 
-### Hỗ trợ & Kiểm thử trên Ubuntu 26.04, Debian 13 & Fedora
+### Hỗ trợ & Kiểm thử trên Ubuntu 26.04, Debian 13, Fedora & CachyOS (Arch)
 
 Repo được hỗ trợ đầy đủ và kiểm thử thực tế (tested) thành công trên:
 - **Ubuntu 26.04 LTS** (APT, Snap Firefox, Yaru GDM)
 - **Debian 13 (Trixie)** (APT, Mozilla APT / ESR Firefox, Adwaita GDM)
 - **Fedora 40, 41, 42+** (DNF, RPM / Flatpak Firefox, Adwaita GDM + SELinux)
+- **CachyOS GNOME / Arch Linux** (Pacman, Native / Flatpak Firefox, Adwaita GDM)
 với môi trường GNOME 48 trở lên.
 
-Bộ cài tự động phát hiện trình quản lý gói phù hợp (`dnf` trên Fedora, `apt-get` trên Ubuntu/Debian) và cài đặt đúng các gói tương thích.
+Bộ cài tự động phát hiện trình quản lý gói phù hợp (`pacman` trên CachyOS/Arch, `dnf` trên Fedora, `apt-get` trên Ubuntu/Debian) và cài đặt đúng các gói tương thích.
 
 Trên Debian, để có trải nghiệm giao diện Firefox chuẩn Safari/macOS Tahoe đẹp nhất, khuyến nghị cài đặt Firefox bản mới nhất từ kho chính thức của Mozilla (Mozilla APT) thay vì dùng bản Firefox ESR cũ:
 
@@ -162,7 +195,7 @@ cd "$HOME/mactahoe-ubuntu" && ./uninstall.sh
 
 Chạy bằng tài khoản thường, không thêm `sudo`; trình gỡ sẽ hỏi xác nhận trước khi khôi phục bản sao cấu hình GNOME. Nếu đã cài theme màn hình đăng nhập, lệnh này cũng sẽ yêu cầu mật khẩu sudo để khôi phục. Các gói hệ thống được giữ lại.
 
-Bộ cài (cả `install.sh` và `install-gdm.sh`) đã được kiểm thử và hỗ trợ đầy đủ trên **Ubuntu 26.04**, **Debian 13** và **Fedora** (GNOME 48 trở lên). Bộ cài GDM kiểm tra dịch vụ GDM đang có (`gdm` trên Fedora, `gdm3` trên Ubuntu/Debian), tự động nhận diện gói và resource phù hợp cho từng hệ thống (Yaru trên Ubuntu hoặc Adwaita trên Debian/Fedora) trước khi áp dụng giao diện Tahoe. Trên Fedora, script tự động phục hồi context bảo mật SELinux (`restorecon`) sau khi cập nhật resource GDM để đăng nhập luôn an toàn và ổn định. Bước này thay đổi resource màn hình đăng nhập hệ thống; chạy riêng và reboot sau khi cài.
+Bộ cài (cả `install.sh` và `install-gdm.sh`) đã được kiểm thử và hỗ trợ đầy đủ trên **Ubuntu 26.04**, **Debian 13**, **Fedora** và **CachyOS / Arch Linux** (GNOME 48 trở lên). Bộ cài GDM kiểm tra dịch vụ GDM đang có (`gdm` trên CachyOS/Arch/Fedora, `gdm3` trên Ubuntu/Debian), tự động nhận diện gói và resource phù hợp cho từng hệ thống (Yaru trên Ubuntu hoặc Adwaita trên Debian/Fedora/CachyOS) trước khi áp dụng giao diện Tahoe. Trên Fedora, script tự động phục hồi context bảo mật SELinux (`restorecon`) sau khi cập nhật resource GDM để đăng nhập luôn an toàn và ổn định. Bước này thay đổi resource màn hình đăng nhập hệ thống; chạy riêng và reboot sau khi cài.
 
 ## Nguồn và phiên bản theme
 

@@ -107,10 +107,9 @@ class WindowPreviewList extends PopupMenu.PopupMenuSection {
 
         const position = Utils.getPosition();
         this.isHorizontal = position === St.Side.BOTTOM || position === St.Side.TOP;
-        if (typeof this.box.set_orientation === 'function')
-            this.box.set_orientation(!this.isHorizontal ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL);
-        else if (typeof this.box.set_vertical === 'function')
-            this.box.set_vertical(!this.isHorizontal);
+        this.box.set_vertical?.(!this.isHorizontal);
+        this.box.set_orientation?.(this.isHorizontal
+            ? Clutter.Orientation.HORIZONTAL : Clutter.Orientation.VERTICAL);
         this.box.set_name('dashtodockWindowList');
         Utils.addActor(this.actor, this.box);
         this.actor._delegate = this;

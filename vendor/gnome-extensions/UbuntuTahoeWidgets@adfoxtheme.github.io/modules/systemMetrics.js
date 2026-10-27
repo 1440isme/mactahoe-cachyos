@@ -4,7 +4,17 @@ import Gio from 'gi://Gio';
 let prevCpu = null;
 let prevNet = null;
 let cpuModelCache = null;
-let gpuInfoCache = { util: 0, temp: null, used: 0, total: 0, model: 'GTX 960' };
+let gpuType = null;
+let amdPath = null;
+let gpuModelName = null;
+let gpuInfoCache = {
+    hasGpu: false,
+    util: 0,
+    temp: null,
+    used: 0,
+    total: 0,
+    model: '',
+};
 
 function readFile(path) {
     try {
@@ -154,7 +164,119 @@ function readNet() {
     };
 }
 
-function updateGpuAsync() {
+function getAmdModel() {
+    if (gpuModelName) return gpuModelName;
+    try {
+        const [ok, stdout] = GLib.spawn_command_line_sync('lspci');
+        if (ok && stdout) {
+            const text = new TextDecoder().decode(stdout);
+            for (const line of text.split('\n')) {
+                if (/vga|3d|display/i.test(line) && /amd|radeon|advanced micro/i.test(line)) {
+                    const bracketMatch = line.match(/\[(.*?)\]/g);
+                    if (bracketMatch && bracketMatch.length > 0) {
+                        for (const b of bracketMatch) {
+                            const inner = b.slice(1, -1).trim();
+                            if (/radeon/i.test(inner)) {
+                                gpuModelName = inner.replace(/^Radeon\s+/i, 'RX ').replace(/Radeon\s+/i, '').trim();
+                                return gpuModelName;
+                            }
+                        }
+                    }
+                    const afterColon = line.split(':').slice(2).join(':').trim();
+                    if (afterColon) {
+                        gpuModelName = afterColon
+                            .replace(/Advanced Micro Devices, Inc\.\s*/i, '')
+                            .replace(/\[AMD\/ATI\]\s*/i, '')
+                            .replace(/\s*\(rev.*$/, '')
+                            .trim();
+                        return gpuModelName;
+                    }
+                }
+            }
+        }
+    } catch (e) {}
+    gpuModelName = 'Radeon GPU';
+    return gpuModelName;
+}
+
+function getAmdTemp(basePath) {
+    try {
+        const hwmonDir = Gio.File.new_for_path(`${basePath}/hwmon`);
+        const iter = hwmonDir.enumerate_children('standard::name', Gio.FileQueryInfoFlags.NONE, null);
+        let info;
+        while ((info = iter.next_file(null)) !== null) {
+            const name = info.get_name();
+            const tempRaw = readFile(`${basePath}/hwmon/${name}/temp1_input`).trim();
+            if (tempRaw) {
+                const val = parseInt(tempRaw, 10);
+                if (!isNaN(val)) return Math.round(val / 1000);
+            }
+        }
+    } catch (e) {}
+    return null;
+}
+
+function detectGpuDevice() {
+    if (gpuType !== null) return;
+
+    // 1. Check for NVIDIA discrete GPU
+    if (GLib.find_program_in_path('nvidia-smi')) {
+        gpuType = 'nvidia';
+        gpuInfoCache.hasGpu = true;
+        return;
+    }
+
+    // 2. Check for AMD discrete GPU via sysfs (/sys/class/drm/card*/device)
+    for (let i = 0; i < 8; i++) {
+        const base = `/sys/class/drm/card${i}/device`;
+        const vendor = readFile(`${base}/vendor`).trim().toLowerCase();
+        if (vendor === '0x1002') {
+            const vramRaw = readFile(`${base}/mem_info_vram_total`).trim();
+            const vramBytes = parseInt(vramRaw, 10) || 0;
+            // Discrete AMD GPUs have dedicated VRAM >= 1GB (1073741824 bytes)
+            // Integrated APU graphics have 0 or <= 512MB
+            if (vramBytes >= 1024 * 1024 * 1024) {
+                gpuType = 'amd';
+                amdPath = base;
+                gpuInfoCache.hasGpu = true;
+                gpuInfoCache.total = Math.round(vramBytes / (1024 * 1024));
+                gpuInfoCache.model = getAmdModel();
+                return;
+            }
+        }
+    }
+
+    // 3. No discrete GPU found (onboard Intel/AMD APU or virtual GPU)
+    gpuType = 'none';
+    gpuInfoCache.hasGpu = false;
+}
+
+function updateAmdGpu() {
+    if (!amdPath) return;
+    try {
+        const busyRaw = readFile(`${amdPath}/gpu_busy_percent`).trim();
+        const util = parseInt(busyRaw, 10);
+        if (!isNaN(util)) gpuInfoCache.util = Math.max(0, Math.min(100, util));
+
+        const usedRaw = readFile(`${amdPath}/mem_info_vram_used`).trim();
+        const usedBytes = parseInt(usedRaw, 10);
+        if (!isNaN(usedBytes)) {
+            gpuInfoCache.used = Math.round(usedBytes / (1024 * 1024));
+        }
+
+        if (!gpuInfoCache.total) {
+            const totalRaw = readFile(`${amdPath}/mem_info_vram_total`).trim();
+            const totalBytes = parseInt(totalRaw, 10);
+            if (!isNaN(totalBytes)) {
+                gpuInfoCache.total = Math.round(totalBytes / (1024 * 1024));
+            }
+        }
+
+        gpuInfoCache.temp = getAmdTemp(amdPath);
+    } catch (e) {}
+}
+
+function updateNvidiaGpuAsync() {
     if (!GLib.find_program_in_path('nvidia-smi')) return;
     try {
         const proc = Gio.Subprocess.new(
@@ -168,6 +290,7 @@ function updateGpuAsync() {
                     const parts = stdout.trim().split(',').map(s => s.trim());
                     if (parts.length >= 4) {
                         gpuInfoCache = {
+                            hasGpu: true,
                             util: parseInt(parts[0], 10) || 0,
                             used: parseInt(parts[1], 10) || 0,
                             total: parseInt(parts[2], 10) || 0,
@@ -182,6 +305,15 @@ function updateGpuAsync() {
         });
     } catch (e) {
         // ignore
+    }
+}
+
+function updateGpu() {
+    detectGpuDevice();
+    if (gpuType === 'nvidia') {
+        updateNvidiaGpuAsync();
+    } else if (gpuType === 'amd') {
+        updateAmdGpu();
     }
 }
 
@@ -200,7 +332,7 @@ export function readSystemMetrics() {
     const disk = readDisk();
     const net = readNet();
 
-    updateGpuAsync();
+    updateGpu();
 
     return {
         uptime: uptimeText,

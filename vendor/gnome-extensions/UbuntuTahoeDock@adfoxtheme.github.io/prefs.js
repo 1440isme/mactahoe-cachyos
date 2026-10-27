@@ -13,6 +13,89 @@ export default class UbuntuTahoeDockPreferences extends ExtensionPreferences {
         });
         window.add(page);
 
+        // Group 1: Chế độ hiển thị & Ẩn hiện
+        const behaviorGroup = new Adw.PreferencesGroup({
+            title: 'Chế độ hiển thị Dock',
+            description: 'Tùy chỉnh hành vi ẩn hoặc giữ cố định thanh Dock trên màn hình',
+        });
+        page.add(behaviorGroup);
+
+        const hideModeModel = new Gtk.StringList({
+            strings: [
+                'Ẩn khi ứng dụng full',
+                'Luôn ẩn',
+                'Luôn hiển thị',
+            ],
+        });
+
+        const hideModeRow = new Adw.ComboRow({
+            title: 'Hành vi thanh Dock',
+            subtitle: 'Chọn cách thanh Dock xuất hiện khi làm việc với cửa sổ',
+            model: hideModeModel,
+        });
+        behaviorGroup.add(hideModeRow);
+
+        const getActiveModeIndex = () => {
+            const dockFixed = settings.get_boolean('dock-fixed');
+            const autohide = settings.get_boolean('autohide');
+            const intellihide = settings.get_boolean('intellihide');
+            const intellihideMode = settings.get_enum('intellihide-mode');
+
+            if (dockFixed || (intellihide && intellihideMode === 3)) {
+                return 2; // Luôn hiển thị (Nổi trên ứng dụng)
+            } else if (autohide && intellihide) {
+                return 0; // Ẩn khi ứng dụng full
+            } else if (autohide && !intellihide) {
+                return 1; // Luôn ẩn
+            } else {
+                return 0;
+            }
+        };
+
+        const applyModeIndex = index => {
+            if (index === 0) {
+                // Ẩn khi ứng dụng full
+                settings.set_boolean('dock-fixed', false);
+                settings.set_boolean('autohide', true);
+                settings.set_boolean('intellihide', true);
+                settings.set_enum('intellihide-mode', 2); // MAXIMIZED_WINDOWS
+            } else if (index === 1) {
+                // Luôn ẩn
+                settings.set_boolean('dock-fixed', false);
+                settings.set_boolean('autohide', true);
+                settings.set_boolean('intellihide', false);
+            } else if (index === 2) {
+                // Luôn hiển thị nổi trên ứng dụng (không làm co cửa sổ hay để khoảng trống bên dưới)
+                settings.set_boolean('dock-fixed', false);
+                settings.set_boolean('autohide', true);
+                settings.set_boolean('intellihide', true);
+                settings.set_enum('intellihide-mode', 3); // ALWAYS_ON_TOP
+            }
+        };
+
+        let updating = false;
+        hideModeRow.selected = getActiveModeIndex();
+
+        hideModeRow.connect('notify::selected', () => {
+            if (updating) return;
+            updating = true;
+            applyModeIndex(hideModeRow.selected);
+            updating = false;
+        });
+
+        const updateRow = () => {
+            if (updating) return;
+            updating = true;
+            hideModeRow.selected = getActiveModeIndex();
+            updating = false;
+        };
+
+        settings.connect('changed::dock-fixed', updateRow);
+        settings.connect('changed::autohide', updateRow);
+        settings.connect('changed::intellihide', updateRow);
+        settings.connect('changed::intellihide-mode', updateRow);
+
+        // Group 2: Kích thước Dock
         const group = new Adw.PreferencesGroup({
             title: 'Kích thước Dock',
             description: 'Kéo thanh trượt qua lại để tùy chỉnh độ lớn biểu tượng trên thanh Dock',

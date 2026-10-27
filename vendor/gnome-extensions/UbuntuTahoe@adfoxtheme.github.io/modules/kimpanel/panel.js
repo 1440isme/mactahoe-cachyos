@@ -41,9 +41,9 @@ export class InputPanel extends GObject.Object {
         this.panel.bin.set_child(this.layout);
 
         this.upperLayout = new St.BoxLayout();
-        this.lookupTableLayout = new St.BoxLayout({
-            orientation: this.kimpanel.isLookupTableVertical() ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL,
-        });
+        this.lookupTableLayout = new St.BoxLayout(
+            {orientation : this.kimpanel.isLookupTableVertical()
+                ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL});
 
         this.layout.add_child(this.upperLayout);
 
@@ -171,10 +171,9 @@ export class InputPanel extends GObject.Object {
         }
     }
     setVertical(vertical) {
-        if (typeof this.lookupTableLayout.set_orientation === 'function')
-            this.lookupTableLayout.set_orientation(vertical ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL);
-        else if (typeof this.lookupTableLayout.set_vertical === 'function')
-            this.lookupTableLayout.set_vertical(vertical);
+        this.lookupTableLayout.set_vertical?.(vertical);
+        this.lookupTableLayout.set_orientation?.(vertical
+            ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL);
     }
     updateFont(textStyle) {
         this.text_style = textStyle;
