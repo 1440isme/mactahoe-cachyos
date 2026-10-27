@@ -175,14 +175,18 @@ backup_item() {
 for relative in \
     .local/bin/mactahoe-icon-manager \
     .local/bin/am-lich-viet-nam .local/bin/image-compressor \
+    .local/bin/mactahoe-app-themer \
     .local/bin/color-scheme-sync.sh .local/share/fonts/MacTahoe \
     .local/share/applications/mactahoe-icon-manager.desktop \
     .local/share/applications/vn.ihoan.AmLich.desktop \
     .local/share/applications/vn.ihoan.ImageCompressor.desktop \
+    .local/share/applications/io.github.adfoxtheme.MacTahoeAppThemer.desktop \
     .local/share/mactahoe-apps/am-lich-viet-nam \
     .local/share/mactahoe-apps/image-compressor \
+    .local/share/mactahoe-apps/mactahoe-app-themer \
     .local/share/icons/hicolor/scalable/apps/vn.ihoan.AmLich.svg \
     .local/share/icons/hicolor/scalable/apps/vn.ihoan.ImageCompressor.svg \
+    .local/share/icons/hicolor/scalable/apps/io.github.adfoxtheme.MacTahoeAppThemer.svg \
     .config/systemd/user/color-scheme-sync.service \
     Pictures/Wallpapers/MacTahoe; do
     backup_item "$relative"
@@ -211,19 +215,26 @@ cp -a "$ROOT_DIR/assets/wallpapers/." "$HOME/Pictures/Wallpapers/MacTahoe/"
 cp "$ROOT_DIR/apps/mactahoe-icon-manager" \
     "$ROOT_DIR/apps/color-scheme-sync.sh" "$HOME/.local/bin/"
 cp "$ROOT_DIR/apps/launchers/am-lich-viet-nam" \
-    "$ROOT_DIR/apps/launchers/image-compressor" "$HOME/.local/bin/"
+    "$ROOT_DIR/apps/launchers/image-compressor" \
+    "$ROOT_DIR/apps/launchers/mactahoe-app-themer" "$HOME/.local/bin/"
 chmod +x "$HOME/.local/bin/mactahoe-icon-manager" \
     "$HOME/.local/bin/am-lich-viet-nam" "$HOME/.local/bin/image-compressor" \
+    "$HOME/.local/bin/mactahoe-app-themer" \
     "$HOME/.local/bin/color-scheme-sync.sh"
 mkdir -p "$HOME/.local/share/mactahoe-apps/am-lich-viet-nam" \
-    "$HOME/.local/share/mactahoe-apps/image-compressor"
+    "$HOME/.local/share/mactahoe-apps/image-compressor" \
+    "$HOME/.local/share/mactahoe-apps/mactahoe-app-themer"
 cp -a "$ROOT_DIR/apps/am-lich-viet-nam/." \
     "$HOME/.local/share/mactahoe-apps/am-lich-viet-nam/"
 cp -a "$ROOT_DIR/apps/image-compressor/." \
     "$HOME/.local/share/mactahoe-apps/image-compressor/"
+cp -a "$ROOT_DIR/apps/mactahoe-app-themer/." \
+    "$HOME/.local/share/mactahoe-apps/mactahoe-app-themer/"
 cp "$ROOT_DIR/apps/am-lich-viet-nam/assets/vn.ihoan.AmLich.svg" \
     "$HOME/.local/share/icons/hicolor/scalable/apps/"
 cp "$ROOT_DIR/apps/image-compressor/assets/vn.ihoan.ImageCompressor.svg" \
+    "$HOME/.local/share/icons/hicolor/scalable/apps/"
+cp "$ROOT_DIR/apps/mactahoe-app-themer/assets/io.github.adfoxtheme.MacTahoeAppThemer.svg" \
     "$HOME/.local/share/icons/hicolor/scalable/apps/"
 
 EXTENSION_IDS=(UbuntuTahoe@adfoxtheme.github.io UbuntuTahoeDock@adfoxtheme.github.io UbuntuTahoeWidgets@adfoxtheme.github.io)
@@ -320,6 +331,9 @@ sed "s|^Exec=am-lich-viet-nam$|Exec=$HOME/.local/bin/am-lich-viet-nam|" \
 sed "s|^Exec=image-compressor$|Exec=$HOME/.local/bin/image-compressor|" \
     "$ROOT_DIR/desktop/vn.ihoan.ImageCompressor.desktop" \
     > "$HOME/.local/share/applications/vn.ihoan.ImageCompressor.desktop"
+sed "s|^Exec=mactahoe-app-themer$|Exec=$HOME/.local/bin/mactahoe-app-themer|" \
+    "$ROOT_DIR/desktop/io.github.adfoxtheme.MacTahoeAppThemer.desktop" \
+    > "$HOME/.local/share/applications/io.github.adfoxtheme.MacTahoeAppThemer.desktop"
 cp "$ROOT_DIR/systemd/color-scheme-sync.service" "$HOME/.config/systemd/user/"
 systemctl --user daemon-reload
 systemctl --user enable --now color-scheme-sync.service

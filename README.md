@@ -26,7 +26,7 @@ Bộ giao diện macOS Tahoe hoàn chỉnh cùng các tiện ích mở rộng đ
 - `assets/fonts/SF-Pro/` và `assets/fonts/SF-Mono/`: font đang dùng.
 - `assets/wallpapers/`: wallpaper ngày và đêm.
 - `assets/screenshots/`: ảnh giới thiệu desktop, Overview và giao diện ứng dụng.
-- `apps/`: trình quản lý icon MacTahoe, cùng mã nguồn và test cho **Âm lịch Việt Nam** (`apps/am-lich-viet-nam/`) và **Nén ảnh** (`apps/image-compressor/`).
+- `apps/`: trình quản lý icon MacTahoe, cùng mã nguồn và test cho **Âm lịch Việt Nam** (`apps/am-lich-viet-nam/`), **Nén ảnh** (`apps/image-compressor/`) và **Giao diện ứng dụng** (`apps/mactahoe-app-themer/`).
 - `desktop/`: launcher ứng dụng.
 - `vendor/gnome-extensions/`: các tiện ích độc quyền gồm giao diện hợp nhất **UbuntuTahoe**, thanh dock macOS **UbuntuTahoeDock** (có sẵn icon Launchpad) và bộ widget desktop Native **UbuntuTahoeWidgets** (thay thế hoàn toàn Conky, tích hợp OpenWeather).
 - `docs/extension-settings/current-gnome-extensions.md`: các extension đang bật và cấu hình Blur/My Shell, Global Menu trên máy.
@@ -86,7 +86,7 @@ Bộ widget desktop được tích hợp trực tiếp qua tiện ích mở rộ
 1. Chờ Terminal báo `Installed`, sau đó đăng xuất rồi đăng nhập lại để GNOME nạp theme và các extension. Sau khi cài riêng GDM bằng `install-gdm.sh`, khởi động lại máy.
 2. Mở **Tiện ích mở rộng (Extension Manager)**, bật tiện ích **UbuntuTahoeWidgets** để hiển thị bộ widget desktop và vào phần Cài đặt để tùy chỉnh theo ý muốn.
 3. Mở **Quản lý icon MacTahoe** trong danh sách ứng dụng để chọn icon riêng cho ứng dụng. Font, con trỏ, bộ icon/theme tổng thể và tiện ích **UbuntuTahoe**, **UbuntuTahoeDock** đã được tự động cài đặt và kích hoạt sẵn trọn bộ giao diện macOS Tahoe.
-4. **Âm lịch Việt Nam** và **Nén ảnh** được cài thành ứng dụng riêng, có thể mở từ danh sách ứng dụng GNOME hoặc chạy `am-lich-viet-nam` và `image-compressor` trong Terminal.
+4. **Âm lịch Việt Nam**, **Nén ảnh** và **Giao diện ứng dụng** được cài thành các ứng dụng riêng, có thể mở từ danh sách ứng dụng GNOME hoặc chạy `am-lich-viet-nam`, `image-compressor`, `mactahoe-app-themer` trong Terminal.
 5. Nếu không thấy thay đổi, kiểm tra Terminal đã hiện thông báo `Installed` chưa; nếu có, thử đăng xuất/đăng nhập lại một lần nữa.
 
 ### Tùy chỉnh Widget Desktop (UbuntuTahoeWidgets)

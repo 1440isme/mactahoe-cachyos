@@ -62,16 +62,20 @@ rm -rf "$ICON_MANAGER_DIR"
 # 3. Gỡ bỏ các ứng dụng, binary, file .desktop và dữ liệu của MacTahoe
 for path in .local/bin/mactahoe-icon-manager \
     .local/bin/am-lich-viet-nam .local/bin/image-compressor \
+    .local/bin/mactahoe-app-themer \
     .local/bin/gnome-theme-switcher \
     .local/bin/color-scheme-sync.sh \
     .local/share/applications/mactahoe-icon-manager.desktop \
     .local/share/applications/org.gnome.GTK4ThemeSwitcher.desktop \
     .local/share/applications/vn.ihoan.AmLich.desktop \
     .local/share/applications/vn.ihoan.ImageCompressor.desktop \
+    .local/share/applications/io.github.adfoxtheme.MacTahoeAppThemer.desktop \
     .local/share/mactahoe-apps/am-lich-viet-nam \
     .local/share/mactahoe-apps/image-compressor \
+    .local/share/mactahoe-apps/mactahoe-app-themer \
     .local/share/icons/hicolor/scalable/apps/vn.ihoan.AmLich.svg \
     .local/share/icons/hicolor/scalable/apps/vn.ihoan.ImageCompressor.svg \
+    .local/share/icons/hicolor/scalable/apps/io.github.adfoxtheme.MacTahoeAppThemer.svg \
     .config/systemd/user/color-scheme-sync.service; do
     restore_item "$path"
 done
