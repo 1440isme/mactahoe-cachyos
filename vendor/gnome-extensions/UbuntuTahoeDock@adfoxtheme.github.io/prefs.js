@@ -39,9 +39,10 @@ export default class UbuntuTahoeDockPreferences extends ExtensionPreferences {
             const dockFixed = settings.get_boolean('dock-fixed');
             const autohide = settings.get_boolean('autohide');
             const intellihide = settings.get_boolean('intellihide');
+            const intellihideMode = settings.get_enum('intellihide-mode');
 
-            if (dockFixed) {
-                return 2; // Luôn hiển thị
+            if (dockFixed || (intellihide && intellihideMode === 3)) {
+                return 2; // Luôn hiển thị (Nổi trên ứng dụng)
             } else if (autohide && intellihide) {
                 return 0; // Ẩn khi ứng dụng full
             } else if (autohide && !intellihide) {
@@ -64,10 +65,11 @@ export default class UbuntuTahoeDockPreferences extends ExtensionPreferences {
                 settings.set_boolean('autohide', true);
                 settings.set_boolean('intellihide', false);
             } else if (index === 2) {
-                // Luôn hiển thị
-                settings.set_boolean('dock-fixed', true);
-                settings.set_boolean('autohide', false);
-                settings.set_boolean('intellihide', false);
+                // Luôn hiển thị nổi trên ứng dụng (không làm co cửa sổ hay để khoảng trống bên dưới)
+                settings.set_boolean('dock-fixed', false);
+                settings.set_boolean('autohide', true);
+                settings.set_boolean('intellihide', true);
+                settings.set_enum('intellihide-mode', 3); // ALWAYS_ON_TOP
             }
         };
 
@@ -91,6 +93,7 @@ export default class UbuntuTahoeDockPreferences extends ExtensionPreferences {
         settings.connect('changed::dock-fixed', updateRow);
         settings.connect('changed::autohide', updateRow);
         settings.connect('changed::intellihide', updateRow);
+        settings.connect('changed::intellihide-mode', updateRow);
 
         // Group 2: Kích thước Dock
         const group = new Adw.PreferencesGroup({
